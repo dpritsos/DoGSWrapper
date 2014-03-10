@@ -6,6 +6,7 @@ sys.path.append('../../html2vectors/src')
 sys.path.append('../src')
 
 import tables as tb
+import collections as coll
 
 #import html2vect.sparse.wngrams as h2v_wcng
 import html2vect.sparse.cngrams as h2v_cng
@@ -39,14 +40,14 @@ test_only_tgs = [12]
 method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/SANTINIS_Char4Grams_RFSE_kf-10_SigmaT-[0.5]_TestOnly-spirit1000.h5', 'w')
 
 
-params_range = {
-    'kfolds' : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    'vocab_size' : [5000, 10000, 50000, 100000],
-    'features_size' : [500, 1000, 5000, 10000, 50000, 90000],
-    'Iterations' : [10, 50, 100],
-    'Sigma' : [0.5, 0.7, 0.9],
-    #'Bagging' : [0.66],
-} 
+params_range = coll.OrderedDict([
+    ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),\
+    ('vocab_size', [5000, 10000, 50000, 100000]),\
+    ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),\
+    ('Sigma', [0.5, 0.7, 0.9]),\
+    ('Iterations', [10, 50, 100]),\
+    #('Bagging', [0.66]),\
+])
 
 #word_n_gram_size = 1
 #sparse_wng = h2v_wcng.Html2TF(word_n_gram_size, attrib='text', lowercase=True, valid_html=False)

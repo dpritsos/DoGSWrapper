@@ -1,0 +1,1103 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"p",
+				"append  (function)"
+			],
+			[
+				"re",
+				"recurtion"
+			],
+			[
+				"key",
+				"keyval_pairs"
+			],
+			[
+				"E",
+				"Exception  (class)"
+			],
+			[
+				"retun",
+				"returning"
+			],
+			[
+				"class",
+				"Classifier"
+			],
+			[
+				"pro",
+				"projection"
+			],
+			[
+				"lo",
+				"load  (function)"
+			],
+			[
+				"create",
+				"createGroup"
+			],
+			[
+				"ev",
+				"evaluate"
+			],
+			[
+				"Ex",
+				"Exception"
+			],
+			[
+				"Exc",
+				"execution"
+			],
+			[
+				"path",
+				"params_path"
+			],
+			[
+				"corp",
+				"corpus_mtrx"
+			],
+			[
+				"ar",
+				"Array"
+			],
+			[
+				"to",
+				"todense"
+			],
+			[
+				"va",
+				"values"
+			],
+			[
+				"class_",
+				"class_RV_lst"
+			],
+			[
+				"std",
+				"stdout  (variable)"
+			],
+			[
+				"py",
+				"pyplot  (module)"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/base/paramgridcrossval.py",
+			"settings":
+			{
+				"buffer_size": 21916,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test.py",
+			"settings":
+			{
+				"buffer_size": 183,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_paramgrid_crossval_tables.py",
+			"settings":
+			{
+				"buffer_size": 2914,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/OCSVME_paramgrid_crossval_tables.py",
+			"settings":
+			{
+				"buffer_size": 2686,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 306.0,
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control:",
+				"Package Control: Disable Package"
+			],
+			[
+				"pa",
+				"Package Control: Remove Package"
+			],
+			[
+				"git",
+				"Git: Diff Tool Current File"
+			],
+			[
+				"gi",
+				"Git: Diff All"
+			],
+			[
+				"Package Control: i",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 602.0
+	},
+	"console":
+	{
+		"height": 139.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib2,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); os.makedirs( ipp ) if not os.path.exists(ipp) else None; urllib2.install_opener( urllib2.build_opener( urllib2.ProxyHandler()) ); by = urllib2.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); open( os.path.join( ipp, pf), 'wb' ).write(by) if dh == h else None; print('Error validating download (got %s instead of %s), please try manual install' % (dh, h) if dh != h else 'Please restart Sublime Text to finish installation')"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/RFSE_paramgrid_crossval.py",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/README.txt",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/README.txt",
+		"/home/dimitrios/Development_Workspace/WEGA/src/base/paramgridcrossval.py",
+		"/home/dimitrios/Development_Workspace/WEGA/README.txt",
+		"/home/dimitrios/Development_Workspace/WEGA/src/OCSVME_paramgrid_crossval_tables.py",
+		"/home/dimitrios/.fonts/Read Me.txt",
+		"/etc/fonts/fonts.conf",
+		"/media/dimitrios/dbbaa90d-fc43-4e53-84ca-e5aa1bce18d9/ExtremePro_Workspace/AdKeywordsGenerator_Scripts/KeywordBuilder.py",
+		"/home/dimitrios/Development_Workspace/WEGA/src/data_retrieval/__init__.py",
+		"/home/dimitrios/Development_Workspace/WEGA/src/ploting/ploting_1.py",
+		"/home/dimitrios/.config/sublime-text-3/Packages/SublimeCodeIntel/SublimeCodeIntel.sublime-settings",
+		"/home/dimitrios/Development_Workspace/WEGA/src/ploting/plot_RFSE_Corpus.py",
+		"/etc/fstab",
+		"/home/dimitrios/Development_Workspace/WEGA/src/analytics/pr_curves_to_11_standard_recall_levels.pyc",
+		"/usr/local/lib/python2.7/dist-packages/sklearn/metrics/metrics.py",
+		"/home/dimitrios/Documents/passwords.txt",
+		"/home/dimitrios/Development_Workspace/WEGA/src/analytics/roc_curves",
+		"/home/dimitrios/Documents/pan13tools/pan13performance.py",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/blog/html/blog_britblog_00000123.htm",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/find_docs_size.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/RFSE_paramgrid_crossval_tables.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/OCSVME_paramgrid_crossval_tables.py",
+		"/home/dimitrios/.config/sublime-text-2/Packages/LaTeXTools/README.markdown",
+		"/home/dimitrios/.config/sublime-text-2/Packages/LaTeXTools/Default (Linux).sublime-keymap",
+		"/home/dimitrios/Documents/Publications-Confs:MyTrys/Publication_ECIR2013/ECIR2013.tex",
+		"/home/dimitrios/.config/sublime-text-2/Packages/LaTeXTools/LaTeXTools Preferences.sublime-settings",
+		"/home/dimitrios/.config/sublime-text-2/Packages/User/Default (Linux).sublime-keymap",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/.gitignore",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_Word_1Grams/Corpus_filename_shorted.lst",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ParamGridCrossVal_RFSE.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/to_be_deprecated/crossval_experiments_OC-SVM.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/wrappedmodels/rfse.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/RFSE_paramgrid_crossval.py",
+		"/home/dimitrios/ExtremePro_Workspace/Barcode_Converter_Scripts/tnf_fw13_stock2.fmt",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_0.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/kfold_crv_0.idx",
+		"/home/dimitrios/.bashrc",
+		"/home/dimitrios/Desktop/Github.tmTheme",
+		"/home/dimitrios/Desktop/test.html",
+		"/home/dimitrios/ExtremePro_Workspace/ArtDesign_Site_ExtremePro.gr/Offers_2013_10_03_Trekking/Offers_2013_10_03_Trekking.html",
+		"/home/dimitrios/ExtremePro_Workspace/Barcode_Converter_Scripts/MIZUNO/odlostock.fmt",
+		"/home/dimitrios/ExtremePro_Workspace/Barcode_Converter_Scripts/ODLO/odlostock.fmt",
+		"/home/dimitrios/ExtremePro_Workspace/Barcode_Converter_Scripts/xl2xl.py",
+		"/home/dimitrios/Desktop/kamakirc.txt",
+		"/home/dimitrios/.ssh/id_rsa_snf.pub",
+		"/home/dimitrios/.ssh/id_rsa_snf",
+		"/home/dimitrios/Desktop/id_rsa (2)",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/pr_curves_to_11_standard_recall_levels.py",
+		"/home/dimitrios/bashrc",
+		"/home/dimitrios/.config/sublime-text-2/Packages/User/Base File.sublime-settings",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/Corpus_tags_shorted.lst",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_9.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_8.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_7.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_6.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_5.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_4.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_3.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_2.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_crv_1.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/kfold_trn_1.idx",
+		"/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams/Corpus_filename_shorted.lst",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/test.py",
+		"/home/dimitrios/Development_Workspace/html2vectors/src/html2vect/base/vectortypes/string2tf.py",
+		"/home/dimitrios/Development_Workspace/html2vectors/src/html2vect/tables/cngrams.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting_deprecated/crossplot_PR_CUR_IV_EnsblAlgo_n_EnsblOCSVM.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/to_be_deprecated/crossval_experiments_Koppels_method.py",
+		"/home/dimitrios/Desktop/Clothing.csv",
+		"/home/dimitrios/Desktop/prosfora_paralia.txt",
+		"/home/dimitrios/Desktop/testt.txt",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting_deprecated/plot_resaults_frm_OCSVM_Sparse.py",
+		"/home/dimitrios/Synergy-Crawler/MGC/structure.rdf.u8",
+		"/home/dimitrios/Synergy-Crawler/PGS/idxf_d.txt",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/to_be_deprecated/crossplot_PR_CUR_IV_EnsblAlgo_n_EnsblOCSVM.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting_deprecated/plot_resaults_frm_pytables_II.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plot_RFSE_Per_Genre_New.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plot_RFSE_Full_Corpus_New.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/experiments_My_Mahalanobis_method.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/plot_RFSE_full_Corpus.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/intersect_script.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/__init__.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting_deprecated/crossplot_PR_CUR_IV_EnsblAlgo_Bagging_n_EnsblOCSVM.py",
+		"/home/dimitrios/Desktop/Sublime Text 2/sublime_plugin.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/PR_curves_to_11_standard_recall_levels.py",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams/Corpus_tags_shorted.lst",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams/Corpus_filename_shorted.lst",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/crossval_experiments_OC-SVM.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/crossval_experiments_Koppels_method.py",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams/kfold_crv_0.idx",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams/kfold_trn_0.idx",
+		"/home/dimitrios/Development_Workspace/html2vectors/src/html2vect/base/html2terms.py",
+		"/home/dimitrios/Development_Workspace/html2vectors/src/html2vect/base/convert/tfdtools.py",
+		"/home/dimitrios/Development_Workspace/html2vectors/src/html2vect/sparse/cngrams.py",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams/kfold_trn_1.idx",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams/kfold_crv_2.idx",
+		"/home/dimitrios/ExtremePro_Workspace/ArtDesign_Site_ExtremePro.gr/Offers_2013_07_02_Kites/Offers_2013_07_02_Kites.html",
+		"/home/dimitrios/Desktop/CSVI_Export_CSVI Product Export_Discount_1-07-2013_16.00.csv",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plot_PR_CUR_frm_pytables_III.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/__init__.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/wrappedmodels/__init__.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/base/__init__.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/wrapped_models/RFSE.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/RFSE.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plothistograms_script.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/crossval_experiments_SVM_TF(Sparse)_multiclass.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/crossval_experiments_RF.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/crossplot_PR_CUR_IV_EnsblAlgo_Bagging_n_EnsblOCSVM.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/crossplot_PR_CUR_IV_EnsblAlgo_n_EnsblOCSVM.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/Generatevectors_Tables_script.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/experiments.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/generatevectors.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/generatevectors_tables.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/parallel_experiment_script.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/parallel_generatevectors_script.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/trainevaloneclssvm.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plot_resaults_frm_pytables_IV_Bagging.py",
+		"/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies/kfold_Voc_0.voc",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plot_PR_CUR_frm_pytables_IV.py",
+		"/home/dimitrios/Desktop/pan13performance.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/TEST.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/evaluate_Koppels_method_for_sigma_values.py",
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/evaluate_Koppels_method_for_F05_values.py",
+		"/home/dimitrios/Documents/pan13tools/pan13rnd.py",
+		"/home/dimitrios/ExtremePro_Workspace/ArtDesign_Site_ExtremePro.gr/Notify_Promo_Grangers_Oct_2012/Promo_Grangers_Nov_2012.html",
+		"/home/dimitrios/Documents/pan13tools/Answers.txt",
+		"/home/dimitrios/ExtremePro_Workspace/ArtDesign_Site_ExtremePro.gr/EOLO-SPORTS_Aetoi-KATHARODEYTERA/Email_HTML/EMAIL_to_Retail_Customers.html",
+		"/home/dimitrios/Desktop/untitled.py"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"creating vocabulary",
+			"gridsearch",
+			" :",
+			",)",
+			":",
+			"params_range",
+			"grid_search",
+			"Normalizing",
+			"precision_score",
+			".",
+			"	\n",
+			"],",
+			", ",
+			" : ",
+			"    '",
+			"'",
+			"],",
+			", ",
+			"OrderedDict",
+			"auc",
+			"srl",
+			"fp_rate",
+			"tp_rate",
+			"precision_recall_curve",
+			"check_arrays",
+			"scr_arr",
+			"trh_arr",
+			"reorder",
+			"auc",
+			"auc_score",
+			"roc_curve",
+			"auc",
+			"roc_curve",
+			"truth_d",
+			"roc_curve",
+			"i",
+			"I",
+			"i",
+			"r",
+			"R",
+			"nrst_smooth_pr",
+			"sub2",
+			"20",
+			"crv_idxs",
+			"Axes3D",
+			"barh",
+			"genre_tag",
+			"last_voc_size",
+			"corpus_matrix(",
+			"size",
+			"Document size",
+			".pdf",
+			"{}",
+			"math",
+			"math mode",
+			"math",
+			"section",
+			"\n\\",
+			"precision_score",
+			"~",
+			"/Users/stamatatos",
+			"shape",
+			"print",
+			"calculate_p_r_f1",
+			"print",
+			", ",
+			"corpus_matrix",
+			"Matrix",
+			"corpus_matrix",
+			"method_results",
+			"cosine_similarity_sparse",
+			"cosine_similarity",
+			"corpus_mtrx",
+			"print",
+			"corpus_mtrx",
+			"self.TF_TT.from_files",
+			"corpus_matrix",
+			"new_cls_gnr_tgs",
+			"FW13_ADDITIONS",
+			"cls_gnr_tgs",
+			"1490",
+			" &",
+			"h5f",
+			"params_path",
+			"pkl_voc_filename",
+			"tf_d",
+			"Matrix",
+			"cls_gnr_tgs",
+			"trn",
+			"self.TF_TT",
+			"ODLO_THERMALWEAR_KIDS",
+			"norm_func",
+			"corpus_matrix",
+			"norm_func",
+			"corpus_matrix",
+			"ODLO_THERMALWEAR",
+			"inv_srd_idx",
+			"ODLO_STOCK",
+			"]",
+			"],",
+			", ",
+			"\"-\" ",
+			"\\w",
+			"w",
+			"crossval_Y",
+			"cls_gnr_tgs",
+			"crossval_Y",
+			"cls_gnr_tgs",
+			"self.genres_lst",
+			"corpus_mtrx",
+			"shape",
+			"tf_d",
+			"cosine_similarity",
+			"corpus_mtrx",
+			"None",
+			"tid",
+			"tf_d",
+			"vocab_size_group",
+			"plt",
+			";",
+			"genre_file_lst",
+			"corpus_path",
+			"attrib",
+			"gnr_classes",
+			"grid_search",
+			"srl",
+			"skm",
+			"np"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"/home/dimitrios",
+			"~",
+			"~^~"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/base/paramgridcrossval.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 21916,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								212,
+								212
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 102.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 183,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								158,
+								158
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/RFSE_paramgrid_crossval_tables.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2914,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1366,
+								1366
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 51.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/OCSVME_paramgrid_crossval_tables.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2686,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1790,
+								1790
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 337.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 112.0
+	},
+	"project": "DoGWrapper.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"crossval_experiments_RF.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/home/dimitrios/Development_Workspace/html2vectors/html2vect.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 254.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -13,7 +13,7 @@ import scipy.spatial.distance as spd
 
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve
 from sklearn import cross_validation
-from sklearn import grid_search
+import base.param_combs as param_combs
 
 
 
@@ -162,7 +162,15 @@ class ParamGridCrossValBase(object):
             #Perform default (division by max value) normalisation for corpus matrix 'corpus_mtrx'
             #Should I perform Standarisation/Normalisation by substracting mean value from vector variables?
             print "Normalising"
-            corpus_mtrx = ssp.csr_matrix( corpus_mtrx.todense() / np.max(corpus_mtrx.todense(), axis=1) )
+
+            #Getting the Maximum frequency for every document.
+            max_vals = np.max(corpus_mtrx.todense(), axis=1)
+
+            #For Documents with zero terms. This case occurs when a sub-Vocabulary is used for the experiment.
+            max_vals[ np.where(max_vals == 0) ] = 1
+
+            #Normalising
+            corpus_mtrx = ssp.csr_matrix( corpus_mtrx.todense() / max_vals )
 
             #Saving TF Vecrors Matrix
             print "Saving Sparse Normalized TF Matrix (for CrossValidation)"
@@ -262,7 +270,7 @@ class ParamGridCrossValBase(object):
                     json.dump(tf_d, f, encoding=encoding)
 
         #Starting Parameters Grid Search 
-        for gci, params in enumerate( grid_search.IterGrid(params_range) ):
+        for gci, params in enumerate(  param_combs.ParamGridIter(params_range) ):
 
             #Show how many Gric Search Parameter combinations are remaning
             print "Param Grid Counts:", gci+1
@@ -421,6 +429,9 @@ class ParamGridCrossValTables(ParamGridCrossValBase):
             #indermidate array which it is required in 'c = c / c.max()' operation
             print "Normalising"   
             max_col_arr = np.max(corpus_mtrx, axis=1)[:, np.newaxis]
+
+            #For Documents with zero terms. This case occurs when a sub-Vocabulary is used for the experiment.
+            max_col_arr[ np.where(max_col_arr == 0) ] = 1
 
             for i, (row, max_val) in enumerate( zip(corpus_mtrx.iterrows(), max_col_arr) ):
                 corpus_mtrx[i] = row / max_val
