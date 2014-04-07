@@ -50,10 +50,10 @@ params_range = coll.OrderedDict([
 ])
 
 #word_n_gram_size = 1
-#sparse_wng = h2v_wcng.Html2TF(word_n_gram_size, attrib='text', lowercase=True, valid_html=False)
+#sparse_wng = h2v_wcng.Html2TF(word_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
 
 char_n_gram_size = 4
-sparse_cng = h2v_cng.Html2TF(char_n_gram_size, attrib='text', lowercase=True, valid_html=False)
+sparse_cng = h2v_cng.Html2TF(char_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
 
 #For Sparse
 ml_model = RFSE_Wrapped(cosine_similarity_sparse, -1.0, genres[0:-1], bagging=False)

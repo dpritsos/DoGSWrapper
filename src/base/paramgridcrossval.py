@@ -1,4 +1,6 @@
 
+import sys
+sys.path.append('../../html2vectors/src')
 
 import json
 import os
@@ -14,6 +16,8 @@ import scipy.spatial.distance as spd
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve
 from sklearn import cross_validation
 import base.param_combs as param_combs
+from html2vect.utils import tfdutils
+from html2vect.base.io.basefilehandlers import file_list_frmpaths
 
 
 
@@ -110,11 +114,7 @@ class ParamGridCrossValBase(object):
                 #Get the list of Genre argument as given to this Class and build html-file-list and class-genres-tags list
                 for i, g in enumerate(self.genres_lst):
                     #Get all files located to the genre's path 'g'
-                    try:
-                        gnrs_file_lst = self.TF_TT.file_list_frmpaths(self.corpus_path, [ str( g + "/html/" ) ] )
-                    except:
-                        msg = "Error reading files from: " +  str( self.corpus_path + g + "/html/" )
-                        raise Exception(msg)
+                    gnrs_file_lst = file_list_frmpaths(self.corpus_path, [ str( g + "/html/" ) ] )
                     
                     #Extends the list of html files with the set of files form genre 'g'
                     html_file_l.extend( gnrs_file_lst )
@@ -328,14 +328,14 @@ class ParamGridCrossValBase(object):
                 tf_d = pickle.load(f)
             
             #Get the Vocabuliary keeping all the terms with same freq to the last feature of the reqested size
-            resized_tf_d = self.TF_TT.tfdtools.keep_atleast(tf_d, vocab_size) 
+            resized_tf_d = tfdutils.keep_atleast(tf_d, vocab_size) 
 
             #Saving the real Vocabulary sizes for this experiment (i.e. this text representation, etc.)
             #keep it as pytables group attribute the actual Vocabulary size
             vocab_size_group._v_attrs.real_voc_size = [(k, len(resized_tf_d))]
 
             #Create The Terms-Index Vocabulary that is shorted by Frequency descending order
-            tid = self.TF_TT.tfdtools.tf2tidx( resized_tf_d )
+            tid = tfdutils.tf2tidx( resized_tf_d )
             #print tid.items()[0:5]
 
             #Load or Create the Coprus Matrix/Array for this combination or kfold and vocabulary_size

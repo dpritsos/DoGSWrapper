@@ -5,6 +5,8 @@ import sys
 sys.path.append('../../html2vectors/src')
 sys.path.append('../src')
 
+import collections as coll
+
 import tables as tb
 
 #import html2vect.sparse.cngrams as h2v_cng
@@ -47,7 +49,7 @@ params_range = coll.OrderedDict([
 ])
 
 word_n_gram_size = 3
-tables_wng = h2v_wcng.Html2TF(word_n_gram_size, attrib='text', lowercase=True, valid_html=False)
+tables_wng = h2v_wcng.Html2TF(word_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
 
 #char_n_gram_size = 4
 #tables_cng = h2v_cng.Html2TF(char_n_gram_size, attrib='text', lowercase=True, valid_html=False)
