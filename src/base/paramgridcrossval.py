@@ -251,7 +251,7 @@ class ParamGridCrossValBase(object):
                 #Save Cross-validation Indeces
                 print "Saving Cross-validation Indices for k-fold=", k
                 with open(crv_filename, 'w') as f:
-                    if test_only_idxs:
+                    if test_only_tgs:
                         json.dump( list(crv) + test_only_idxs, f, encoding=encoding)   
                     else:
                         json.dump( list(crv), f, encoding=encoding)               
