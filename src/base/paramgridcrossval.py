@@ -15,7 +15,7 @@ import scipy.spatial.distance as spd
 
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve
 from sklearn import cross_validation
-import base.param_combs as param_combs
+import param_combs
 from html2vect.utils import tfdutils
 from html2vect.base.io.basefilehandlers import file_list_frmpaths
 
@@ -260,6 +260,7 @@ class ParamGridCrossValBase(object):
                 #Creating Vocabulary
                 print "Creating Vocabulary for k-fold=",k
                 tf_d = self.TF_TT.build_vocabulary( list( html_file_l[trn] ), encoding='utf-8', error_handling='replace' )
+                
 
                 #Saving Vocabulary
                 print "Saving Vocabulary"
