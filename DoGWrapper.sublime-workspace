@@ -95,7 +95,7 @@
 			"file": "src/base/paramgridcrossval.py",
 			"settings":
 			{
-				"buffer_size": 21833,
+				"buffer_size": 21832,
 				"line_ending": "Unix"
 			}
 		},
@@ -350,6 +350,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"get_test_only_idxs",
+			"test_onl",
+			"test",
 			"print",
 			"items",
 			"Vocab",
@@ -474,10 +477,7 @@
 			"cls_gnr_tgs",
 			"crossval_Y",
 			"cls_gnr_tgs",
-			"self.genres_lst",
-			"corpus_mtrx",
-			"shape",
-			"tf_d"
+			"self.genres_lst"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -507,15 +507,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 21833,
+						"buffer_size": 21832,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12556,
-								12556
+								12075,
+								12075
 							]
 						],
 						"settings":
@@ -629,7 +629,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3716.0,
+						"translation.y": 3495.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
