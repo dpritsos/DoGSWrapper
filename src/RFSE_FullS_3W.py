@@ -36,11 +36,11 @@ from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarit
 
 #SANTINIS
 corpus_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/"
-kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_3Words_RFSE_SANTINI"
+kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_3Words_RFSE_SANTINI_SQRD"
 genres = [ "blog", "eshop", "faq", "frontpage", "listing", "php", "spage", "diy_mini", "editorial", "feat_articles", "short_bio", "spirit_1000" ]
 #genres = [ "short_bio", "spirit_1000" ]
 test_only_tgs = [12]
-method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_3Words_SANTINIS.h5', 'w')
+method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_3Words_SANTINIS_SQRD.h5', 'w')
 
 
 params_range = coll.OrderedDict([
