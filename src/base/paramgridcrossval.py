@@ -152,7 +152,7 @@ class ParamGridCrossValBase(object):
         else:
             print "Creating Sparse TF Matrix (for CrossValidation) for K-fold=", k, " and Vocabulary size=", vocab_size
             #Creating TF Vectors Sparse Matrix
-            corpus_mtrx = self.TF_TT.from_files(list( html_file_l ), tid_dictionary=tid, norm_func=norm_func,\
+            corpus_mtrx = self.TF_TT.from_files(list( html_file_l ), tid_vocabulary=tid, norm_func=norm_func,\
                                                 encoding='utf8', error_handling='replace' )[0] #<--- Be carefull with zero index
 
             #Save the Webpages term counts (Char N-grans or Word N-Grams)
@@ -416,7 +416,7 @@ class ParamGridCrossValTables(ParamGridCrossValBase):
             print "Creating pyTables TF EArray (for CrossValidation) for K-fold=", k, " and Vocabulary size=", vocab_size
             
             #Creating pyTables TF EArray
-            corpus_mtrx, h5f = self.TF_TT.from_files(list( html_file_l ), corpus_mtrx_fname, tid_dictionary=tid, norm_func=norm_func,\
+            corpus_mtrx, h5f = self.TF_TT.from_files(list( html_file_l ), corpus_mtrx_fname, tid_vocabulary=tid, norm_func=norm_func,\
                                                 encoding='utf8', error_handling='replace' )[0:2] #<--- Getting only 2 of the 3 returend values
             
             #Save the Webpages term counts (Char N-grans or Word N-Grams)
