@@ -26,7 +26,7 @@ class OCSVME_Wrapped(object):
                 inds = []
             
             inds.append( trn_idx )    
-        
+        print self.genres_lst
         inds_per_gnr[ self.genres_lst[last_gnr_tag - 1] ] = inds 
     
         gnr_classes = dict()
@@ -63,7 +63,7 @@ class OCSVME_Wrapped(object):
                 
         #Initialise Predicted-Classes-Arrays List 
         predicted_Y_per_gnr = list()
-        predicted_Dist_per_gnr = list()
+        predicted_dist_per_gnr = list()
         
         for cls_tag, g in enumerate(self.genres_lst):
             
@@ -80,20 +80,29 @@ class OCSVME_Wrapped(object):
             
             #Keeping the prediction per genre 
             predicted_Y_per_gnr.append( predicted_Y )
-            predicted_Dist_per_gnr.append( predicted_D.reshape( predicted_D.shape[0] ) ) 
+            predicted_dist_per_gnr.append( predicted_D.reshape( predicted_D.shape[0] ) ) 
             
         #Converting it to Array before returning
         predicted_Y_per_gnr = np.vstack( predicted_Y_per_gnr )
-        predicted_Dist_per_gnr = np.vstack( predicted_Dist_per_gnr )
+        predicted_dist_per_gnr = np.vstack( predicted_dist_per_gnr )
 
-        #Finding index of the Max Positive Distancies from the Ensembles Predicted Distance Array/Matrix
-        max_dist_idxs =  np.argmax(predicted_Dist_per_gnr, axis=0)
+        #Finding index of the Max Positive distancies from the Ensembles Predicted distance Array/Matrix
+        max_dist_idxs =  np.argmax(predicted_dist_per_gnr, axis=0)
 
-        #Keeping the Max Positive Distance form Predicted Distancies Array/Matrix and the respected Predicted Ys 
+        #Keeping the Max Positive distance form Predicted distancies Array/Matrix and the respected Predicted Ys 
         predicted_Y_per_gnr = predicted_Y_per_gnr[ max_dist_idxs ]
-        predicted_Dist_per_gnr = predicted_Dist_per_gnr[ max_dist_idxs ]
+        predicted_dist_per_gnr = predicted_dist_per_gnr[ max_dist_idxs ]
+
+        #Selecting tha maximum score per column, i.e., per genre-learner for each document.
+        max_scores_idxs = np.argmax( predicted_dist_per_gnr, axis=0 )
+        
+        #Getting the maximum scores as selected above.
+        predicted_scores = np.choose(max_scores_idxs, predicted_dist_per_gnr) 
+        
+        #Getting the Y's respectively to maximum scores as selected above.
+        predicted_Y = np.choose(max_scores_idxs, predicted_Y_per_gnr) 
     
-        return (predicted_Y_per_gnr, predicted_Dist_per_gnr) 
+        return (predicted_Y, predicted_scores, predicted_Y_per_gnr, predicted_dist_per_gnr) 
 
 
     def eval(self, *args):
@@ -105,18 +114,20 @@ class OCSVME_Wrapped(object):
         cls_gnr_tgs = args[3]
         vocab_index_dct = args[4] #tid
         params = args[5]
-
+        
         #Build Genre Classes given the training vectors
         gnr_classes = self.contruct_classes(trn_idxs, corpus_mtrx, cls_gnr_tgs, params)
 
         #Execute predict() with gnr_classes which triggers simple RFSE (non Bagging)
         results = self.predict(crv_idxs, corpus_mtrx, params, gnr_classes)
 
-
         #Expected Results for the ParamGridCrossValBase class in paramgridcrossval module
         predicted_Y = results[0]
         predicted_scores = results[1]
-        model_specific_d = None
+        model_specific_d = {\
+            'predicted_Y_per_gnr' : results[2],\
+            'predicted_dist_per_gnr' : results[3]
+        }
 
         #Return results as expected form ParamGridCrossValBase class
         return predicted_Y, predicted_scores, model_specific_d

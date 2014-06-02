@@ -20,29 +20,10 @@ from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarit
 
 #"Santini's 7-genres Corpus"
 corpus_filepath = "/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/"
-kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/Kfolds_Vocs_Inds_3Words_RFSE_7Genres"
+kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/Kfolds_Vocs_Inds_3Words_7Genres"
 genres = [ "blog", "eshop", "faq", "frontpage", "listing", "php", "spage" ]
 test_only_tgs = False
 method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/RFSE_3Words_7Genres.h5', 'w')
-
-#"KI-04"
-#corpus_filepath = "/home/dimitrios/Synergy-Crawler/KI-04/"
-#kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/KI-04/Kfolds_Vocabularies_4grams"
-#genres = [ "article", "discussion", "download", "help", "linklist", "portrait", "portrait_priv", "shop" ]
-#method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/KI-04/C-KI04_TT-Char4Grams-Koppels-Bagging_method_kfolds-10_GridSearch_TEST.h5', 'w')
-
-#HGC
-
-#MGC
-
-#SANTINIS
-#corpus_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/"
-#kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Grams_RFSE_SANTINI"
-#genres = [ "blog", "eshop", "faq", "frontpage", "listing", "php", "spage", "diy_mini", "editorial", "feat_articles", "short_bio", "spirit_1000" ]
-#genres = [ "short_bio", "spirit_1000" ]
-#test_only_tgs = [12]
-#method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_4Grams_SANTINIS.h5', 'w')
-
 
 params_range = coll.OrderedDict([
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),\
