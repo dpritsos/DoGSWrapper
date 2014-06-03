@@ -90,17 +90,8 @@ class OCSVME_Wrapped(object):
         max_dist_idxs =  np.argmax(predicted_dist_per_gnr, axis=0)
 
         #Keeping the Max Positive distance form Predicted distancies Array/Matrix and the respected Predicted Ys 
-        predicted_Y_per_gnr = predicted_Y_per_gnr[ max_dist_idxs ]
-        predicted_dist_per_gnr = predicted_dist_per_gnr[ max_dist_idxs ]
-
-        #Selecting tha maximum score per column, i.e., per genre-learner for each document.
-        max_scores_idxs = np.argmax( predicted_dist_per_gnr, axis=0 )
-        
-        #Getting the maximum scores as selected above.
-        predicted_scores = np.choose(max_scores_idxs, predicted_dist_per_gnr) 
-        
-        #Getting the Y's respectively to maximum scores as selected above.
-        predicted_Y = np.choose(max_scores_idxs, predicted_Y_per_gnr) 
+        predicted_scores = np.choose(max_dist_idxs, predicted_dist_per_gnr)
+        predicted_Y = np.choose(max_dist_idxs, predicted_Y_per_gnr)
     
         return (predicted_Y, predicted_scores, predicted_Y_per_gnr, predicted_dist_per_gnr) 
 
@@ -131,6 +122,3 @@ class OCSVME_Wrapped(object):
 
         #Return results as expected form ParamGridCrossValBase class
         return predicted_Y, predicted_scores, model_specific_d
-        
- 
-
