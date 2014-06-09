@@ -48,8 +48,8 @@ class ParamGridCrossValBase(object):
         
         end = 0
         for gnr_cnt in range(len(self.genres_lst)):
-            start = end
-            end = end + cv_tg_idxs[gnr_cnt+1]
+            start = np.int( end )
+            end = np.int( end + cv_tg_idxs[gnr_cnt+1] )
             counts_per_grn_cv = np.histogram( predicted_Y[start:end], bins=np.arange(self.gnrs_num+2) )[0]
             #print counts_per_grn_cv
             #print tp_n_fp[gnr_cnt+1]
@@ -156,8 +156,8 @@ class ParamGridCrossValBase(object):
                                                 encoding='utf8', error_handling='replace' )[0] #<--- Be carefull with zero index
 
             #Save the Webpages term counts (Char N-grans or Word N-Grams)
-            kfld_group = self.h5_res.createGroup(vocab_size_group, 'KFold'+str(k))
-            docs_term_counts = self.h5_res.createArray(kfld_group, 'docs_term_counts', np.sum(corpus_mtrx.toarray(), axis=1))
+            kfld_group = self.h5_res.create_group(vocab_size_group, 'KFold'+str(k))
+            docs_term_counts = self.h5_res.create_array(kfld_group, 'docs_term_counts', np.sum(corpus_mtrx.toarray(), axis=1))
 
             #Perform default (division by max value) normalisation for corpus matrix 'corpus_mtrx'
             #Should I perform Standarisation/Normalisation by substracting mean value from vector variables?
@@ -288,16 +288,16 @@ class ParamGridCrossValBase(object):
 
             #Creating a Group for this Vocabulary size in h5 file under this k-fold
             try:
-                vocab_size_group = self.h5_res.getNode('/', 'vocab_size'+str(vocab_size))    
+                vocab_size_group = self.h5_res.get_node('/', 'vocab_size'+str(vocab_size))    
             except:
-                vocab_size_group = self.h5_res.createGroup('/', 'vocab_size'+str(vocab_size),\
+                vocab_size_group = self.h5_res.create_group('/', 'vocab_size'+str(vocab_size),\
                                 "Vocabulary actual size group of Results Arrays for this K-fold" )
                                    
             #Creating a Group for this features size in h5 file under this k-fold
             try:
-                feat_num_group = self.h5_res.getNode(vocab_size_group, 'features_size'+str(featrs_size))    
+                feat_num_group = self.h5_res.get_node(vocab_size_group, 'features_size'+str(featrs_size))    
             except:
-                feat_num_group = self.h5_res.createGroup(vocab_size_group, 'features_size'+str(featrs_size),\
+                feat_num_group = self.h5_res.create_group(vocab_size_group, 'features_size'+str(featrs_size),\
                                 "Features Number group of Results Arrays for this K-fold" )
             
             ###Create the group sequence respectively to the models parameters:
@@ -309,17 +309,17 @@ class ParamGridCrossValBase(object):
             for pname, pvalue in params.items():
                 if pname not in ['kfolds', 'vocab_size', 'features_size']:           
                     try:
-                        next_group = self.h5_res.getNode(next_group, pname+str(pvalue).replace('.',''))
+                        next_group = self.h5_res.get_node(next_group, pname+str(pvalue).replace('.',''))
                     except:
-                        next_group = self.h5_res.createGroup(next_group, pname+str(pvalue).replace('.',''), "<Comment>" )   
+                        next_group = self.h5_res.create_group(next_group, pname+str(pvalue).replace('.',''), "<Comment>" )   
 
             ###END- Group creation sequence 
 
             #Creating a Group for this k-fold in h5 file
             try:
-                kfld_group = self.h5_res.getNode(next_group, 'KFold'+str(k))
+                kfld_group = self.h5_res.get_node(next_group, 'KFold'+str(k))
             except:
-                kfld_group = self.h5_res.createGroup(next_group, 'KFold'+str(k), "K-Fold group of Results Arrays")
+                kfld_group = self.h5_res.create_group(next_group, 'KFold'+str(k), "K-Fold group of Results Arrays")
 
             #Loading Vocabulary
             print "Loadinging VOCABULARY for k-fold=",k
@@ -369,18 +369,18 @@ class ParamGridCrossValBase(object):
             P_per_gnr, R_per_gnr, F1_per_gnr = self.calculate_p_r_f1(crossval_Y, predicted_Y)
                         
             #Saving results
-            self.h5_res.createArray(kfld_group, 'expected_Y', crossval_Y, "Expected Classes per Document (CrossValidation Set)")[:]                                         
-            self.h5_res.createArray(kfld_group, 'predicted_Y', predicted_Y, "predicted Classes per Document (CrossValidation Set)")[:]
-            self.h5_res.createArray(kfld_group, 'predicted_scores', predicted_scores, "predicted Scores per Document (CrossValidation Set)")[:]
-            self.h5_res.createArray(kfld_group, "P_per_gnr", P_per_gnr, "Precision per Genre (P[0]==Global P)")[:]
-            self.h5_res.createArray(kfld_group, "R_per_gnr", R_per_gnr, "Recall per Genre (R[0]==Global R)")[:]
-            self.h5_res.createArray(kfld_group, "F1_per_gnr", F1_per_gnr, "F1_statistic per Genre (F1[0]==Global F1)")[:]
+            self.h5_res.create_array(kfld_group, 'expected_Y', crossval_Y, "Expected Classes per Document (CrossValidation Set)")[:]                                         
+            self.h5_res.create_array(kfld_group, 'predicted_Y', predicted_Y, "predicted Classes per Document (CrossValidation Set)")[:]
+            self.h5_res.create_array(kfld_group, 'predicted_scores', predicted_scores, "predicted Scores per Document (CrossValidation Set)")[:]
+            self.h5_res.create_array(kfld_group, "P_per_gnr", P_per_gnr, "Precision per Genre (P[0]==Global P)")[:]
+            self.h5_res.create_array(kfld_group, "R_per_gnr", R_per_gnr, "Recall per Genre (R[0]==Global R)")[:]
+            self.h5_res.create_array(kfld_group, "F1_per_gnr", F1_per_gnr, "F1_statistic per Genre (F1[0]==Global F1)")[:]
 
             print 
             
             if  model_specific_d:
                 for name, value in model_specific_d.items():
-                    self.h5_res.createArray(kfld_group, name, value, "<Comment>")[:]             
+                    self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]             
         
             #Closing corpus file if any. Originaly for closing hd5 files
             if corpus_file:
@@ -408,7 +408,7 @@ class ParamGridCrossValTables(ParamGridCrossValBase):
             print "Loading pyTables TF EArray for CrossValidation for K-fold=", k, " and Vocabulary size=", vocab_size
             #Loading Coprus pyTables TF EArray for this combination or kfold and vocabulary_size
             h5f = tb.open_file(corpus_mtrx_fname, 'r+')
-            corpus_mtrx = h5f.getNode('/',  'corpus_earray') #h5f.root.corpus_earray 
+            corpus_mtrx = h5f.get_node('/',  'corpus_earray') #h5f.root.corpus_earray 
 
         else:
             print "Creating pyTables TF EArray (for CrossValidation) for K-fold=", k, " and Vocabulary size=", vocab_size
@@ -418,8 +418,8 @@ class ParamGridCrossValTables(ParamGridCrossValBase):
                                                 encoding='utf8', error_handling='replace' )[0:2] #<--- Getting only 2 of the 3 returend values
             
             #Save the Webpages term counts (Char N-grans or Word N-Grams)
-            kfld_group = self.h5_res.createGroup(vocab_size_group, 'KFold'+str(k))
-            docs_term_counts = self.h5_res.createArray(kfld_group, 'docs_term_counts', np.sum(corpus_mtrx, axis=1))
+            kfld_group = self.h5_res.create_group(vocab_size_group, 'KFold'+str(k))
+            docs_term_counts = self.h5_res.create_array(kfld_group, 'docs_term_counts', np.sum(corpus_mtrx, axis=1))
 
             #Performing default (division by max value) normalisation for corpus matrix 'corpus_mtrx'
             #Should I perform Standarisation/Normalisation by substracting mean value from vector variables?            

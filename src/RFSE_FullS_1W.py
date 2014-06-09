@@ -14,7 +14,7 @@ import tables as tb
 #import html2vect.tables.cngrams as h2v_cng
 import html2vect.tables.wngrams as h2v_wcng
 
-from base.paramgridcrossval import ParamGridCrossValBase, ParamGridCrossValTables
+from base.paramgridcrossval_enhanced import ParamGridCrossValBase, ParamGridCrossValTables
 from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarity_sparse
     
 
@@ -24,7 +24,7 @@ kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Ind
 genres = [ "blog", "eshop", "faq", "frontpage", "listing", "php", "spage", "diy_mini", "editorial", "feat_articles", "short_bio", "spirit_1000" ]
 #genres = [ "short_bio", "spirit_1000" ]
 test_only_tgs = [12]
-method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_1Words_SANTINIS.h5', 'w')
+method_results = tb.open_file('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_1Words_SANTINIS_TEST_TEST.h5', 'w')
 
 
 params_range = coll.OrderedDict([

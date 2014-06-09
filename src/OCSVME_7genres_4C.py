@@ -19,17 +19,17 @@ from wrappedmodels.ocsvme import OCSVME_Wrapped
     
 
 #"Santini's 7-genres Corpus"
-corpus_filepath = "/home/dimitrios/SSynergy-Crawler/Santinis_7-web_genre/"
-kfolds_vocs_filepath = "/home/dimitrios/SSynergy-Crawler/Santinis_7-web_genre/Kfolds_Vocs_Inds_4Chars_7Genres"
+corpus_filepath = "/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/"
+kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/Kfolds_Vocs_Inds_4Chars_7Genres"
 genres = [ "blog", "eshop", "faq", "frontpage", "listing", "php", "spage" ]
 test_only_tgs = False
-method_results = tb.open_file('/home/dimitrios/SSynergy-Crawler/Santinis_7-web_genre/OCSVM_4Chars_7Genres.h5', 'w')
+method_results = tb.open_file('/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/OCSVM_4Chars_7Genres.h5', 'w')
 
 params_range = coll.OrderedDict([
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),\
     ('vocab_size', [5000, 10000, 50000, 100000]),\
     ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),\
-    ('nu', [0.1, 0.3, 0.5, 0.7, 0.9])
+    ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9])
 ])
 
 #word_n_gram_size = 1
