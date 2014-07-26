@@ -96,30 +96,6 @@
 	"buffers":
 	[
 		{
-			"file": "src/base/paramgridcrossval_enhanced.py",
-			"settings":
-			{
-				"buffer_size": 21862,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/wrappedmodels/rfse.py",
-			"settings":
-			{
-				"buffer_size": 10000,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/usr/lib/python2.7/dist-packages/scipy/spatial/distance.py",
-			"settings":
-			{
-				"buffer_size": 72557,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "/home/dimitrios/Development_Workspace/WEGA/src/crossval_experiments_OC-SVM.py",
 			"settings":
 			{
@@ -128,42 +104,90 @@
 			}
 		},
 		{
-			"file": "src/RFSE_FullS_1W.py",
+			"file": "src/wrappedmodels/rfse.py",
 			"settings":
 			{
-				"buffer_size": 2077,
+				"buffer_size": 10140,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/OCSVME_FullS_1W.py",
+			"file": "src/testing_minmax_similarity.py",
 			"settings":
 			{
-				"buffer_size": 1957,
+				"buffer_size": 294,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/OCSVME_7genres_1W.py",
+			"file": "src/RFSE_FullS_3W_minmax.py",
 			"settings":
 			{
-				"buffer_size": 1890,
+				"buffer_size": 2082,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/OCSVME_FullS_3W.py",
+			"file": "src/RFSE_FullS_1W_minmax.py",
 			"settings":
 			{
-				"buffer_size": 1952,
+				"buffer_size": 2092,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "src/OCSVME_FullS_4C.py",
+			"file": "src/RFSE_FullS_4C_minmax.py",
 			"settings":
 			{
-				"buffer_size": 1955,
+				"buffer_size": 2081,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_KI04_3W_minmax.py",
+			"settings":
+			{
+				"buffer_size": 2078,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_KI04_1W_minmax.py",
+			"settings":
+			{
+				"buffer_size": 2078,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_KI04_4C_minmax.py",
+			"settings":
+			{
+				"buffer_size": 2078,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_7gernes_1W_minmax.py",
+			"settings":
+			{
+				"buffer_size": 2119,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_7gernes_3W_minmax.py",
+			"settings":
+			{
+				"buffer_size": 2119,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/RFSE_7gernes_4C_minmax.py",
+			"settings":
+			{
+				"buffer_size": 2119,
 				"line_ending": "Unix"
 			}
 		}
@@ -225,15 +249,18 @@
 	},
 	"file_history":
 	[
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_FullS_4C.py",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_FullS_3W.py",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_7genres_1W.py",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_FullS_1W.py",
+		"/usr/lib/python2.7/dist-packages/scipy/spatial/distance.py",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/wrappedmodels/rfse.py",
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/base/paramgridcrossval_enhanced.py",
 		"/home/dimitrios/Desktop/omer_Barcode_SS14/omer_ss14.fmt",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/wrappedmodels/ocsvme.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/wrappedmodels/cosine_similarity_time_it.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_7genres_4C.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_7genres_3W.py",
-		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_7genres_1W.py",
-		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_FullS_1W.py",
-		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_FullS_3W.py",
-		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_FullS_4C.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_KI04_1W.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_KI04_3W.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/OCSVME_KI04_4C.py",
@@ -349,10 +376,7 @@
 		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plot_RFSE_Full_Corpus_New.py",
 		"/home/dimitrios/Development_Workspace/webgenreidentification/src/experiments_My_Mahalanobis_method.py",
 		"/home/dimitrios/Development_Workspace/webgenreidentification/src/plot_RFSE_full_Corpus.py",
-		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/intersect_script.py",
-		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/__init__.py",
-		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting_deprecated/crossplot_PR_CUR_IV_EnsblAlgo_Bagging_n_EnsblOCSVM.py",
-		"/home/dimitrios/Desktop/Sublime Text 2/sublime_plugin.py"
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/deprecated/intersect_script.py"
 	],
 	"find":
 	{
@@ -370,6 +394,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"minmax",
 			"Mares",
 			"SSynergy-Crawler",
 			"cosine",
@@ -496,8 +521,7 @@
 			"print",
 			", ",
 			"corpus_matrix",
-			"Matrix",
-			"corpus_matrix"
+			"Matrix"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -518,205 +542,11 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "src/base/paramgridcrossval_enhanced.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 21862,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1655,
-								1655
-							]
-						],
-						"settings":
-						{
-							"codeintel": true,
-							"codeintel_config":
-							{
-								"JavaScript":
-								{
-									"codeintel_max_recursive_dir_depth": 2,
-									"codeintel_scan_files_in_project": false,
-									"javascriptExtraPaths":
-									[
-									]
-								},
-								"PHP":
-								{
-									"codeintel_max_recursive_dir_depth": 5,
-									"codeintel_scan_files_in_project": false,
-									"phpExtraPaths":
-									[
-									]
-								},
-								"Python":
-								{
-									"env":
-									{
-									}
-								}
-							},
-							"codeintel_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_live": true,
-							"codeintel_live_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_max_recursive_dir_depth": 10,
-							"codeintel_scan_exclude_dir":
-							{
-								"JavaScript":
-								[
-									"/build/",
-									"/min/"
-								]
-							},
-							"codeintel_scan_files_in_project": true,
-							"codeintel_selected_catalogs":
-							[
-								"PyWin32",
-								"jQuery",
-								"Rails"
-							],
-							"codeintel_snippets": true,
-							"codeintel_syntax_map":
-							{
-								"Python Django": "Python"
-							},
-							"codeintel_tooltips": "popup",
-							"sublime_auto_complete": true,
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 315.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/wrappedmodels/rfse.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 10000,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								413,
-								413
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 170.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/usr/lib/python2.7/dist-packages/scipy/spatial/distance.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 72557,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6750,
-								6750
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3560.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "/home/dimitrios/Development_Workspace/WEGA/src/crossval_experiments_OC-SVM.py",
 					"semi_transient": false,
 					"settings":
@@ -846,24 +676,291 @@
 						"translation.y": 630.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "src/RFSE_FullS_1W.py",
+					"buffer": 1,
+					"file": "src/wrappedmodels/rfse.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2077,
+						"buffer_size": 10140,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1026,
-								1026
+								9418,
+								9418
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2880.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/testing_minmax_similarity.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 294,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								157,
+								157
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/RFSE_FullS_3W_minmax.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2082,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								225,
+								225
 							]
 						],
 						"settings":
@@ -978,30 +1075,30 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 5,
 			"sheets":
 			[
 				{
-					"buffer": 5,
-					"file": "src/OCSVME_FullS_1W.py",
+					"buffer": 4,
+					"file": "src/RFSE_FullS_1W_minmax.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1957,
+						"buffer_size": 2092,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								811,
-								811
+								1648,
+								1648
 							]
 						],
 						"settings":
@@ -1116,28 +1213,528 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "src/OCSVME_7genres_1W.py",
+					"buffer": 5,
+					"file": "src/RFSE_FullS_4C_minmax.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1890,
+						"buffer_size": 2081,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								782,
-								782
+								1637,
+								1637
 							]
 						],
 						"settings":
 						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": -0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/RFSE_KI04_3W_minmax.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2078,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1540,
+								1540
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/RFSE_KI04_1W_minmax.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2078,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1540,
+								1540
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/RFSE_KI04_4C_minmax.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2078,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1540,
+								1540
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
 							"syntax": "Packages/Python/Python.tmLanguage"
 						},
 						"translation.x": 0.0,
@@ -1148,20 +1745,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "src/OCSVME_FullS_3W.py",
+					"buffer": 9,
+					"file": "src/RFSE_7gernes_1W_minmax.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1952,
+						"buffer_size": 2119,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								958,
-								958
+								620,
+								620
 							]
 						],
 						"settings":
@@ -1272,28 +1869,28 @@
 							"sublime_auto_complete": true,
 							"syntax": "Packages/Python/Python.tmLanguage"
 						},
-						"translation.x": 0.0,
+						"translation.x": 6.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "src/OCSVME_FullS_4C.py",
+					"buffer": 10,
+					"file": "src/RFSE_7gernes_3W_minmax.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1955,
+						"buffer_size": 2119,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								953,
-								953
+								1581,
+								1581
 							]
 						],
 						"settings":
@@ -1410,6 +2007,138 @@
 					},
 					"stack_index": 2,
 					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "src/RFSE_7gernes_4C_minmax.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2119,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1581,
+								1581
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
 				}
 			]
 		}
@@ -1442,7 +2171,7 @@
 		"cols":
 		[
 			0.0,
-			0.351334951456,
+			0.415369081677,
 			1.0
 		],
 		"rows":
@@ -1509,7 +2238,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 200.0,
+	"side_bar_width": 50.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

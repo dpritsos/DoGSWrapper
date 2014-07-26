@@ -11,8 +11,8 @@ import tables as tb
 
 #import html2vect.sparse.cngrams as h2v_cng
 #import html2vect.sparse.wngrams as h2v_wcng
-#import html2vect.tables.cngrams as h2v_cng
-import html2vect.tables.wngrams as h2v_wcng
+import html2vect.tables.cngrams as h2v_cng
+#import html2vect.tables.wngrams as h2v_wcng
 
 from base.paramgridcrossval import ParamGridCrossValBase, ParamGridCrossValTables
 from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarity_sparse, minmax_similarity
@@ -20,12 +20,11 @@ from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarit
 
 #SANTINIS
 corpus_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/"
-kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_3Words_SANTINI_MinMax"
+kfolds_vocs_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/Kfolds_Vocs_Inds_4Chars_SANTINI"
 genres = [ "blog", "eshop", "faq", "frontpage", "listing", "php", "spage", "diy_mini", "editorial", "feat_articles", "short_bio", "spirit_1000" ]
 #genres = [ "short_bio", "spirit_1000" ]
 test_only_tgs = [12]
-method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_3Words_SANTINIS_MinMax.h5', 'w')
-
+method_results = tb.openFile('/home/dimitrios/Synergy-Crawler/SANTINIS/RFSE_4Chars_SANTINIS_minmax.h5', 'w')
 
 params_range = coll.OrderedDict([
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),\
@@ -36,16 +35,16 @@ params_range = coll.OrderedDict([
     #('Bagging', [0.66]),\
 ])
 
-word_n_gram_size = 3
-tables_wng = h2v_wcng.Html2TF(word_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
+#word_n_gram_size = 1
+#tables_wng = h2v_wcng.Html2TF(word_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
 
-#char_n_gram_size = 4
-#tables_cng = h2v_cng.Html2TF(char_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
+char_n_gram_size = 4
+tables_cng = h2v_cng.Html2TF(char_n_gram_size, html_attrib='text', lowercase=True, valid_html=False)
 
 ml_model = RFSE_Wrapped(minmax_similarity, 0.0, genres[0:-1], bagging=False)
 
 pgrid_corssv = ParamGridCrossValTables(\
-                    ml_model, tables_wng, method_results, 
+                    ml_model, tables_cng, method_results, 
                     genres, corpus_filepath, kfolds_vocs_filepath\
                )
                

@@ -213,6 +213,10 @@ def cosine_similarity_sparse(vector, centroid):
     return cosine_similarity(vector.todense(), centroid)
 
 
+def minmax_similarity(v1, v2):
+
+    return np.sum( np.min( np.vstack((v1,v2)), axis=0 ) ) / np.sum( np.max( np.vstack((v1,v2)), axis=0 ) )
+
 
 def hamming_similarity(vector, centroid):
  
