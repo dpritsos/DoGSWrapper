@@ -218,6 +218,14 @@ def minmax_similarity(v1, v2):
     return np.sum( np.min( np.vstack((v1,v2)), axis=0 ) ) / np.sum( np.max( np.vstack((v1,v2)), axis=0 ) )
 
 
+def jaccard_similarity_binconv(v0,v1):
+
+    v0 = np.where((v0 > 0), 1, 0)
+    v1 = np.where((v0 > 0), 1, 0)
+
+    return 1.0 - spd.jaccard(v0, v1)
+
+
 def hamming_similarity(vector, centroid):
  
     return 1.0 - spd.hamming(centroid, vector)
