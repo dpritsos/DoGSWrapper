@@ -104,6 +104,22 @@
 			}
 		},
 		{
+			"file": "src/base/paramgridcrossval.py",
+			"settings":
+			{
+				"buffer_size": 21822,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/wrappedmodels/test_mahalanobis.py",
+			"settings":
+			{
+				"buffer_size": 822,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "src/RFSE_7gernes_1W_jaccard.py",
 			"settings":
 			{
@@ -233,6 +249,7 @@
 	},
 	"file_history":
 	[
+		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/base/braces_test.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/testing_minmax_similarity.py",
 		"/home/dimitrios/Development_Workspace/DoGSWrapper/src/test.py",
 		"/media/dimitrios/dbbaa90d-fc43-4e53-84ca-e5aa1bce18d9/ExtremePro_Workspace/ArtDesign_Site_ExtremePro.gr/Notification_2014_07_12_SummerSales/Notification_2014_07_12_SummerSales clean.html",
@@ -359,12 +376,11 @@
 		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/plothistograms_script.py",
 		"/home/dimitrios/Development_Workspace/webgenreidentification/src/crossval_experiments_SVM_TF(Sparse)_multiclass.py",
 		"/home/dimitrios/Development_Workspace/webgenreidentification/src/crossval_experiments_RF.py",
-		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/crossplot_PR_CUR_IV_EnsblAlgo_Bagging_n_EnsblOCSVM.py",
-		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/crossplot_PR_CUR_IV_EnsblAlgo_n_EnsblOCSVM.py"
+		"/home/dimitrios/Development_Workspace/webgenreidentification/src/ploting/crossplot_PR_CUR_IV_EnsblAlgo_Bagging_n_EnsblOCSVM.py"
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -378,6 +394,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"train_set",
 			" & (params_full_array[:,3] == 100)",
 			"expected_ys = np.hstack( exp_ys",
 			"pred_ys",
@@ -504,8 +521,7 @@
 			"ODLO_STOCK",
 			"]",
 			"],",
-			", ",
-			"\"-\" "
+			", "
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -526,7 +542,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -553,14 +569,176 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3049.0,
+						"translation.y": 2781.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/base/paramgridcrossval.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 21822,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20127,
+								20127
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5660.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
+					"buffer": 2,
+					"file": "src/wrappedmodels/test_mahalanobis.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 822,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								538,
+								538
+							]
+						],
+						"settings":
+						{
+							"codeintel": true,
+							"codeintel_config":
+							{
+								"JavaScript":
+								{
+									"codeintel_max_recursive_dir_depth": 2,
+									"codeintel_scan_files_in_project": false,
+									"javascriptExtraPaths":
+									[
+									]
+								},
+								"PHP":
+								{
+									"codeintel_max_recursive_dir_depth": 5,
+									"codeintel_scan_files_in_project": false,
+									"phpExtraPaths":
+									[
+									]
+								},
+								"Python":
+								{
+									"env":
+									{
+									}
+								}
+							},
+							"codeintel_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_live": true,
+							"codeintel_live_enabled_languages":
+							[
+								"JavaScript",
+								"Mason",
+								"XBL",
+								"XUL",
+								"RHTML",
+								"SCSS",
+								"Python",
+								"HTML",
+								"Ruby",
+								"Python3",
+								"XML",
+								"Sass",
+								"XSLT",
+								"Django",
+								"HTML5",
+								"Perl",
+								"CSS",
+								"Twig",
+								"Less",
+								"Smarty",
+								"Node.js",
+								"Tcl",
+								"TemplateToolkit",
+								"PHP"
+							],
+							"codeintel_max_recursive_dir_depth": 10,
+							"codeintel_scan_exclude_dir":
+							{
+								"JavaScript":
+								[
+									"/build/",
+									"/min/"
+								]
+							},
+							"codeintel_scan_files_in_project": true,
+							"codeintel_selected_catalogs":
+							[
+								"PyWin32",
+								"jQuery",
+								"Rails"
+							],
+							"codeintel_snippets": true,
+							"codeintel_syntax_map":
+							{
+								"Python Django": "Python"
+							},
+							"codeintel_tooltips": "popup",
+							"sublime_auto_complete": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
 					"file": "src/RFSE_7gernes_1W_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -688,11 +866,11 @@
 						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 4,
 					"file": "src/RFSE_7gernes_3W_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -820,11 +998,11 @@
 						"translation.y": 90.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 5,
 					"file": "src/RFSE_7gernes_4C_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -952,11 +1130,11 @@
 						"translation.y": 45.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 6,
 					"file": "src/RFSE_FullS_1W_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -1084,11 +1262,11 @@
 						"translation.y": 135.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 7,
 					"file": "src/RFSE_FullS_3W_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -1216,11 +1394,11 @@
 						"translation.y": 45.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "src/RFSE_FullS_4C_minmax.py",
 					"semi_transient": false,
 					"settings":
@@ -1348,11 +1526,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 9,
 					"file": "src/RFSE_KI04_1W_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -1480,11 +1658,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 10,
 					"file": "src/RFSE_KI04_3W_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -1612,11 +1790,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "src/RFSE_KI04_4C_jaccard.py",
 					"semi_transient": false,
 					"settings":
@@ -1744,7 +1922,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
