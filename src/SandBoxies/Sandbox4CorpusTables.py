@@ -2,7 +2,7 @@
 import numpy as np #numpy.linalg for SVD etc.
 #import numpy.linalg as alg
 import scipy.spatial.distance as spd
-from sklearn.decomposition import PCA
+import sklearn.decomposition as skd #sklearn.decomposition
 import tables as tb
 
 
@@ -17,11 +17,35 @@ corpus_mtrx = h5f.get_node('/',  'corpus_earray').read()
 #Using projections of a random vector on new PC/Coordinates system.
 def RandomMahal():
 
-	U, S, V = np.linalg.svd(corpus_mtrx[:,0:90000])
+	mean_vect = np.mean(corpus_mtrx[0:100, 0:5], axis=0)
+
+	#print np.sum( corpus_mtrx[0:100, 0:5] - mean_vect, axis=1 )
+
+	data_zero_mean = corpus_mtrx[0:100, 0:5] - mean_vect
+
+	U, S, V = np.linalg.svd(data_zero_mean, full_matrices = False)
+
+	print data_zero_mean.transpose().shape
+
+	print np.matrix(data_zero_mean).T * np.matrix(data_zero_mean) / 100
+	print 
+	print np.cov(corpus_mtrx[0:100, 0:5].T)
+
+	#print np.diag(S)
+
+	print U.shape, S.shape, V.shape
+
+	print
+	print (np.matrix(V) * np.diag(S)**2) * np.matrix(V).T
+
+	print
+
+	
+
 
 	#print U
-	print S
-	
+	#print S
+	#pass
 
 RandomMahal()
 
@@ -29,7 +53,11 @@ RandomMahal()
 #Testing Mahalanobis distnace using PCA/SVD for selecting the Principal Components. 
 #Using projections of a random vector on new PC/Coordinates system.
 def PCAMahal():
-	pass
+	
+	pca = skd.PCA()
+	print pca.fit(corpus_mtrx)
+
+#PCAMahal()
 
 #mean = [.1,.1,.1,.1,.1,.5,.1,.1,.1,.1,.1,.1,.6,.1,.1,.1,.1,.1,.1]
 #cov = np.diag([.5,.7,.9,.2,.10,.5,.9,.8,.9,.1,.4,.1,.1,.6,.7,.3,.5,.8,.4])
