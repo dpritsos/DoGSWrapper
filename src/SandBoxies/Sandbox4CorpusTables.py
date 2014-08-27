@@ -4,48 +4,88 @@ import numpy as np #numpy.linalg for SVD etc.
 import scipy.spatial.distance as spd
 import sklearn.decomposition as skd #sklearn.decomposition
 import tables as tb
+import time
 
 
 corpus_mtrx_fname = '/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/Kfolds_Vocs_Inds_4Chars_7Genres/kfold_CorpusMatrix_9100000.h5'
 
 #Loading a table from any corpus available at a time. 
 h5f = tb.open_file(corpus_mtrx_fname, 'r')
-corpus_mtrx = h5f.get_node('/',  'corpus_earray').read()
+corpus_mtrx = h5f.get_node('/',  'corpus_earray')
 
 
 #Testing Mahalanobis distance using randomly selected dimentions and timeing it. 
 #Using projections of a random vector on new PC/Coordinates system.
 def RandomMahal():
 
-	mean_vect = np.mean(corpus_mtrx[0:100, 0:5], axis=0)
+	
 
-	#print np.sum( corpus_mtrx[0:100, 0:5] - mean_vect, axis=1 )
+	print "COVARIANCE Manualy Made:"
 
-	data_zero_mean = corpus_mtrx[0:100, 0:5] - mean_vect
+	ts = time.time()
+
+	#Calculate Variables Means
+	mean_vect = np.mean(corpus_mtrx[0:100, 0:50000], axis=0)
+
+	#Convert Raw data vectors to Zero-mean Vectors
+	data_zero_mean = corpus_mtrx[0:100, 0:50000] - mean_vect
+	"""
+
+	#Display Manualy Crreated Covariance Matrix:
+	print np.matrix(data_zero_mean).T.shape
+	print np.ascontiguousarray( np.matrix(data_zero_mean).T ) * np.matrix(data_zero_mean) / (np.matrix(data_zero_mean).shape[0] - 1)
+
+	ts -= time.time()
+	print ts
+	
+	print
+	print "COVARIANCE"
+
+	#ts = time.time()
+
+	#print np.cov(corpus_mtrx[0:100, 0:50000].T)
+
+	#ts -= time.time()
+	#print ts
+
+	"""
+
+	print
+	print "COVARIANCE form SVD"
+
+	ts = time.time()
 
 	U, S, V = np.linalg.svd(data_zero_mean, full_matrices = False)
 
-	print data_zero_mean.transpose().shape
-
-	print np.matrix(data_zero_mean).T * np.matrix(data_zero_mean) / 100
-	print 
-	print np.cov(corpus_mtrx[0:100, 0:5].T)
-
 	#print np.diag(S)
 
-	print U.shape, S.shape, V.shape
+	print U.shape, np.matrix(np.diag(S)).shape, V.shape
 
-	print
-	print (np.matrix(V) * np.diag(S)**2) * np.matrix(V).T
+	#print np.matrix(U).T.shape
 
-	print
+	print np.ascontiguousarray( np.matrix(V).T ) * ( np.ascontiguousarray( np.matrix(np.diag(S)).T ) *  np.matrix(np.diag(S)) ) *  np.ascontiguousarray( np.matrix(V) ) / (np.matrix(data_zero_mean).shape[0] - 1)
+	#print np.matrix(U).shape, (np.matrix(np.diag(S)) * np.matrix(np.diag(S)).T).shape, np.matrix(U).shape
+	# np.matrix(U) * (np.matrix(np.diag(S)) * np.matrix(np.diag(S)).T) * np.matrix(U).T   #SAME AS#   print np.matrix(data_zero_mean) * np.matrix(data_zero_mean).T 
 
-	
+	ts -= time.time()
+	print ts
+
+	"""
+	## for the Mahalanobis distance, use the SVD
+	mymahal <- function(X) {
+		X <- as.matrix(X)
+		n <- nrow(X)
+		HX <- scale(X, scale = FALSE) # subtract col means
+		U <- svd(HX, nv = 0)$u # don’t need V matrix
+		m <- sqrt(n) * dist(U)
+		as.dist(m) # helps with formatting
+	}
+	"""
 
 
-	#print U
-	#print S
-	#pass
+
+
+
 
 RandomMahal()
 
