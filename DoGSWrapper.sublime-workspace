@@ -99,7 +99,7 @@
 			"file": "src/SandBoxies/Sandbox4CorpusTables.py",
 			"settings":
 			{
-				"buffer_size": 2178,
+				"buffer_size": 3057,
 				"line_ending": "Unix"
 			}
 		},
@@ -117,15 +117,6 @@
 			{
 				"buffer_size": 22688,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": " Singular Value Decomposition.\n     Factorizes the matrix a into two unitary matrices U and Vh, and\n         a 1-D array s of singular values (real, non-negative) such that\n         ``a == U*S*Vh``, where S is a suitably shaped matrix of zeros with\n         main diagonal s.\n     Parameters\n         ----------\n         a : (M, N) array_like\n             Matrix to decompose.\n         full_matrices : bool, optional\n             If True, `U` and `Vh` are of shape ``(M,M)``, ``(N,N)``.\n             If False, the shapes are ``(M,K)`` and ``(K,N)``, where\n             ``K = min(M,N)``.\n         compute_uv : bool, optional\n             Whether to compute also `U` and `Vh` in addition to `s`.\n             Default is True.\n         overwrite_a : bool, optional\n             Whether to overwrite `a`; may improve performance.\n             Default is False.\n         check_finite : boolean, optional\n             Whether to check that the input matrix contains only finite numbers.\n             Disabling may give a performance gain, but may result in problems\n             (crashes, non-termination) if the inputs do contain infinities or NaNs.\n     Returns\n         -------\n         U : ndarray\n             Unitary matrix having left singular vectors as columns.\n             Of shape ``(M,M)`` or ``(M,K)``, depending on `full_matrices`.\n         s : ndarray\n             The singular values, sorted in non-increasing order.\n             Of shape (K,), with ``K = min(M, N)``.\n         Vh : ndarray\n             Unitary matrix having right singular vectors as rows.\n             Of shape ``(N,N)`` or ``(K,N)`` depending on `full_matrices`.\n     For ``compute_uv = False``, only `s` is returned.\n     Raises\n         ------\n         LinAlgError\n             If SVD computation does not converge.\n     See also\n         --------\n         svdvals : Compute singular values of a matrix.\n         diagsvd : Construct the Sigma matrix, given the vector s.\n     Examples\n         --------\n         >>> from scipy import linalg\n         >>> a = np.random.randn(9, 6) + 1.j*np.random.randn(9, 6)\n         >>> U, s, Vh = linalg.svd(a)\n         >>> U.shape, Vh.shape, s.shape\n         ((9, 9), (6, 6), (6,))\n     >>> U, s, Vh = linalg.svd(a, full_matrices=False)\n         >>> U.shape, Vh.shape, s.shape\n         ((9, 6), (6, 6), (6,))\n         >>> S = linalg.diagsvd(s, 6, 6)\n         >>> np.allclose(a, np.dot(U, np.dot(S, Vh)))\n         True\n     >>> s2 = linalg.svd(a, compute_uv=False)\n         >>> np.allclose(s, s2)\n         True\n",
-			"settings":
-			{
-				"buffer_size": 2528,
-				"line_ending": "Unix",
-				"name": "Singular Value Decomposition."
 			}
 		}
 	],
@@ -331,6 +322,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"print ts -= time.time()",
 			"covariance",
 			"noise_variance_",
 			"covariance",
@@ -457,8 +449,7 @@
 			"ODLO_THERMALWEAR_KIDS",
 			"norm_func",
 			"corpus_matrix",
-			"norm_func",
-			"corpus_matrix"
+			"norm_func"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -488,15 +479,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2178,
+						"buffer_size": 3057,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								776,
-								776
+								1166,
+								1166
 							]
 						],
 						"settings":
@@ -606,10 +597,11 @@
 							"codeintel_tooltips": "popup",
 							"side_bar_folders_auto_load_folder": 1,
 							"sublime_auto_complete": true,
-							"syntax": "Packages/Python/Python.tmLanguage"
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 180.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -643,7 +635,7 @@
 						"translation.y": 5705.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -659,8 +651,8 @@
 						"selection":
 						[
 							[
-								10071,
-								10071
+								11278,
+								11278
 							]
 						],
 						"settings":
@@ -671,142 +663,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4280.0,
+						"translation.y": 4370.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2528,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								398,
-								398
-							]
-						],
-						"settings":
-						{
-							"auto_name": "Singular Value Decomposition.",
-							"codeintel": true,
-							"codeintel_config":
-							{
-								"JavaScript":
-								{
-									"codeintel_max_recursive_dir_depth": 2,
-									"codeintel_scan_files_in_project": false,
-									"javascriptExtraPaths":
-									[
-									]
-								},
-								"PHP":
-								{
-									"codeintel_max_recursive_dir_depth": 5,
-									"codeintel_scan_files_in_project": false,
-									"phpExtraPaths":
-									[
-									]
-								},
-								"Python":
-								{
-									"env":
-									{
-									}
-								}
-							},
-							"codeintel_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_live": true,
-							"codeintel_live_enabled_languages":
-							[
-								"JavaScript",
-								"Mason",
-								"XBL",
-								"XUL",
-								"RHTML",
-								"SCSS",
-								"Python",
-								"HTML",
-								"Ruby",
-								"Python3",
-								"XML",
-								"Sass",
-								"XSLT",
-								"Django",
-								"HTML5",
-								"Perl",
-								"CSS",
-								"Twig",
-								"Less",
-								"Smarty",
-								"Node.js",
-								"Tcl",
-								"TemplateToolkit",
-								"PHP"
-							],
-							"codeintel_max_recursive_dir_depth": 10,
-							"codeintel_scan_exclude_dir":
-							{
-								"JavaScript":
-								[
-									"/build/",
-									"/min/"
-								]
-							},
-							"codeintel_scan_files_in_project": true,
-							"codeintel_selected_catalogs":
-							[
-								"PyWin32",
-								"jQuery",
-								"Rails"
-							],
-							"codeintel_snippets": true,
-							"codeintel_syntax_map":
-							{
-								"Python Django": "Python"
-							},
-							"codeintel_tooltips": "popup",
-							"sublime_auto_complete": true,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -845,7 +705,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 269.0
+		"height": 366.0
 	},
 	"output.find_results":
 	{

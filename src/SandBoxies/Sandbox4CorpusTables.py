@@ -29,11 +29,15 @@ def RandomMahal():
 
 	#Convert Raw data vectors to Zero-mean Vectors
 	data_zero_mean = corpus_mtrx[0:100, 0:50000] - mean_vect
-	"""
+	
 
 	#Display Manualy Crreated Covariance Matrix:
 	print np.matrix(data_zero_mean).T.shape
-	print np.ascontiguousarray( np.matrix(data_zero_mean).T ) * np.matrix(data_zero_mean) / (np.matrix(data_zero_mean).shape[0] - 1)
+	cov1 =  np.ascontiguousarray( np.matrix(data_zero_mean).T ) * np.matrix(data_zero_mean) / (np.matrix(data_zero_mean).shape[0] - 1)
+
+	print cov1
+
+	print np.linalg.eig(cov1)
 
 	ts -= time.time()
 	print ts
@@ -48,7 +52,7 @@ def RandomMahal():
 	#ts -= time.time()
 	#print ts
 
-	"""
+	
 
 	print
 	print "COVARIANCE form SVD"
@@ -63,24 +67,16 @@ def RandomMahal():
 
 	#print np.matrix(U).T.shape
 
-	print np.ascontiguousarray( np.matrix(V).T ) * ( np.ascontiguousarray( np.matrix(np.diag(S)).T ) *  np.matrix(np.diag(S)) ) *  np.ascontiguousarray( np.matrix(V) ) / (np.matrix(data_zero_mean).shape[0] - 1)
+	print len(S)
+
+	#print np.ascontiguousarray( np.matrix(V).T ) * ( np.ascontiguousarray( np.matrix(np.diag(S)).T ) *  np.matrix(np.diag(S)) ) *  np.ascontiguousarray( np.matrix(V) ) / (np.matrix(data_zero_mean).shape[0] - 1)
 	#print np.matrix(U).shape, (np.matrix(np.diag(S)) * np.matrix(np.diag(S)).T).shape, np.matrix(U).shape
 	# np.matrix(U) * (np.matrix(np.diag(S)) * np.matrix(np.diag(S)).T) * np.matrix(U).T   #SAME AS#   print np.matrix(data_zero_mean) * np.matrix(data_zero_mean).T 
 
 	ts -= time.time()
 	print ts
 
-	"""
-	## for the Mahalanobis distance, use the SVD
-	mymahal <- function(X) {
-		X <- as.matrix(X)
-		n <- nrow(X)
-		HX <- scale(X, scale = FALSE) # subtract col means
-		U <- svd(HX, nv = 0)$u # don’t need V matrix
-		m <- sqrt(n) * dist(U)
-		as.dist(m) # helps with formatting
-	}
-	"""
+	
 
 
 
