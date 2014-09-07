@@ -55,7 +55,7 @@ def RandomMahal():
 	
 
 	print
-	print "COVARIANCE form SVD"
+	print "COVARIANCE from SVD"
 
 	ts = time.time()
 
