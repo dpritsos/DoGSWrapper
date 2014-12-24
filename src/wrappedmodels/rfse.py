@@ -233,10 +233,10 @@ def hamming_similarity(vector, centroid):
 
 
 def correlation_similarity(vector, centroid):
-    
+
     vector = vector[0]
     centroid = np.array(centroid)[0]
-        
+
     vector_ = np.where(vector > 0, 0, 1)
     centroid_ = np.where(centroid > 0, 0, 1)
    

@@ -16,7 +16,7 @@ import html2vect.tables.wngrams as h2v_wcng
 
 from base.paramgridcrossval import ParamGridCrossValBase, ParamGridCrossValTables
 from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarity_sparse, minmax_similarity
-    
+
 
 #"Santini's 7-genres Corpus"
 corpus_filepath = "/home/dimitrios/Synergy-Crawler/Santinis_7-web_genre/"

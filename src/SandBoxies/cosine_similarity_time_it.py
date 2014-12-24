@@ -7,7 +7,7 @@ from scipy.spatial.distance import cosine as cosine_dist
 import timeit
 
 
-cos_old = """\
+cos_old = 
 
 def cosine_similarity(vector, centroid):
 
@@ -17,9 +17,9 @@ def cosine_similarity(vector, centroid):
 
     return vector * np.transpose(centroid) / ( np.linalg.norm(vector) * np.linalg.norm(centroid) )
 
-"""
 
-cos_new = """\
+
+cos_new = 
 
 def cosine_sim(vector, centroid):
 
@@ -29,7 +29,7 @@ def cosine_sim(vector, centroid):
 
 	return 1 - cosine_dist(vector, centroid) 
 
-"""
+
 
 vector = np.array([0.5,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.2,0.1,0.6,0.8,0.7,0.8,0.20,0.0,0.0,0.0,0.0,0.0,0.0,0.0,])
 centroid = np.array([0.15,0.31,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.21,0.11,0.61,0.18,0.17,0.81,0.20,0.0,0.0,0.0,0.0,0.01,0.0,0.0,])
