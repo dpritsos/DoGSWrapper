@@ -549,35 +549,41 @@ class SemiSupervisedParamGridSearchBase(object):
                 # ################   ALMOST THERE ###########################
                 print "EVALUATE"
                 # Evaluating Classification Method
-                predicted_Y, predicted_scores, model_specific_d = self.model.eval(
-                    trn_idxs,
-                    crv_idxs,
+                clusters_y = self.semisuper_model.eval(
+                    trn_subsplt, tst_subsplt,
                     corpus_mtrx,
-                    cls_tgs,
-                    tid, params
+                    # cls_tgs,
+                    # tid,
+                    params
                 )
 
-                # Select Cross Validation Set
-                # print cls_tgs
-                # print crv_idxs
-                crossval_Y = cls_tgs[crv_idxs]
-
-                P_per_gnr, R_per_gnr, F1_per_gnr = self.calculate_p_r_f1(crossval_Y, predicted_Y)
-
-                # Saving results
+                # Saving the assigned cluster labels for all the corpus subset under evaluation.
                 self.h5_res.create_array(
-                    kfld_group, 'expected_Y', crossval_Y,
+                    save_group, 'clusters_y', clusters_y,
+                    "The assigned cluster labels after Semi-Supervised clustering."
+                )
+
+                # Saving the expected class labels for all the corpus subset under evaluation.
+
+                # Serializing the training split indeces.
+                srl_trn_spl = trn_subsplt.reshape((1, np.multiply(*trn_subsplt.shape)))
+                srl_tst_spl = tst_subsplt.reshape((1, np.multiply(*tst_subsplt.shape)))
+
+                # Getting the class tags for the corpus subset used for the Semi-Supervised...
+                # ...Clustering Evaluation.
+                subset_classtags_y = cls_tgs[
+                    np.short(
+                        np.vstack((srl_trn_spl, srl_tst_spl))
+                    )
+                ]
+
+                self.h5_res.create_array(
+                    save_group, 'expected_y', subset_classtags_y,
                     "Expected Classes per Document (CrossValidation Set)"
-                )[:]
-                self.h5_res.create_array(
-                    kfld_group, 'predicted_Y', predicted_Y,
-                    "predicted Classes per Document (CrossValidation Set)"
-                )[:]
-                self.h5_res.create_array(
-                    kfld_group, 'predicted_scores', predicted_scores,
-                    "predicted Scores per Document (CrossValidation Set)"
-                )[:]
+                )
 
+
+                # ###### Not sure I need the following few lines of code.
                 print
 
                 if model_specific_d:
