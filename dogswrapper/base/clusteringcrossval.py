@@ -264,29 +264,6 @@ class SemiSupervisedParamGridSearchBase(object):
             encoding=encoding, error_handling='replace'
         )[0]  # <--- Be careful with zero index
 
-        """
-        # Save the Web-pages term counts (Char N-grans or Word N-Grams)
-        kfld_group = self.h5_res.create_group(vocab_size_group, 'KFold'+str(k))
-        docs_term_counts = self.h5_res.create_array(
-            kfld_group, 'docs_term_counts', np.sum(corpus_mtrx.toarray(), axis=1)
-        )
-
-        # Perform default (division by max value) normalization for corpus matrix 'corpus_mtrx'
-        # Should I perform Standarisation/Normalisation by subtracting mean value from...
-        # ...vector variables?
-        print "Normalizing"
-
-        # Getting the Maximum frequency for every document.
-        max_vals = np.max(corpus_mtrx.todense(), axis=1)
-
-        # For Documents with zero terms. This case occurs when a sub-Vocabulary is used for...
-        # ...the experiment.
-        max_vals[np.where(max_vals == 0)] = 1
-
-        # Normalizing.
-        corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_vals)
-        """
-
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
         return corpus_mtrx
 
@@ -338,6 +315,23 @@ class SemiSupervisedParamGridSearchBase(object):
 
         return (corpus_mtrx, None)
 
+    def MaxNormalise(self, corpus_matrix, vocab_len):
+
+        # Getting the Maximum frequency for every document.
+        max_vals = np.max(corpus_mtrx.todense(), axis=1)
+
+        # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs when...
+        # ...a sub-Vocabulary is used for the experiment.
+        max_vals[np.where(max_vals == 0)] = 1.0
+
+        # Normalizing based on the matrix/array type.
+        if issparse(corpus_mtrx):
+            corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_vals)
+        else:
+            corpus_mtrx = corpus_mtrx / max_vals
+
+        return corpus_mtrx
+
     def EvaluateAll(self, raw_corpus_files_path=None, params_range, encoding='utf-8'):
 
         # Replace the class instantiation defined variable self.corpus_files_path if any.
@@ -361,52 +355,6 @@ class SemiSupervisedParamGridSearchBase(object):
 
         # Loading the Filename list of the corpus and their respective class tags.
         html_file_l, cls_tgs = self.LoadCrpsFnameTags()
-
-        # # Create CrossVal Folds
-        # KF = cross_validation.StratifiedKFold(
-        #      cls_tgs, len(params_range['kfolds']), indices=True
-        # )
-        #
-        # for k, (trn, crv) in enumerate(KF):
-        #
-        #     voc_filename = self.crps_voc_path+'/kfold_Voc_'+str(k)+'.vtf'
-        #     pkl_voc_filename = self.crps_voc_path+'/kfold_Voc_'+str(k)+'.pkl'
-        #     trn_filename = self.crps_voc_path+'/kfold_trn_'+str(k)+'.idx'
-        #     crv_filename = self.crps_voc_path+'/kfold_crv_'+str(k)+'.idx'
-        #
-        #     # Save K-Fold Cross-Validation corpus vector selection-indecies if does not exists...
-        #     # ...Create K-fold Cross-Validation Vocabulary for each fold Stratified Indeces and...
-        #     # ...respective Vocabularies should be synchronized therefore there saving-files...
-        #     # ...should be created all together if one or more are missing.
-        #     if not os.path.exists(trn_filename) or not os.path.exists(crv_filename) or\
-        #             not os.path.exists(voc_filename) or not os.path.exists(pkl_voc_filename):
-        #
-        #         # Save Training Indices
-        #         print "Saving Training Indices for k-fold=", k
-        #         with open(trn_filename, 'w') as f:
-        #             json.dump(list(trn), f, encoding=encoding)
-        #
-        #         # Save Cross-validation Indices
-        #         print "Saving Cross-validation Indices for k-fold=", k
-        #         with open(crv_filename, 'w') as f:
-        #             if test_only_tgs:
-        #                 json.dump(list(crv) + test_only_idxs, f, encoding=encoding)
-        #             else:
-        #                 json.dump(list(crv), f, encoding=encoding)
-        #
-        #         # Creating Vocabulary
-        #         print "Creating Vocabulary for k-fold=", k
-        #         tf_d = self.terms_tf.build_vocabulary(
-        #             list(html_file_l[trn]), encoding='utf-8', error_handling='replace'
-        #         )
-        #
-        #         # Saving Vocabulary
-        #         print "Saving Vocabulary"
-        #         with open(pkl_voc_filename, 'w') as f:
-        #             pickle.dump(tf_d, f)
-        #
-        #         with open(voc_filename, 'w') as f:
-        #             json.dump(tf_d, f, encoding=encoding) """
 
         # Setting initial value for the variable will be used also for not re-loading a file has...
         # ...been loaded in the exact previous iteration.
@@ -483,13 +431,13 @@ class SemiSupervisedParamGridSearchBase(object):
                 corpus_fname = self.state_save_path + 'Corpus_' +
                 'VS_' + str(params['vocab_size']) +
                 'Splt_' + splt_fname_suffix +
-                '_#' + str(subsplt_cnt) + '.pkl'
+                '_#' + str(subsplt_cnt)
 
                 # If not already loading the corpus matrix.
                 if last_corpus_fname != corpus_fname:
 
                     # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
-                    corpus_matrix = self.LoadCorpusMatrix(corpus_fname)[0]
+                    corpus_matrix = self.LoadCorpusMatrix(corpus_fname + '.pkl')[0]
 
                     # If 'None' corpus matrix has been loaded build it.
                     if corpus_matrix is None:
@@ -499,7 +447,7 @@ class SemiSupervisedParamGridSearchBase(object):
                         # Loading the proper Vocabulary.
                         if os.path.exists(vocab_fname):
 
-                            with open(vocab_fname+'.pkl', 'r')  as f:
+                            with open(vocab_fname+'.pkl', 'r') as f:
                                 tf_vocab = pickle.load(f)
 
                         else:
@@ -537,24 +485,18 @@ class SemiSupervisedParamGridSearchBase(object):
                         # ...descending order
                         tid_vocab = tfdutils.tf2tidx(resized_tf_vocab)
 
-                        # Building the corpus matrix.
+                        # Building the corpus matrix with a specific Normalizing function.
                         corpus_matrix = self.BuildCorpusMatrix(
-                            html_file_l, tid_vocab, norm_func, encoding=encoding
+                            html_file_l, tid_vocab, norm_func=self.MaxNormalise, encoding=encoding
                         )
 
-                        # Saving the corpus matrix.
+                        # NOTE: Saving the corpus matrix in normalized form.
                         self.SaveCorpusMatrix(corus_matrix, corpus_fname)
 
-
-                # ################   ALMOST THERE ###########################
+                # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATE"
-                # Evaluating Classification Method
                 clusters_y = self.semisuper_model.eval(
-                    trn_subsplt, tst_subsplt,
-                    corpus_mtrx,
-                    # cls_tgs,
-                    # tid,
-                    params
+                    trn_subsplt, tst_subsplt, corpus_mtrx, params
                 )
 
                 # Saving the assigned cluster labels for all the corpus subset under evaluation.
@@ -582,74 +524,104 @@ class SemiSupervisedParamGridSearchBase(object):
                     "Expected Classes per Document (CrossValidation Set)"
                 )
 
-
                 # ###### Not sure I need the following few lines of code.
                 print
 
                 if model_specific_d:
-                    for name, value in model_specific_d.items():
-                        self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]
-
-                # Closing corpus file if any. Originally for closing hd5 files
-                if corpus_file:
-                    corpus_file.close()
+                    pass
+                    # for name, value in model_specific_d.items():
+                    #    self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]
 
         # Return Results H5 File handler class
         return self.h5_res
 
 
-class ParamGridCrossValTables(ParamGridCrossValBase):
+class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
 
-    def __init__(self, ML_Model, terms_tf, h5_res, genres, corpus_path, voc_path):
+    def __init__(self, semisupervised_model, terms_tf_module, class_names_lst,
+                 h5_file_results, raw_corpus_files_path, process_state_saving_path):
 
         # Passing the argument to the Super-Class
-        super(ParamGridCrossValTables, self).__init__(
-            ML_Model, terms_tf, h5_res, genres, corpus_path, voc_path
+        super(SemiSupervisedParamGridSearchTables, self).__init__(
+            semisupervised_model, terms_tf_module, class_names_lst,
+            h5_file_results, raw_corpus_files_path, process_state_saving_path
         )
 
-    def corpus_matrix(self, k, vocab_size_group, vocab_size, html_file_l, tid, norm_func):
+    def BuildCorpusMatrix(self, html_file_l, tid_vocab, norm_func, encoding='utf-8'):
 
-        # Load or Create the Corpus Matrix (Spase) for this combination or kfold and vocabulary_size
-        corpus_mtrx_fname = self.crps_voc_path+'/kfold_CorpusMatrix_'+str(k)+str(vocab_size)+'.h5'
+        print "Building the Corpus Matrix..."
+
+        # Creating TF Vectors Matrix (pyTables TF EArray)
+        corpus_mtrx, h5f = self.terms_tf.from_files(
+            html_file_l, filename, tid_vocabulary=tid, norm_func=norm_func, # <------------------- 'filename' is a issue!
+            encoding='utf8', error_handling='replace'
+        )[0:2]  # <--- Getting only 2 of the 3 returned values.
+
+        # Returning the Corpus Matrix aligned upon the given Vocabulary.
+        return (corpus_mtrx, h5f)
+
+    def SaveCorpusMatrix(self, corpus_mtrx, filename, process_state_saving_path=None):
+
+        ########################### NOT IMPLEMENTED FOR pyTABELS ################################
+
+        # Replace the default or create if required the path where Corpus Matrix will be saved.
+        if process_state_saving_path:
+            save_path = process_state_saving_path
+        else:
+            save_path = self.state_save_path
+
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
+
+        # Set the file names for the Corpus matrix.
+        corpus_mtrx_fname = save_path + filename
+
+        # Saving TF Vectors Corpus Matrix
+        print "Saving the Corpus TF Matrix..."
+        with open(corpus_mtrx_fname, 'w') as f:
+            pickle.dump(corpus_mtrx, f)
+
+    def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
+
+        # Replace the path where the process-state files was supposed to be saved.
+        if process_state_saving_path:
+            save_path = process_state_saving_path
+        else:
+            save_path = self.state_save_path
+
+        if not os.path.exists(save_path):
+            raise Exception(
+                "Loading Samples Splits Faild: process-state-saving-path does not exist"
+            )
+
+        # Setting the filename to load the Corpus Matrix (Spase).
+        corpus_mtrx_fname = save_path + filename
 
         if os.path.exists(corpus_mtrx_fname):
 
-            print "Loading pyTables TF EArray for CrossValidation for K-fold=", k,
-            " and Vocabulary size=", vocab_size
-            # Loading Corpus pyTables TF EArray for this combination or kfold and vocabulary_size
+            print "Loading Corpus Matrix..."
+
+            # Loading Coprus Matrix (pyTables TF EArray).
             h5f = tb.open_file(corpus_mtrx_fname, 'r+')
+
             corpus_mtrx = h5f.get_node('/',  'corpus_earray')  # h5f.root.corpus_earray
 
         else:
-
-            print "Creating pyTables TF EArray (for CrossValidation) for K-fold=", k,
-            " and Vocabulary size=", vocab_size
-
-            # Creating pyTables TF EArray.
-            corpus_mtrx, h5f = self.terms_tf.from_files(
-                list(html_file_l), corpus_mtrx_fname, tid_vocabulary=tid, norm_func=norm_func,
-                encoding='utf8', error_handling='replace'
-            )[0:2]  # <--- Getting only 2 of the 3 returned values.
-
-            # Save the Webpages term counts (Char N-grans or Word N-Grams).
-            kfld_group = self.h5_res.create_group(vocab_size_group, 'KFold'+str(k))
-            docs_term_counts = self.h5_res.create_array(
-                kfld_group, 'docs_term_counts', np.sum(corpus_mtrx, axis=1)
-            )
-
-            # Performing default (division by max value) normalization for corpus matrix...
-            # ...'corpus_mtrx'. Should I perform Standarisation/Normalisation by subtracting mean...
-            # ...value from vector variables? The following way of normalization supposed to be...
-            # ...executed faster and it requires much less memory because it prevents the use of...
-            # ...indermidate array which it is required in 'c = c / c.max()' operation.
-            print "Normalizing"
-            max_col_arr = np.max(corpus_mtrx, axis=1)[:, np.newaxis]
-
-            # For Documents with zero terms. This case occurs when a sub-Vocabulary is used for...
-            # ...the experiment.
-            max_col_arr[np.where(max_col_arr == 0)] = 1
-
-            for i, (row, max_val) in enumerate(zip(corpus_mtrx.iterrows(), max_col_arr)):
-                corpus_mtrx[i] = row / max_val
+            return None, None
 
         return (corpus_mtrx, h5f)
+
+    def MaxNormalise(self, corpus_matrix, vocab_len):
+
+        # Getting the Maximum frequency for every document.
+        max_vals = np.max(corpus_mtrx.todense(),  np.newaxis)
+
+        # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs when...
+        # ...a sub-Vocabulary is used for the experiment.
+        max_vals[np.where(max_vals == 0)] = 1.0
+
+        # Normalizing based on the matrix/array type.
+        for i, (row, max_val) in enumerate(zip(corpus_mtrx.iterrows(), max_vals)):
+            corpus_mtrx[i] = row / max_val
+
+        return corpus_mtrx
