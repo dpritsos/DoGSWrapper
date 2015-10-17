@@ -1,7 +1,4 @@
 
-import sys
-sys.path.append('../../html2vectors/src')
-
 import json
 import os
 import cPickle as pickle
@@ -13,6 +10,9 @@ import scipy.spatial.distance as spd
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve
 from sklearn import cross_validation
 import param_combs
+
+import sys
+sys.path.append('../../html2vectors/')
 from html2vect.utils import tfdutils
 from html2vect.base.io.basefilehandlers import file_list_frmpaths
 
@@ -265,9 +265,12 @@ class SemiSupervisedParamGridSearchBase(object):
         )[0]  # <--- Be careful with zero index
 
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
-        return corpus_mtrx
+        return (corpus_mtrx, None)
 
-    def SaveCorpusMatrix(self, corpus_mtrx, filename, process_state_saving_path=None):
+    def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
+
+        # Does nothing. It is only usefull for pyTables.
+        file_obj = None
 
         # Replace the default or create if required the path where Corpus Matrix will be saved.
         if process_state_saving_path:
@@ -285,6 +288,8 @@ class SemiSupervisedParamGridSearchBase(object):
         print "Saving the Corpus TF Matrix..."
         with open(corpus_mtrx_fname, 'w') as f:
             pickle.dump(corpus_mtrx, f)
+
+        return None
 
     def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
 
@@ -486,12 +491,12 @@ class SemiSupervisedParamGridSearchBase(object):
                         tid_vocab = tfdutils.tf2tidx(resized_tf_vocab)
 
                         # Building the corpus matrix with a specific Normalizing function.
-                        corpus_matrix = self.BuildCorpusMatrix(
+                        corpus_matrix, file_obj = self.BuildCorpusMatrix(
                             html_file_l, tid_vocab, norm_func=self.MaxNormalise, encoding=encoding
                         )
 
                         # NOTE: Saving the corpus matrix in normalized form.
-                        self.SaveCorpusMatrix(corus_matrix, corpus_fname)
+                        file_obj = self.SaveCorpusMatrix(corus_matrix, corpus_fname, file_obj)
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATE"
@@ -524,13 +529,16 @@ class SemiSupervisedParamGridSearchBase(object):
                     "Expected Classes per Document (CrossValidation Set)"
                 )
 
-                # ###### Not sure I need the following few lines of code.
                 print
 
                 if model_specific_d:
                     pass
                     # for name, value in model_specific_d.items():
                     #    self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]
+
+                # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
+                if file_obj:
+                    file_obj.close()
 
         # Return Results H5 File handler class
         return self.h5_res
@@ -553,33 +561,23 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
 
         # Creating TF Vectors Matrix (pyTables TF EArray)
         corpus_mtrx, h5f = self.terms_tf.from_files(
-            html_file_l, filename, tid_vocabulary=tid, norm_func=norm_func, # <------------------- 'filename' is a issue!
+            html_file_l, filename, tid_vocabulary=tid, norm_func=norm_func,
             encoding='utf8', error_handling='replace'
         )[0:2]  # <--- Getting only 2 of the 3 returned values.
 
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
         return (corpus_mtrx, h5f)
 
-    def SaveCorpusMatrix(self, corpus_mtrx, filename, process_state_saving_path=None):
+    def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
 
-        ########################### NOT IMPLEMENTED FOR pyTABELS ################################
+        # Does Nothing. It is only usfull for Numpy/Scipy.sparse Arrays/Matrices.
+        process_state_saving_path = None
 
-        # Replace the default or create if required the path where Corpus Matrix will be saved.
-        if process_state_saving_path:
-            save_path = process_state_saving_path
-        else:
-            save_path = self.state_save_path
+        # Closing and re-opening file just for safety.
+        file_obj.close()
+        file_obj = tb.open_file(filename, 'r+')
 
-        if not os.path.exists(save_path):
-            os.mkdir(save_path)
-
-        # Set the file names for the Corpus matrix.
-        corpus_mtrx_fname = save_path + filename
-
-        # Saving TF Vectors Corpus Matrix
-        print "Saving the Corpus TF Matrix..."
-        with open(corpus_mtrx_fname, 'w') as f:
-            pickle.dump(corpus_mtrx, f)
+        return file_obj
 
     def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
 
