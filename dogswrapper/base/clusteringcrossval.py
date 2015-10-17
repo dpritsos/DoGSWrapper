@@ -338,6 +338,22 @@ class SemiSupervisedParamGridSearchBase(object):
         return corpus_mtrx
 
     def EvaluateAll(self, raw_corpus_files_path=None, params_range, encoding='utf-8'):
+        """
+            Parameters Template
+            -------------------
+            params_range = coll.OrderedDict([
+               ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
+               ('train_split-step-method', [
+                  (0.5, 0.1, 'rndred-trn-rest4-test'),
+                  (0.5, 0.1, 'rndred-trn-fixed-test'),
+               ])
+               ('vocab_size', [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]),
+               ('max_iter', [50, 100, 300])
+               ('converg_diff', [0.001, 0.005, 0.01, 0.05, 0.1, 0.5])
+               ('learing_rate', [0.0003, 0.003, 0.01, 0.03, 0.1, 0.3])
+            ])
+
+        """
 
         # Replace the class instantiation defined variable self.corpus_files_path if any.
         if raw_corpus_files_path:
@@ -345,18 +361,6 @@ class SemiSupervisedParamGridSearchBase(object):
 
         if not os.path.exists(self.corpus_files_path):
             raise Exception("Corpus files path does not exist.")
-
-        # params_range = coll.OrderedDict([
-        #    ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-        #    ('train_split-step-method', [
-        #       (0.5, 0.1, 'rndred-trn-rest4-test'),
-        #       (0.5, 0.1, 'rndred-trn-fixed-test'),
-        #    ])
-        #    ('vocab_size', [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]),
-        #    ('max_iter', [50, 100, 300])
-        #    ('converg_diff', [0.001, 0.005, 0.01, 0.05, 0.1, 0.5])
-        #    ('learing_rate', [0.0003, 0.003, 0.01, 0.03, 0.1, 0.3])
-        # ])
 
         # Loading the Filename list of the corpus and their respective class tags.
         html_file_l, cls_tgs = self.LoadCrpsFnameTags()

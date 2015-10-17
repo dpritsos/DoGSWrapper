@@ -5,9 +5,8 @@ import numpy as np
 
 class HMRFKmeans_Wrapped(object):
 
-    def __init__(self, class_lst):
-        self.class_lst = class_lst
-        self.gnrs_num = len(class_lst)
+    def __init__(self):
+        pass
 
     def BuildContraints(self, train_ctg_idxs_arr):
 
