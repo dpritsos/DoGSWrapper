@@ -1,7 +1,9 @@
 
 
 import numpy as np
-
+import sys
+sys.path.append('../../Djumble/')
+from djumble.vmf_semisupervised_kmeans import HMRFKmeans
 
 class HMRFKmeans_Wrapped(object):
 
@@ -40,7 +42,7 @@ class HMRFKmeans_Wrapped(object):
         must_lnk, cannot_lnk = self.BuildContraints(trn_subsplt)
 
         # Getting the number of the expected clusters.
-        k_clusters = trn_susplt.shape[0]
+        k_clusters = trn_subsplt.shape[0]
 
         # Selecting randomly a set of initial centroids, i.e., one index from every class.
         init_centrs = [
@@ -55,7 +57,7 @@ class HMRFKmeans_Wrapped(object):
             lrn_rate=params['learing_rate'], ray_sigma=0.5,
             w_violations=np.random.uniform(
                 1.0, 1.0, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
-            d_params=np.random.uniform(0.9, 1.7, size=test_dims),
+            d_params=np.random.uniform(0.9, 1.7, size=corpus_mtrx.shape[0]),
             norm_part=False
         )
 
@@ -64,10 +66,10 @@ class HMRFKmeans_Wrapped(object):
         srl_tst_spl = tst_subsplt.reshape((1, np.multiply(*tst_subsplt.shape)))
 
         # Getting the Indeced split for clustering by Stacking them and sorting the above.
-        subset_split_idxs = np.short(np.vstack((srl_trn_spl, srl_tst_spl)))
+        subset_split_idxs = np.short(np.hstack((srl_trn_spl, srl_tst_spl)))[0]
 
         # Doing the Semi-Supervised Clustering for this Corpus Split.
-        res = hkmeans.Fit(corpus_mtrx[subset_split_idxs, :])
+        res = hkmeans.fit(corpus_mtrx[subset_split_idxs, :])
 
         # Converting the list index sets to vector of cluster tags.
         # NOTE: mu_lst, clstr_idxs_set_lst, self.A.data  = res

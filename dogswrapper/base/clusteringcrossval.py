@@ -26,10 +26,9 @@ class SemiSupervisedParamGridSearchBase(object):
         self.terms_tf = terms_tf_module
         self.classes_lst = class_names_lst
         self.classes_num = len(class_names_lst)
-
         self.h5_res = h5_file_results
-        if not os.path.exists(self.h5_res):
-            raise Exception("Results HD5 file for saving results does not exist.")
+        # if not os.path.exists(self.h5_res):
+        #    raise Exception("Results HD5 file for saving results does not exist.")
 
         self.corpus_files_path = raw_corpus_files_path
         if not os.path.exists(self.corpus_files_path):
@@ -85,7 +84,7 @@ class SemiSupervisedParamGridSearchBase(object):
             for i, g in enumerate(self.classes_lst):
 
                 # Get all files located to the genre's path 'g'
-                gnrs_file_lst = file_list_frmpaths(self.corpus_path, [str(g + "/html/")])
+                gnrs_file_lst = file_list_frmpaths(self.corpus_files_path, [str(g + "/html/")])
 
                 # Extends the list of html files with the set of files form genre 'g'.
                 html_file_l.extend(gnrs_file_lst)
@@ -110,7 +109,7 @@ class SemiSupervisedParamGridSearchBase(object):
         print "Returning the Corpus Filenames list and Classes Tags Numpy array."
 
         # Returning the filename list and the tags array.
-        return html_file_l, np.array(cls_tgs)
+        return np.array(html_file_l), np.array(cls_tgs)
 
     def SplitSamples(self, cls_tgs,
                      trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
@@ -121,7 +120,7 @@ class SemiSupervisedParamGridSearchBase(object):
 
         # Two list of arrays where each array has the file indeces for training and testing...
         # ...repspectivly splitted initially upon trn_percentage.
-        trn_splts_per_ctg_arrlst, trn_splts_per_ctg_arrlst = list(), list()
+        trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst = list(), list()
 
         for ctg in np.unique(cls_tgs):
 
@@ -130,7 +129,7 @@ class SemiSupervisedParamGridSearchBase(object):
 
             # Calculating the amount of samples keeping for training for this class for the...
             # ...initial split.
-            smpls_num = np.ceil(this_cls_idxs.shape[0] * trn_percent)
+            smpls_num = int(np.ceil(this_cls_idxs.shape[0] * trn_percent))
 
             # NOTE: Here the training indeces are selected Randomly! Thus, it is easy to...
             # ...use this python-class-method into Cross-Validation experimental set-up....
@@ -142,7 +141,7 @@ class SemiSupervisedParamGridSearchBase(object):
             trn_splts_per_ctg_arrlst.append(train_files_idxs_arr)
 
             # Keeping the indeces but the ones for training as testing indeces.
-            trn_splts_per_ctg_arrlst.append(
+            tst_splts_per_ctg_arrlst.append(
                 np.short(
                     np.array(
                         [tst_i for tst_i in this_cls_idxs if tst_i not in train_files_idxs_arr]
@@ -159,27 +158,27 @@ class SemiSupervisedParamGridSearchBase(object):
 
             train_ctg_lst, test_ctg_lst = list(), list()
 
-            for trn_splts_per_ctg_arr in trn_splts_per_ctg_arrlst:
+            for trn_arr, tst_arr in zip(trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst):
 
-                smpls_num = np.ceil(trn_splts_per_ctg_arr.shape[0] * splts_decreased_perc)
+                smpls_num = np.ceil(trn_arr.shape[0] * splts_decreased_perc)
 
                 # Selecting the method to split the corpus to training and test sets.
-                if method == 'rndred-trn-fixed-test':
+                if method == 'rndred_trn_fixed_test':
 
                     # Keeping only a partition of the training indeces split, while the...
                     # ...testning split remains the same.
-                    train_ctg_lst.append(trn_splts_per_ctg_arr[0:smpls_num])
-                    test_ctg_lst.append(trn_splts_per_ctg_arrlst)
+                    train_ctg_lst.append(trn_arr[0:smpls_num])
+                    test_ctg_lst.append(tst_arr)
 
-                elif method == 'rndred-trn-rest4-test':
+                elif method == 'rndred_trn_rest4_test':
 
                     # Keeping only a partition of the training indeces split, while the...
                     # ...testing split is extended with the rest of the training split.
-                    train_ctg_lst.append(trn_splts_per_ctg_arr[0:smpls_num])
+                    train_ctg_lst.append(trn_arr[0:smpls_num])
                     test_ctg_lst.append(
                         np.short(
                             np.hstack(
-                                (trn_splts_per_ctg_arrlst, trn_splts_per_ctg_arr[smpls_num:0])
+                                (tst_arr, trn_arr[smpls_num::])
                             )
                         )
                     )
@@ -237,16 +236,16 @@ class SemiSupervisedParamGridSearchBase(object):
             )
 
         # Set the file names for training and testing splits.
-        train_splits_path = save_path + fnames_tpl[0]
-        test_splits_path = save_path + fnames_tpl[1]
+        train_splits_fname = save_path + fnames_tpl[0]
+        test_splits_fname = save_path + fnames_tpl[1]
 
-        if os.path.exists(train_subsplits_arrlst) and os.path.exists(testing_subsplits_arrlst):
+        if os.path.exists(train_splits_fname) and os.path.exists(test_splits_fname):
 
             # Unpickleing the Training and Testing Splits.
-            with open(train_splits_path, 'w') as f:
+            with open(train_splits_fname, 'r') as f:
                 train_subsplits_arrlst = pickle.load(f)
 
-            with open(test_splits_path, 'w') as f:
+            with open(test_splits_fname, 'r') as f:
                 testing_subsplits_arrlst = pickle.load(f)
         else:
 
@@ -254,18 +253,21 @@ class SemiSupervisedParamGridSearchBase(object):
 
         return train_subsplits_arrlst, testing_subsplits_arrlst
 
-    def BuildCorpusMatrix(self, html_file_l, tid_vocab, norm_func, encoding='utf-8'):
+    def BuildCorpusMatrix(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
+
+        # Does nothing. It is only usefull for pyTables.
+        filename = None
 
         print "Building the Corpus Matrix..."
 
         # Creating TF Vectors Matrix
         corpus_mtrx = self.terms_tf.from_files(
-            html_file_l, tid_vocabulary=tid_vocab, norm_func=norm_func,
-            encoding=encoding, error_handling='replace'
+            xhtml_file_l=html_file_l, tid_vocabulary=tid_vocab,
+            norm_func=norm_func, encoding=encoding, error_handling='replace'
         )[0]  # <--- Be careful with zero index
 
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
-        return (corpus_mtrx, None)
+        return (corpus_mtrx, filename)
 
     def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
 
@@ -282,7 +284,7 @@ class SemiSupervisedParamGridSearchBase(object):
             os.mkdir(save_path)
 
         # Set the file names for the Corpus matrix.
-        corpus_mtrx_fname = save_path + filename
+        corpus_mtrx_fname = save_path + filename + '.pkl'
 
         # Saving TF Vectors Corpus Matrix
         print "Saving the Corpus TF Matrix..."
@@ -305,7 +307,7 @@ class SemiSupervisedParamGridSearchBase(object):
             )
 
         # Setting the filename to load the Corpus Matrix (Spase).
-        corpus_mtrx_fname = save_path + filename
+        corpus_mtrx_fname = save_path + filename + '.pkl'
 
         if os.path.exists(corpus_mtrx_fname):
 
@@ -320,7 +322,7 @@ class SemiSupervisedParamGridSearchBase(object):
 
         return (corpus_mtrx, None)
 
-    def MaxNormalise(self, corpus_matrix, vocab_len):
+    def MaxNormalise(self, corpus_mtrx, vocab_len):
 
         # Getting the Maximum frequency for every document.
         max_vals = np.max(corpus_mtrx.todense(), axis=1)
@@ -330,20 +332,20 @@ class SemiSupervisedParamGridSearchBase(object):
         max_vals[np.where(max_vals == 0)] = 1.0
 
         # Normalizing based on the matrix/array type.
-        if issparse(corpus_mtrx):
+        if ssp.issparse(corpus_mtrx):
             corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_vals)
         else:
             corpus_mtrx = corpus_mtrx / max_vals
 
         return corpus_mtrx
 
-    def EvaluateAll(self, raw_corpus_files_path=None, params_range, encoding='utf-8'):
+    def EvaluateAll(self, params_range, raw_corpus_files_path=None, encoding='utf-8'):
         """
             Parameters Template
             -------------------
             params_range = coll.OrderedDict([
                ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-               ('train_split-step-method', [
+               ('train_split_step_method', [
                   (0.5, 0.1, 'rndred-trn-rest4-test'),
                   (0.5, 0.1, 'rndred-trn-fixed-test'),
                ])
@@ -363,7 +365,7 @@ class SemiSupervisedParamGridSearchBase(object):
             raise Exception("Corpus files path does not exist.")
 
         # Loading the Filename list of the corpus and their respective class tags.
-        html_file_l, cls_tgs = self.LoadCrpsFnameTags()
+        html_file_l, cls_tgs = self.LoadCrpsFnamesTags()
 
         # Setting initial value for the variable will be used also for not re-loading a file has...
         # ...been loaded in the exact previous iteration.
@@ -396,7 +398,7 @@ class SemiSupervisedParamGridSearchBase(object):
             # Forming the Training/Testing Splits filename suffix. If it is the same with the...
             # ...previous iteration's one just skip the file loading, because it is already there.
             splt_fname_suffix = '_'.join(
-                [str(elem) for elem in params['train_split-step-method']]
+                [str(elem) for elem in params['train_split_step_method']]
             ).replace('.', '')
 
             if last_splt_fname_suffix != splt_fname_suffix:
@@ -405,7 +407,7 @@ class SemiSupervisedParamGridSearchBase(object):
                 test_fname = self.state_save_path + 'Testing_Splits_' + splt_fname_suffix + '.pkl'
 
                 # Loading Training/Testing Splits.
-                train_splts, test_splts = self.LoadSplitSamples((trn_fname, test_fname))
+                train_splts, test_splts = self.LoadSplitSamples((trn_fname, test_fname), '/')
 
                 # In case 'None' has been loaded: Building and saving splits upon params for...
                 # ...the next iteration will be needed.
@@ -414,13 +416,15 @@ class SemiSupervisedParamGridSearchBase(object):
                     # Building the splits.
                     train_splts, test_splts = self.SplitSamples(
                         cls_tgs,
-                        trn_percent=params['train_split-step-method'][0],
-                        decrease_step=params['train_split-step-method'][1],
-                        method=params['train_split-step-method'][2]
+                        trn_percent=params['train_split_step_method'][0],
+                        decrease_step=params['train_split_step_method'][1],
+                        method=params['train_split_step_method'][2]
                     )
 
                     # Saving the splits.
-                    self.SaveSplitSamples(train_splts, test_splts, (trn_fname, test_fname))
+                    self.SaveSplitSamples(
+                        train_splts, test_splts, (trn_fname, test_fname), '/'
+                    )
 
             # Setting initial value for the variable will be used also for not re-loading
             # ...a file has been loaded in the exact previous iteration.
@@ -437,74 +441,83 @@ class SemiSupervisedParamGridSearchBase(object):
                 save_group = next_group  # The final group results to be saved.
 
                 # Loading corpus matrix for this Sub-Split.
-                corpus_fname = self.state_save_path + 'Corpus_' +
-                'VS_' + str(params['vocab_size']) +
-                'Splt_' + splt_fname_suffix +
-                '_#' + str(subsplt_cnt)
+                corpus_fname = self.state_save_path + 'Corpus_' +\
+                    'VS' + str(params['vocab_size']) +\
+                    '_Splt_' + splt_fname_suffix +\
+                    '_#' + str(subsplt_cnt)
 
                 # If not already loading the corpus matrix.
                 if last_corpus_fname != corpus_fname:
 
                     # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
-                    corpus_matrix = self.LoadCorpusMatrix(corpus_fname + '.pkl')[0]
+                    corpus_mtrx = self.LoadCorpusMatrix(corpus_fname, '/')[0]
 
                     # If 'None' corpus matrix has been loaded build it.
-                    if corpus_matrix is None:
+                    if corpus_mtrx is None:
 
                         vocab_fname = self.state_save_path + 'Vocab_' + 'Splt_' + splt_fname_suffix
 
                         # Loading the proper Vocabulary.
-                        if os.path.exists(vocab_fname):
+                        if os.path.exists(vocab_fname+'.pkl'):
 
+                            # Loading the vocabulary.
+                            print "Loading Vocabulary..."
                             with open(vocab_fname+'.pkl', 'r') as f:
                                 tf_vocab = pickle.load(f)
 
                         else:
                             # Building the Vocabulary if not already exists.
 
+                            print "Building Vocabulary..."
+
                             # Serializing the training split indeces.
                             srl_trn_spl = trn_subsplt.reshape(
                                 (1, np.multiply(*trn_subsplt.shape))
-                            )
+                            )[0]
 
                             # Building the TF Vocabulary.
                             tf_vocab = self.terms_tf.build_vocabulary(
-                                html_file_l[srl_trn_spl],
+                                list(html_file_l[srl_trn_spl]),
                                 encoding=encoding, error_handling='replace'
                             )
 
                             # Saving TF Vocabulary in pickle and Json format.
-                            print "Saving Vocabulary"
+                            print "Saving Vocabulary..."
                             with open(vocab_fname+'.pkl', 'w') as f:
                                 pickle.dump(tf_vocab, f)
 
-                            with open(voc_filename+'.pkl' 'w') as f:
+                            with open(vocab_fname+'.jsn', 'w') as f:
                                 json.dump(tf_vocab, f, encoding=encoding)
 
                         # Get the Vocabulary keeping all the terms with same freq to the...
                         # ...last feature of the requested size.
-                        resized_tf_vocab = tfdutils.keep_atleast(tf_vocab, vocab_size)
+                        resized_tf_vocab = tfdutils.keep_atleast(tf_vocab, params['vocab_size'])
 
                         # Saving the real Vocabulary sizes for this experiment...
                         # ...(i.e. this text representation, etc.) keep it as pytables group...
                         # ...attribute the actual Vocabulary size.
-                        vocab_size_group._v_attrs.real_voc_size = [(k, len(resized_tf_vocab))]
+
+                        # DO I NEED IT?
+                        # vocab_size_group._v_attrs.real_voc_size = [(k, len(resized_tf_vocab))]
 
                         # Creating the Terms-Index Vocabulary that is shorted by Frequency's...
                         # ...descending order
                         tid_vocab = tfdutils.tf2tidx(resized_tf_vocab)
 
                         # Building the corpus matrix with a specific Normalizing function.
-                        corpus_matrix, file_obj = self.BuildCorpusMatrix(
-                            html_file_l, tid_vocab, norm_func=self.MaxNormalise, encoding=encoding
+                        print 'Building Corpus Matrix...'
+
+                        corpus_mtrx, file_obj = self.BuildCorpusMatrix(
+                            list(html_file_l), corpus_fname, tid_vocab,
+                            norm_func=self.MaxNormalise, encoding=encoding
                         )
 
                         # NOTE: Saving the corpus matrix in normalized form.
-                        file_obj = self.SaveCorpusMatrix(corus_matrix, corpus_fname, file_obj)
+                        file_obj = self.SaveCorpusMatrix(corpus_mtrx, corpus_fname, file_obj, '/')
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATE"
-                clusters_y = self.semisuper_model.eval(
+                clusters_y = self.semisuper_model.DoSemiSupervdClustrering(
                     trn_subsplt, tst_subsplt, corpus_mtrx, params
                 )
 
@@ -559,14 +572,17 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
             h5_file_results, raw_corpus_files_path, process_state_saving_path
         )
 
-    def BuildCorpusMatrix(self, html_file_l, tid_vocab, norm_func, encoding='utf-8'):
+    def BuildCorpusMatrix(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
+
+        # Setting the pyTables suffix, just for separating them from Numpy pickled Arrays/Matrices.
+        filename = filename + '.h5'
 
         print "Building the Corpus Matrix..."
 
         # Creating TF Vectors Matrix (pyTables TF EArray)
         corpus_mtrx, h5f = self.terms_tf.from_files(
-            html_file_l, filename, tid_vocabulary=tid, norm_func=norm_func,
-            encoding='utf8', error_handling='replace'
+            xhtml_file_l=html_file_l, h5_fname=filename, tid_vocabulary=tid_vocab,
+            norm_func=norm_func, encoding=encoding, error_handling='replace'
         )[0:2]  # <--- Getting only 2 of the 3 returned values.
 
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
@@ -579,7 +595,7 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
 
         # Closing and re-opening file just for safety.
         file_obj.close()
-        file_obj = tb.open_file(filename, 'r+')
+        file_obj = tb.open_file(filename+'.h5', 'r+')
 
         return file_obj
 
@@ -597,7 +613,7 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
             )
 
         # Setting the filename to load the Corpus Matrix (Spase).
-        corpus_mtrx_fname = save_path + filename
+        corpus_mtrx_fname = save_path + filename + '.h5'
 
         if os.path.exists(corpus_mtrx_fname):
 
@@ -613,7 +629,7 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
 
         return (corpus_mtrx, h5f)
 
-    def MaxNormalise(self, corpus_matrix, vocab_len):
+    def MaxNormalise(self, corpus_mtrx, vocab_len):
 
         # Getting the Maximum frequency for every document.
         max_vals = np.max(corpus_mtrx.todense(),  np.newaxis)
