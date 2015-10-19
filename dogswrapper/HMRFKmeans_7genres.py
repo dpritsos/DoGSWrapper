@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import collections as coll
 import tables as tb
@@ -10,7 +11,8 @@ from base.clusteringcrossval import SemiSupervisedParamGridSearchBase
 from base.clusteringcrossval import SemiSupervisedParamGridSearchTables
 from wrappedmodels.HMRFKmeans import HMRFKmeans_Wrapped
 # import html2vect.sparse.cngrams as h2v_cng
-import html2vect.sparse.wngrams as h2v_wcng
+#import html2vect.sparse.wngrams as h2v_wcng
+import html2vect.narray.wngrams as h2v_wcng
 # import html2vect.tables.cngrams as h2v_cng
 # import html2vect.tables.wngrams as h2v_wcng
 
@@ -30,7 +32,7 @@ params_range = coll.OrderedDict([
       (0.5, 0.1, 'rndred_trn_rest4_test'),
       (0.5, 0.1, 'rndred_trn_fixed_test'),
    ]),
-   ('vocab_size', [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]),
+   ('vocab_size', [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]),  # 10,
    ('max_iter', [50, 100, 300]),
    ('converg_diff', [0.001, 0.005, 0.01, 0.05, 0.1, 0.5]),
    ('learing_rate', [0.0003, 0.003, 0.01, 0.03, 0.1, 0.3])

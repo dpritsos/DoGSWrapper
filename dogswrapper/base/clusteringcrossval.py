@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import json
 import os
@@ -160,7 +161,7 @@ class SemiSupervisedParamGridSearchBase(object):
 
             for trn_arr, tst_arr in zip(trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst):
 
-                smpls_num = np.ceil(trn_arr.shape[0] * splts_decreased_perc)
+                smpls_num = int(np.ceil(trn_arr.shape[0] * splts_decreased_perc))
 
                 # Selecting the method to split the corpus to training and test sets.
                 if method == 'rndred_trn_fixed_test':

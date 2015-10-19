@@ -38,11 +38,14 @@ class HMRFKmeans_Wrapped(object):
 
     def DoSemiSupervdClustrering(self, trn_subsplt, tst_subsplt, corpus_mtrx, params):
 
+        print "DIMS: ", corpus_mtrx.shape[1]
+
         # Building the Must-Link and Cannot-Link Constraints.
         must_lnk, cannot_lnk = self.BuildContraints(trn_subsplt)
 
         # Getting the number of the expected clusters.
         k_clusters = trn_subsplt.shape[0]
+        print "Clusters (Expected): ", k_clusters
 
         # Selecting randomly a set of initial centroids, i.e., one index from every class.
         init_centrs = [
@@ -55,10 +58,10 @@ class HMRFKmeans_Wrapped(object):
         hkmeans = HMRFKmeans(
             k_clusters,  must_lnk, cannot_lnk, init_centroids=init_centrs,
             max_iter=params['max_iter'], cvg=params['converg_diff'],
-            lrn_rate=params['learing_rate'], ray_sigma=0.5,
+            lrn_rate=params['learing_rate'], ray_sigma=1.5,
             w_violations=np.random.uniform(
                 1.0, 1.0, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
-            d_params=np.random.uniform(0.9, 1.7, size=corpus_mtrx.shape[1]),
+            d_params=np.random.uniform(1.9, 2.7, size=corpus_mtrx.shape[1]),
             norm_part=False
         )
 
