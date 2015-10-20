@@ -29,8 +29,8 @@ method_results = tb.open_file(state_saving_path + 'HMRFKmeans_1W_7Genres.h5', 'w
 params_range = coll.OrderedDict([
    #  ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
    ('train_split_step_method', [
-      (0.5, 0.1, 'rndred_trn_rest4_test'),
-      (0.5, 0.1, 'rndred_trn_fixed_test'),
+      [0.5, 0.1, 'rndred_trn_rest4_test'],
+      [0.5, 0.1, 'rndred_trn_fixed_test'],
    ]),
    ('vocab_size', [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]),  # 10,
    ('max_iter', [50, 100, 300]),

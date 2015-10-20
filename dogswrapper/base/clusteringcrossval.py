@@ -368,6 +368,12 @@ class SemiSupervisedParamGridSearchBase(object):
         # Loading the Filename list of the corpus and their respective class tags.
         html_file_l, cls_tgs = self.LoadCrpsFnamesTags()
 
+        # Loading the last good states list for skipping the sates already has been evaluated.
+        last_goodstate_lst = list()
+        if os.path.exists(self.state_save_path+'last_good_sate.jsn'):
+            with open(self.state_save_path+'last_good_sate.jsn', 'r') as f:
+                last_goodstate_lst = json.load(f)
+
         # Setting initial value for the variable will be used also for not re-loading a file has...
         # ...been loaded in the exact previous iteration.
         last_splt_fname_suffix = ''
@@ -433,6 +439,14 @@ class SemiSupervisedParamGridSearchBase(object):
 
             # Running experiments for THIS params for each Sub-Split.
             for subsplt_cnt, (trn_subsplt, tst_subsplt) in enumerate(zip(train_splts, test_splts)):
+
+                # Skipping the states that have already been tested.
+                this_state_params = params.values()
+                this_state_params.append(subsplt_cnt)
+                # print last_goodstate_lst
+                if this_state_params in last_goodstate_lst:
+                    print "Skipping already tested state: ", this_state_params
+                    continue
 
                 # Appending the Group for this sub-split.
                 try:
@@ -557,6 +571,14 @@ class SemiSupervisedParamGridSearchBase(object):
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
                 if file_obj:
                     file_obj.close()
+
+                # Saving the last good state. Then the process can continue after this state in...
+                # ...order not to start every Evaluation again.
+                with open(self.state_save_path+'last_good_sate.jsn', 'w') as f:
+                    pram_vals = params.values()
+                    pram_vals.append(subsplt_cnt)
+                    last_goodstate_lst.append(pram_vals)
+                    json.dump(last_goodstate_lst, f)
 
         # Return Results H5 File handler class
         return self.h5_res
