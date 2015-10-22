@@ -542,6 +542,17 @@ class SemiSupervisedParamGridSearchBase(object):
                     "The assigned cluster labels after Semi-Supervised clustering."
                 )
 
+                # Saving the set-ip hyper-parameters and convergence parameters.
+                final_params = self.semisuper_model.get_params()
+
+                rec_type = np.dtype([('keys', 'S18'), ('values', 'float32')])
+
+                self.h5_res.create_array(
+                    save_group, 'clustering_params',
+                    np.rec.array(final_params.items(), dtype=rec_type),
+                    "Expected Classes per Document (CrossValidation Set)"
+                )
+
                 # Saving the expected class labels for all the corpus subset under evaluation.
 
                 # Serializing the training split indeces.

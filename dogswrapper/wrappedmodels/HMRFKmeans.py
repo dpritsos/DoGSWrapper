@@ -62,8 +62,8 @@ class HMRFKmeans_Wrapped(object):
             lrn_rate=params['learing_rate'], ray_sigma=3.5,
             w_violations=np.random.uniform(
                 0.5, 0.5, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
-            d_params=np.random.uniform(5.9, 10.7, size=corpus_mtrx.shape[1]),
-            norm_part=True
+            d_params=np.random.uniform(50.9, 100.7, size=corpus_mtrx.shape[1]),
+            norm_part=False, globj='non-normed'
         )
 
         # Serializing the training split indeces.
