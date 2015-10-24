@@ -59,11 +59,11 @@ class HMRFKmeans_Wrapped(object):
         hkmeans = HMRFKmeans(
             k_clusters,  must_lnk, cannot_lnk, init_centroids=init_centrs,
             max_iter=params['max_iter'], cvg=params['converg_diff'],
-            lrn_rate=params['learing_rate'], ray_sigma=3.5,
+            lrn_rate=params['learing_rate'], ray_sigma=1.0,
             w_violations=np.random.uniform(
-                0.5, 0.5, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
-            d_params=np.random.uniform(50.9, 100.7, size=corpus_mtrx.shape[1]),
-            norm_part=False, globj='non-normed'
+                0.3, 0.3, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
+            d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
+            norm_part=True, globj='non-normed'
         )
 
         # Serializing the training split indeces.
