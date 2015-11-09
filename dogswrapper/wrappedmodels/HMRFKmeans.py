@@ -1,5 +1,5 @@
 
-
+import tables
 import numpy as np
 import sys
 sys.path.append('../../Djumble/')
@@ -38,7 +38,10 @@ class HMRFKmeans_Wrapped(object):
 
     def DoSemiSupervdClustrering(self, trn_subsplt, tst_subsplt, corpus_mtrx, params):
 
-        print "DIMS: ", corpus_mtrx.shape[1]
+        if isinstance(corpus_mtrx, tables.EArray):
+            print "DIMS: ", corpus_mtrx.read().shape[1]
+        else:
+            print "DIMS: ", corpus_mtrx.shape[1]
         # print params
         # 0/0
         # Building the Must-Link and Cannot-Link Constraints.
@@ -56,14 +59,14 @@ class HMRFKmeans_Wrapped(object):
         # Initializing the HMRF Kmeans Semi-Supervised Clustering Model upon params argument and...
         # k-clusters expected, Must-Link and Cannot-Link constraints.
         print corpus_mtrx.shape[1]
-        hkmeans = HMRFKmeans(
+        self.hkmeans = HMRFKmeans(
             k_clusters,  must_lnk, cannot_lnk, init_centroids=init_centrs,
             max_iter=params['max_iter'], cvg=params['converg_diff'],
             lrn_rate=params['learing_rate'], ray_sigma=1.0,
             w_violations=np.random.uniform(
-                0.3, 0.3, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
+                0.99, 0.99, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
-            norm_part=True, globj='non-normed'
+            norm_part=False, globj='non-normed'
         )
 
         # Serializing the training split indeces.
@@ -74,16 +77,16 @@ class HMRFKmeans_Wrapped(object):
         subset_split_idxs = np.short(np.hstack((srl_trn_spl, srl_tst_spl)))[0]
 
         # Doing the Semi-Supervised Clustering for this Corpus Split.
-        res = hkmeans.fit(corpus_mtrx[subset_split_idxs, :])
+        res = self.hkmeans.fit(corpus_mtrx[subset_split_idxs, :])
 
         # Converting the list index sets to vector of cluster tags.
         # NOTE: mu_lst, clstr_idxs_set_lst, self.A.data  = res
 
         # Setting the place holder for the clusters-tag vector to be returned.
-        clstr_tags_arr = np.zeros(corpus_mtrx.shape[0], dtype=np.int32)
+        clstr_tags_arr = np.zeros(corpus_mtrx.shape[0], dtype=np.int)
 
         # Assigning the cluster tags per vector position.
-        for i, iset in res[1]:
+        for i, iset in enumerate(res[1]):
             for idx in iset:
                 clstr_tags_arr[idx] = i+1
 
@@ -98,3 +101,6 @@ class HMRFKmeans_Wrapped(object):
 
         # Return results.
         return clstr_tags_arr_nonzero
+
+    def get_params(self):
+        return self.hkmeans.get_params()

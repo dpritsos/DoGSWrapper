@@ -155,13 +155,15 @@ class SemiSupervisedParamGridSearchBase(object):
         # ...testing index splits for every class (tag) respectively.
         train_subsplits_arrlst, testing_subsplits_arrlst = list(), list()
 
-        for splts_decreased_perc in np.arange(1, decrease_step, -decrease_step):
+        for trn_decreased_perc in np.arange(trn_percent, 0.0, -decrease_step):
 
             train_ctg_lst, test_ctg_lst = list(), list()
 
             for trn_arr, tst_arr in zip(trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst):
 
-                smpls_num = int(np.ceil(trn_arr.shape[0] * splts_decreased_perc))
+                smpls_num = int(
+                    np.ceil(trn_arr.shape[0] * trn_decreased_perc)
+                )
 
                 # Selecting the method to split the corpus to training and test sets.
                 if method == 'rndred_trn_fixed_test':
@@ -292,7 +294,7 @@ class SemiSupervisedParamGridSearchBase(object):
         with open(corpus_mtrx_fname, 'w') as f:
             pickle.dump(corpus_mtrx, f)
 
-        return None
+        return None, corpus_mtrx
 
     def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
 
@@ -326,17 +328,22 @@ class SemiSupervisedParamGridSearchBase(object):
     def MaxNormalise(self, corpus_mtrx, vocab_len):
 
         # Getting the Maximum frequency for every document.
-        max_vals = np.max(corpus_mtrx.todense(), axis=1)
+        max_val = np.max(corpus_mtrx.todense())
 
-        # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs when...
-        # ...a sub-Vocabulary is used for the experiment.
-        max_vals[np.where(max_vals == 0)] = 1.0
+        if max_val == 0.0:
+
+            # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs...
+            # when a sub-Vocabulary is used for the experiment.
+            max_val = 1.0
+
+            # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
+            corpus_mtrx[:] = np.finfo(np.float32).min
 
         # Normalizing based on the matrix/array type.
         if ssp.issparse(corpus_mtrx):
-            corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_vals)
+            corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_val)
         else:
-            corpus_mtrx = corpus_mtrx / max_vals
+            corpus_mtrx = corpus_mtrx / max_val
 
         return corpus_mtrx
 
@@ -465,7 +472,7 @@ class SemiSupervisedParamGridSearchBase(object):
                 if last_corpus_fname != corpus_fname:
 
                     # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
-                    corpus_mtrx = self.LoadCorpusMatrix(corpus_fname, '/')[0]
+                    corpus_mtrx, file_obj = self.LoadCorpusMatrix(corpus_fname, '/')
 
                     # If 'None' corpus matrix has been loaded build it.
                     if corpus_mtrx is None:
@@ -528,10 +535,12 @@ class SemiSupervisedParamGridSearchBase(object):
                         )
 
                         # NOTE: Saving the corpus matrix in normalized form.
-                        file_obj = self.SaveCorpusMatrix(corpus_mtrx, corpus_fname, file_obj, '/')
+                        file_obj, corpus_mtrx = self.SaveCorpusMatrix(
+                            corpus_mtrx, corpus_fname, file_obj, '/'
+                        )
 
                 # Evaluating Semi-Supervised Classification Method.
-                print "EVALUATE"
+                print "EVALUATING"
                 clusters_y = self.semisuper_model.DoSemiSupervdClustrering(
                     trn_subsplt, tst_subsplt, corpus_mtrx, params
                 )
@@ -545,12 +554,40 @@ class SemiSupervisedParamGridSearchBase(object):
                 # Saving the set-ip hyper-parameters and convergence parameters.
                 final_params = self.semisuper_model.get_params()
 
-                rec_type = np.dtype([('keys', 'S18'), ('values', 'float32')])
+                # rec_type = np.dtype([('keys', 'S18'), ('values', 'float64')])
+
+                d1_params = [
+                    final_params['k_clusters'],
+                    final_params['max_iter'],
+                    final_params['final_iter'],
+                    final_params['convg_diff'],
+                    final_params['lrn_rate'],
+                    final_params['ray_sigma']
+                ]
 
                 self.h5_res.create_array(
                     save_group, 'clustering_params',
-                    np.rec.array(final_params.items(), dtype=rec_type),
-                    "Expected Classes per Document (CrossValidation Set)"
+                    np.array(d1_params, dtype=np.float64)
+                )
+
+                if ssp.issparse(final_params['dist_msur_params']):
+                    dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
+                else:
+                    dist_msur_params = np.diag(final_params['dist_msur_params'])
+
+                self.h5_res.create_array(
+                    save_group, 'dist_params',
+                    np.array(dist_msur_params, dtype=np.float64)
+                )
+
+                if ssp.issparse(final_params['w_violations']):
+                    w_violations = final_params['w_violations'].toarray()
+                else:
+                    w_violations = final_params['w_violations']
+
+                self.h5_res.create_array(
+                    save_group, 'w_violations',
+                    np.array(w_violations, dtype=np.float64)
                 )
 
                 # Saving the expected class labels for all the corpus subset under evaluation.
@@ -563,7 +600,7 @@ class SemiSupervisedParamGridSearchBase(object):
                 # ...Clustering Evaluation.
                 subset_classtags_y = cls_tgs[
                     np.short(
-                        np.vstack((srl_trn_spl, srl_tst_spl))
+                        np.hstack((srl_trn_spl, srl_tst_spl))
                     )
                 ]
 
@@ -574,10 +611,10 @@ class SemiSupervisedParamGridSearchBase(object):
 
                 print
 
-                if model_specific_d:
-                    pass
-                    # for name, value in model_specific_d.items():
-                    #    self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]
+                # if model_specific_d:
+                #    pass
+                # for name, value in model_specific_d.items():
+                # self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
                 if file_obj:
@@ -611,7 +648,7 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
         # Setting the pyTables suffix, just for separating them from Numpy pickled Arrays/Matrices.
         filename = filename + '.h5'
 
-        print "Building the Corpus Matrix..."
+        print "Building the Corpus Matrix (Tables)..."
 
         # Creating TF Vectors Matrix (pyTables TF EArray)
         corpus_mtrx, h5f = self.terms_tf.from_files(
@@ -630,8 +667,9 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
         # Closing and re-opening file just for safety.
         file_obj.close()
         file_obj = tb.open_file(filename+'.h5', 'r+')
+        corpus_mtrx = file_obj.get_node('/',  'corpus_earray')
 
-        return file_obj
+        return file_obj, corpus_mtrx
 
     def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
 
@@ -662,18 +700,3 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
             return None, None
 
         return (corpus_mtrx, h5f)
-
-    def MaxNormalise(self, corpus_mtrx, vocab_len):
-
-        # Getting the Maximum frequency for every document.
-        max_vals = np.max(corpus_mtrx.todense(),  np.newaxis)
-
-        # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs when...
-        # ...a sub-Vocabulary is used for the experiment.
-        max_vals[np.where(max_vals == 0)] = 1.0
-
-        # Normalizing based on the matrix/array type.
-        for i, (row, max_val) in enumerate(zip(corpus_mtrx.iterrows(), max_vals)):
-            corpus_mtrx[i] = row / max_val
-
-        return corpus_mtrx
