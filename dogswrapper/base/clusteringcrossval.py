@@ -162,7 +162,7 @@ class SemiSupervisedParamGridSearchBase(object):
             for trn_arr, tst_arr in zip(trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst):
 
                 smpls_num = int(
-                    np.ceil(trn_arr.shape[0] * trn_decreased_perc)
+                    np.ceil(this_cls_idxs.shape[0] * trn_decreased_perc)
                 )
 
                 # Selecting the method to split the corpus to training and test sets.

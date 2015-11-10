@@ -58,7 +58,7 @@ class HMRFKmeans_Wrapped(object):
 
         # Initializing the HMRF Kmeans Semi-Supervised Clustering Model upon params argument and...
         # k-clusters expected, Must-Link and Cannot-Link constraints.
-        print corpus_mtrx.shape[1]
+
         self.hkmeans = HMRFKmeans(
             k_clusters,  must_lnk, cannot_lnk, init_centroids=init_centrs,
             max_iter=params['max_iter'], cvg=params['converg_diff'],
@@ -69,15 +69,26 @@ class HMRFKmeans_Wrapped(object):
             norm_part=False, globj='non-normed'
         )
 
-        # Serializing the training split indeces.
-        srl_trn_spl = trn_subsplt.reshape((1, np.multiply(*trn_subsplt.shape)))
-        srl_tst_spl = tst_subsplt.reshape((1, np.multiply(*tst_subsplt.shape)))
+        if params['train_split_step_method'][2] == 'rndred_trn_fixed_test':
 
-        # Getting the Indeced split for clustering by Stacking them and sorting the above.
-        subset_split_idxs = np.short(np.hstack((srl_trn_spl, srl_tst_spl)))[0]
+            # Serializing the training split indeces.
+            srl_trn_spl = set(trn_subsplt.reshape((1, np.multiply(*trn_subsplt.shape)))[0])
+            srl_tst_spl = set(tst_subsplt.reshape((1, np.multiply(*tst_subsplt.shape)))[0])
 
-        # Doing the Semi-Supervised Clustering for this Corpus Split.
-        res = self.hkmeans.fit(corpus_mtrx[subset_split_idxs, :])
+            # Getting the Indeced that should not participate in clustering.
+            all_corp_idxs = set(range(corpus_mtrx.shape[0]))
+            neg_subset_split_idxs = all_corp_idxs - srl_trn_spl - srl_tst_spl
+
+            # Doing the Semi-Supervised Clustering for this Corpus Split.
+            res = self.hkmeans.fit(corpus_mtrx, neg_idxs4clstring=neg_subset_split_idxs)
+
+        elif params['train_split_step_method'][2] == 'rndred_trn_rest4_test':
+
+            # Doing the Semi-Supervised Clustering for this Corpus Split.
+            res = self.hkmeans.fit(corpus_mtrx)
+
+        else:
+            raise Exception('Given params[train_split_step_method] option has not been defined')
 
         # Converting the list index sets to vector of cluster tags.
         # NOTE: mu_lst, clstr_idxs_set_lst, self.A.data  = res
