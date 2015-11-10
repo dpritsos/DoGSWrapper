@@ -62,7 +62,7 @@ class HMRFKmeans_Wrapped(object):
         self.hkmeans = HMRFKmeans(
             k_clusters,  must_lnk, cannot_lnk, init_centroids=init_centrs,
             max_iter=params['max_iter'], cvg=params['converg_diff'],
-            lrn_rate=params['learing_rate'], ray_sigma=1.0,
+            lrn_rate=params['learing_rate'], ray_sigma=0.5,
             w_violations=np.random.uniform(
                 0.99, 0.99, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
