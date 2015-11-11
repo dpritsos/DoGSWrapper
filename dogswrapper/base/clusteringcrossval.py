@@ -337,7 +337,7 @@ class SemiSupervisedParamGridSearchBase(object):
             max_val = 1.0
 
             # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
-            corpus_mtrx[:] = np.finfo(np.float32).min
+            corpus_mtrx[:] = np.finfo(np.float).resolution
 
         # Normalizing based on the matrix/array type.
         if ssp.issparse(corpus_mtrx):

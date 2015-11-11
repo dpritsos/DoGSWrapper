@@ -56,13 +56,15 @@ class HMRFKmeans_Wrapped(object):
             set(np.random.choice(cls_row_idxs, 1)) for cls_row_idxs in trn_subsplt
         ]
 
+        print 'ml & cl cons count', len(must_lnk), len(cannot_lnk)
+
         # Initializing the HMRF Kmeans Semi-Supervised Clustering Model upon params argument and...
         # k-clusters expected, Must-Link and Cannot-Link constraints.
 
         self.hkmeans = HMRFKmeans(
             k_clusters,  must_lnk, cannot_lnk, init_centroids=init_centrs,
             max_iter=params['max_iter'], cvg=params['converg_diff'],
-            lrn_rate=params['learing_rate'], ray_sigma=0.5,
+            lrn_rate=params['learing_rate'], ray_sigma=0.8,
             w_violations=np.random.uniform(
                 0.99, 0.99, size=(corpus_mtrx.shape[0], corpus_mtrx.shape[0])),
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
