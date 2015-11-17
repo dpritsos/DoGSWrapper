@@ -337,7 +337,7 @@ class SemiSupervisedParamGridSearchBase(object):
             max_val = 1.0
 
             # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
-            corpus_mtrx[:] = np.finfo(np.float).resolution
+            corpus_mtrx[:] = 1e-15
 
         # Normalizing based on the matrix/array type.
         if ssp.issparse(corpus_mtrx):
@@ -457,10 +457,9 @@ class SemiSupervisedParamGridSearchBase(object):
 
                 # Appending the Group for this sub-split.
                 try:
-                    next_group = self.h5_res.get_node(next_group, '#'+str(subsplt_cnt))
+                    save_group = self.h5_res.get_node(next_group, '#'+str(subsplt_cnt))
                 except:
-                    next_group = self.h5_res.create_group(next_group, '#'+str(subsplt_cnt))
-                save_group = next_group  # The final group results to be saved.
+                    save_group = self.h5_res.create_group(next_group, '#'+str(subsplt_cnt))
 
                 # Loading corpus matrix for this Sub-Split.
                 corpus_fname = self.state_save_path + 'Corpus_' +\

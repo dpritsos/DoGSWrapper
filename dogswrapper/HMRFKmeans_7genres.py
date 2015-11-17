@@ -28,7 +28,9 @@ if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
 genres = ["blog", "eshop", "faq", "frontpage", "listing", "php", "spage"]
-method_results = tb.open_file(state_saving_path + 'HMRFKmeans_1W_7Genres.h5', 'w')
+
+# Creating or opeding existing file for saving the resaults.
+method_results = tb.open_file(state_saving_path + 'HMRFKmeans_1W_7Genres#2.h5', 'a')
 
 params_range = coll.OrderedDict([
    #  ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -36,7 +38,7 @@ params_range = coll.OrderedDict([
       # [0.3, 0.1, 'rndred_trn_rest4_test'],
       [0.3, 0.1, 'rndred_trn_fixed_test'],
    ]),
-   ('vocab_size', [100, 500, 1000, 5000, 10000, 50000, 100000]), # 50
+   ('vocab_size', [500, 1000, 5000, 10000, 50000, 100000]),  # 50, 100,
    ('max_iter', [30, 100, 300]),
    ('converg_diff', [0.001, 0.005, 0.01, 0.05, 0.1, 0.5]),
    ('learing_rate', [0.003, 0.01, 0.03, 0.1, 0.3])  # 0.0003,
