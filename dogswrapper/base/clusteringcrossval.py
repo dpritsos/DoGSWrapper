@@ -579,15 +579,15 @@ class SemiSupervisedParamGridSearchBase(object):
                     np.array(dist_msur_params, dtype=np.float64)
                 )
 
-                if ssp.issparse(final_params['w_violations']):
-                    w_violations = final_params['w_violations'].toarray()
-                else:
-                    w_violations = final_params['w_violations']
+                # if ssp.issparse(final_params['w_violations']):
+                #     w_violations = final_params['w_violations'].toarray()
+                # else:
+                #     w_violations = final_params['w_violations']
 
-                self.h5_res.create_array(
-                    save_group, 'w_violations',
-                    np.array(w_violations, dtype=np.float64)
-                )
+                # self.h5_res.create_array(
+                #     save_group, 'w_violations',
+                #     np.array(w_violations, dtype=np.float64)
+                # )
 
                 # Saving the expected class labels for all the corpus subset under evaluation.
 
