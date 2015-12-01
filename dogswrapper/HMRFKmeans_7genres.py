@@ -11,7 +11,9 @@ sys.path.append('../dogswrapper')
 
 from base.clusteringcrossval import SemiSupervisedParamGridSearchBase
 from base.clusteringcrossval import SemiSupervisedParamGridSearchTables
-from wrappedmodels.HMRFKmeans import HMRFKmeans_Wrapped
+####from wrappedmodels.HMRFKmeans import HMRFKmeans_Wrapped
+
+from wrappedmodels.Cosine_Kmeans import CosineKmeans_Wrapped
 
 # import html2vect.sparse.cngrams as h2v_cng
 # import html2vect.sparse.wngrams as h2v_wcng
@@ -30,7 +32,7 @@ if not os.path.exists(state_saving_path):
 genres = ["blog", "eshop", "faq", "frontpage", "listing", "php", "spage"]
 
 # Creating or opeding existing file for saving the resaults.
-method_results = tb.open_file(state_saving_path + 'HMRFKmeans_1W_7Genres#2.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'CosineKmeans_1W_7Genres.h5', 'a')
 
 params_range = coll.OrderedDict([
    #  ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -38,10 +40,10 @@ params_range = coll.OrderedDict([
       # [0.3, 0.1, 'rndred_trn_rest4_test'],
       [0.3, 0.1, 'rndred_trn_fixed_test'],
    ]),
-   ('vocab_size', [500, 1000, 5000, 10000, 50000, 100000]),  # 50, 100,
+   ('vocab_size', [10, 50, 500, 1000, 5000, 10000, 50000, 100000]),  # 50, 100,
    ('max_iter', [30, 100, 300]),
    ('converg_diff', [0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5]),
-   ('learing_rate', [0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3])  # 0.0003,
+   ('learing_rate', [0.001, 0.003, 0.01, 0.03, 0.1, 0.3])  # 0.0003,
 ])
 
 word_n_gram_size = 1
@@ -54,7 +56,7 @@ tables_wng = h2v_wcng.Html2TF(
 #     char_n_gram_size, html_attrib='text', lowercase=True, valid_html=False
 # )
 
-semisupervised_model = HMRFKmeans_Wrapped()
+semisupervised_model = CosineKmeans_Wrapped()
 
 # SemiSPGridSearch = SemiSupervisedParamGridSearchBase(
 SemiSPGridSearch = SemiSupervisedParamGridSearchTables(

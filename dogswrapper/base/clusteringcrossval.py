@@ -560,8 +560,8 @@ class SemiSupervisedParamGridSearchBase(object):
                     final_params['max_iter'],
                     final_params['final_iter'],
                     final_params['convg_diff'],
-                    final_params['lrn_rate'],
-                    final_params['ray_sigma']
+                    # final_params['lrn_rate'],
+                    # final_params['ray_sigma']
                 ]
 
                 self.h5_res.create_array(
@@ -569,10 +569,10 @@ class SemiSupervisedParamGridSearchBase(object):
                     np.array(d1_params, dtype=np.float64)
                 )
 
-                if ssp.issparse(final_params['dist_msur_params']):
-                    dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
-                else:
-                    dist_msur_params = np.diag(final_params['dist_msur_params'])
+                # if ssp.issparse(final_params['dist_msur_params']):
+                #     dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
+                # else:
+                #     dist_msur_params = np.diag(final_params['dist_msur_params'])
 
                 self.h5_res.create_array(
                     save_group, 'dist_params',

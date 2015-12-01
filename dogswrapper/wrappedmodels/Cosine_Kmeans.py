@@ -3,9 +3,11 @@ import tables
 import numpy as np
 import sys
 sys.path.append('../../Djumble/')
-from djumble.vmf_semisupervised_kmeans import HMRFKmeans
+# from djumble.vmf_semisupervised_kmeans import HMRFKmeans
+from djumble.vmf_semisupervised_kmeans_real import CosineKmeans
 
-class HMRFKmeans_Wrapped(object):
+
+class CosineKmeans_Wrapped(object):
 
     def __init__(self):
         pass
@@ -61,12 +63,9 @@ class HMRFKmeans_Wrapped(object):
         # Initializing the HMRF Kmeans Semi-Supervised Clustering Model upon params argument and...
         # k-clusters expected, Must-Link and Cannot-Link constraints.
 
-        self.hkmeans = HMRFKmeans(
+        self.coskmeans = CosineKmeans(
             k_clusters, must_lnk, cannot_lnk, init_centroids=init_centrs,
-            max_iter=params['max_iter'], cvg=params['converg_diff'],
-            lrn_rate=params['learing_rate'], ray_sigma=0.5,
-            d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
-            norm_part=False, globj='non-normed'
+            max_iter=params['max_iter'], cvg=params['converg_diff']
         )
 
         if params['train_split_step_method'][2] == 'rndred_trn_fixed_test':
@@ -80,12 +79,12 @@ class HMRFKmeans_Wrapped(object):
             neg_subset_split_idxs = all_corp_idxs - srl_trn_spl - srl_tst_spl
 
             # Doing the Semi-Supervised Clustering for this Corpus Split.
-            res = self.hkmeans.fit(corpus_mtrx, neg_idxs4clstring=neg_subset_split_idxs)
+            res = self.coskmeans.fit(corpus_mtrx, neg_idxs4clstring=neg_subset_split_idxs)
 
         elif params['train_split_step_method'][2] == 'rndred_trn_rest4_test':
 
             # Doing the Semi-Supervised Clustering for this Corpus Split.
-            res = self.hkmeans.fit(corpus_mtrx)
+            res = self.coskmeans.fit(corpus_mtrx)
 
         else:
             raise Exception('Given params[train_split_step_method] option has not been defined')
@@ -114,4 +113,4 @@ class HMRFKmeans_Wrapped(object):
         return clstr_tags_arr_nonzero
 
     def get_params(self):
-        return self.hkmeans.get_params()
+        return self.coskmeans.get_params()
