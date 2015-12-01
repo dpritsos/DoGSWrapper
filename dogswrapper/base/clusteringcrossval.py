@@ -574,10 +574,10 @@ class SemiSupervisedParamGridSearchBase(object):
                 # else:
                 #     dist_msur_params = np.diag(final_params['dist_msur_params'])
 
-                self.h5_res.create_array(
-                    save_group, 'dist_params',
-                    np.array(dist_msur_params, dtype=np.float64)
-                )
+                # self.h5_res.create_array(
+                #     save_group, 'dist_params',
+                #     np.array(dist_msur_params, dtype=np.float64)
+                # )
 
                 # if ssp.issparse(final_params['w_violations']):
                 #     w_violations = final_params['w_violations'].toarray()
