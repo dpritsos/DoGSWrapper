@@ -116,8 +116,8 @@ class SemiSupervisedParamGridSearchBase(object):
                      trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
 
         # Checking trn_percent and decrease_step value constraints.
-        if trn_percent < 0.01 or trn_percent > 1.0 or decrease_step < 0.01 or decrease_step > 1.0:
-            raise Exception("trm_percent and decrease_step values mast be in range [0.01, 1]")
+        if trn_percent < 0.001 or trn_percent > 1.0 or decrease_step < 0.001 or decrease_step > 1.0:
+            raise Exception("trm_percent and decrease_step values mast be in range [0.001, 1]")
 
         # Two list of arrays where each array has the file indeces for training and testing...
         # ...repspectivly splitted initially upon trn_percentage.
@@ -559,9 +559,12 @@ class SemiSupervisedParamGridSearchBase(object):
                     final_params['k_clusters'],
                     final_params['max_iter'],
                     final_params['final_iter'],
+                    final_params['ml_wg'],
+                    final_params['cl_wg'],
                     final_params['convg_diff'],
-                    # final_params['lrn_rate'],
-                    # final_params['ray_sigma']
+                    final_params['lrn_rate'],
+                    final_params['ray_sigma'],
+                    final_params['norm_part']
                 ]
 
                 self.h5_res.create_array(
@@ -569,25 +572,15 @@ class SemiSupervisedParamGridSearchBase(object):
                     np.array(d1_params, dtype=np.float64)
                 )
 
-                # if ssp.issparse(final_params['dist_msur_params']):
-                #     dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
-                # else:
-                #     dist_msur_params = np.diag(final_params['dist_msur_params'])
+                if ssp.issparse(final_params['dist_msur_params']):
+                    dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
+                else:
+                    dist_msur_params = np.diag(final_params['dist_msur_params'])
 
-                # self.h5_res.create_array(
-                #     save_group, 'dist_params',
-                #     np.array(dist_msur_params, dtype=np.float64)
-                # )
-
-                # if ssp.issparse(final_params['w_violations']):
-                #     w_violations = final_params['w_violations'].toarray()
-                # else:
-                #     w_violations = final_params['w_violations']
-
-                # self.h5_res.create_array(
-                #     save_group, 'w_violations',
-                #     np.array(w_violations, dtype=np.float64)
-                # )
+                self.h5_res.create_array(
+                 save_group, 'dist_params',
+                 np.array(dist_msur_params, dtype=np.float64)
+                )
 
                 # Saving the expected class labels for all the corpus subset under evaluation.
 

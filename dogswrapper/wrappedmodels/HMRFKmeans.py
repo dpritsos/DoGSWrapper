@@ -3,7 +3,8 @@ import tables
 import numpy as np
 import sys
 sys.path.append('../../Djumble/')
-from djumble.vmf_semisupervised_kmeans import HMRFKmeans
+from djumble.hmrf_semisup_km import HMRFKmeans
+
 
 class HMRFKmeans_Wrapped(object):
 
@@ -63,8 +64,8 @@ class HMRFKmeans_Wrapped(object):
 
         self.hkmeans = HMRFKmeans(
             k_clusters, must_lnk, cannot_lnk, init_centroids=init_centrs,
-            max_iter=params['max_iter'], cvg=params['converg_diff'],
-            lrn_rate=params['learing_rate'], ray_sigma=0.5,
+            ml_wg=0.5, cl_wg=0.5, max_iter=params['max_iter'],
+            cvg=params['converg_diff'], lrn_rate=params['learing_rate'], ray_sigma=0.5,
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
             norm_part=False, globj='non-normed'
         )
