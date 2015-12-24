@@ -559,28 +559,38 @@ class SemiSupervisedParamGridSearchBase(object):
                     final_params['k_clusters'],
                     final_params['max_iter'],
                     final_params['final_iter'],
-                    final_params['ml_wg'],
-                    final_params['cl_wg'],
-                    final_params['convg_diff'],
-                    final_params['lrn_rate'],
-                    final_params['ray_sigma'],
-                    final_params['norm_part']
+                    final_params['convg_diff']
                 ]
+
+                # FOR HMRF-Kmeans
+                # d1_params = [
+                #     final_params['k_clusters'],
+                #     final_params['max_iter'],
+                #     final_params['final_iter'],
+                #     final_params['ml_wg'],
+                #     final_params['cl_wg'],
+                #     final_params['convg_diff'],
+                #     final_params['lrn_rate'],
+                #     final_params['ray_sigma'],
+                #     final_params['norm_part']
+                # ]
 
                 self.h5_res.create_array(
                     save_group, 'clustering_params',
                     np.array(d1_params, dtype=np.float64)
                 )
 
-                if ssp.issparse(final_params['dist_msur_params']):
-                    dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
-                else:
-                    dist_msur_params = np.diag(final_params['dist_msur_params'])
+                # FOR HMRF-Kmeans
+                # if ssp.issparse(final_params['dist_msur_params']):
+                #     dist_msur_params = np.diag(final_params['dist_msur_params'].toarray())
+                # else:
+                #     dist_msur_params = np.diag(final_params['dist_msur_params'])
 
-                self.h5_res.create_array(
-                 save_group, 'dist_params',
-                 np.array(dist_msur_params, dtype=np.float64)
-                )
+                # FOR HMRF-Kmeans
+                # self.h5_res.create_array(
+                #  save_group, 'dist_params',
+                #  np.array(dist_msur_params, dtype=np.float64)
+                # )
 
                 # Saving the expected class labels for all the corpus subset under evaluation.
 
