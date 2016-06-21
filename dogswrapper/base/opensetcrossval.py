@@ -13,7 +13,7 @@ from html2vect.utils import tfdutils
 from html2vect.base.io.basefilehandlers import file_list_frmpaths
 
 
-class SemiSupervisedParamGridSearchBase(object):
+class OpenSetParamGridSearchBase(object):
 
     def __init__(self, semisupervised_model, terms_tf_module, class_names_lst,
                  h5_file_results, raw_corpus_files_path, process_state_saving_path):
@@ -107,8 +107,7 @@ class SemiSupervisedParamGridSearchBase(object):
         # Returning the filename list and the tags array.
         return np.array(html_file_l), np.array(cls_tgs)
 
-    def SplitSamples(self, cls_tgs,
-                     trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
+    def SplitSamples(self, cls_tgs, trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
 
         # Checking trn_percent and decrease_step value constraints.
         if trn_percent < 0.001 or trn_percent > 1.0 or decrease_step < 0.001 or decrease_step > 1.0:
@@ -348,14 +347,11 @@ class SemiSupervisedParamGridSearchBase(object):
             -------------------
             params_range = coll.OrderedDict([
                ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-               ('train_split_step_method', [
-                  (0.5, 0.1, 'rndred-trn-rest4-test'),
-                  (0.5, 0.1, 'rndred-trn-fixed-test'),
-               ])
-               ('vocab_size', [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]),
-               ('max_iter', [50, 100, 300])
-               ('converg_diff', [0.001, 0.005, 0.01, 0.05, 0.1, 0.5])
-               ('learing_rate', [0.0003, 0.003, 0.01, 0.03, 0.1, 0.3])
+               ('genre_split_step_method', [5, 1]),
+               ('vocab_size', [5000, 10000, 50000, 100000]),
+               ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),
+               ('Sigma', [0.5, 0.7, 0.9]),
+               ('Iterations', [10, 50, 100])
             ])
 
         """
@@ -626,7 +622,7 @@ class SemiSupervisedParamGridSearchBase(object):
         return self.h5_res
 
 
-class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
+class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
 
     def __init__(self, semisupervised_model, terms_tf_module, class_names_lst,
                  h5_file_results, raw_corpus_files_path, process_state_saving_path):

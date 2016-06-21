@@ -1,7 +1,4 @@
 
-import sys
-sys.path.append('../../html2vectors/src')
-
 import json
 import os
 import cPickle as pickle
@@ -13,10 +10,10 @@ import scipy.spatial.distance as spd
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_curve
 from sklearn import cross_validation
 import param_combs
+import sys
+sys.path.append('../../../html2vectors/src')
 from html2vect.utils import tfdutils
 from html2vect.base.io.basefilehandlers import file_list_frmpaths
-
-
 
 
 class ParamGridCrossValBase(object):
@@ -208,8 +205,8 @@ class ParamGridCrossValBase(object):
     def get_test_only_idxs(self, cls_gnr_tgs, test_only_tgs):
 
         if len(test_only_tgs) > 1:
-            valid_tgs_lst = range(test_only_tgs[0], len(test_only_tgs), 1)
 
+            valid_tgs_lst = range(test_only_tgs[0], len(test_only_tgs), 1)
             if valid_tgs_lst != test_only_tgs:
                 raise Exception(
                     "Invalid test-only-tags sequence: Only a numerical sequence with " +
@@ -245,7 +242,7 @@ class ParamGridCrossValBase(object):
         params_range = args[4]
         encoding = args[5]
 
-        # Separating the "Test-Only" tags for the rest
+        # Separating the "Test-Only" tags from the rest.
         if test_only_tgs:
             cls_gnr_tgs, test_only_idxs = self.get_test_only_idxs(cls_gnr_tgs, test_only_tgs)
 
@@ -254,12 +251,12 @@ class ParamGridCrossValBase(object):
             cls_gnr_tgs, len(params_range['kfolds']), indices=True
         )
 
-        # Appending the test only tags the "Test-Only" tags for the rest - this works only for...
+        # Appending the "Test-Only" tags for the rest - this works only for...
         # ...the last most in genres list() Since it is required to build the "crv" and "trn"...
-        # ...indeces first and then load them for using then it is required to create the...
-        # ...Corss-Validations sets form the rest of the tags set and then append them. Therefor...
+        # ...indeces first and then load them. For using them it is required to create the...
+        # ...Corss-Validations sets from the rest of the tags set and then append them. Therefor...
         # ...for selecting the proper tags it is required to be appended back to the cls_gnr_tgs...
-        # ...but this time with Zero(0) class tag. NOTE: Need to be simplafied!
+        # ...but this time with Zero(0) class tag. NOTE: Needs to be simplfied!
         if test_only_tgs:
             cls_gnr_tgs = np.hstack(
                 (np.array(cls_gnr_tgs), np.zeros(len(test_only_idxs), dtype=np.int32))

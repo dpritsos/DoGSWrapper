@@ -2,8 +2,8 @@
 import tables
 import numpy as np
 import sys
-sys.path.append('../../Djumble/')
-from djumble.hmrf_semisup_km import HMRFKmeans
+sys.path.append('../../Djumble/djumble/')
+from cy.hmrf_km_semi import HMRFKmeans
 
 
 class HMRFKmeans_Wrapped(object):
@@ -37,6 +37,16 @@ class HMRFKmeans_Wrapped(object):
 
         return must_lnk, cannot_lnk
 
+    def MakeSetsArrays(self, cons_lst_set):
+
+        cons_arr = np.zeros((2, len(cons_lst_set)), dtype=np.int)
+
+        for i, iset in enumerate(cons_lst_set):
+            cons_arr[0, i] = iset.pop()
+            cons_arr[1, i] = iset.pop()
+
+        return cons_arr
+
     def DoSemiSupervdClustrering(self, trn_subsplt, tst_subsplt, corpus_mtrx, params):
 
         if isinstance(corpus_mtrx, tables.EArray):
@@ -48,16 +58,31 @@ class HMRFKmeans_Wrapped(object):
         # Building the Must-Link and Cannot-Link Constraints.
         must_lnk, cannot_lnk = self.BuildContraints(trn_subsplt)
 
+        # Only for Narray versions!!!
+        must_lnk = self.MakeSetsArrays(must_lnk)
+        cannot_lnk = self.MakeSetsArrays(cannot_lnk)
+
+        print must_lnk
+        print cannot_lnk
+
+        # print 'ml & cl cons count', len(must_lnk), len(cannot_lnk)
+        print 'ml & cl cons count', must_lnk.shape[1], cannot_lnk.shape[1]
+
         # Getting the number of the expected clusters.
         k_clusters = trn_subsplt.shape[0]
         print "Clusters (Expected): ", k_clusters
 
         # Selecting randomly a set of initial centroids, i.e., one index from every class.
+        # init_centrs = [
+        #    set(np.random.choice(cls_row_idxs, 1)) for cls_row_idxs in trn_subsplt
+        # ]
+        # Only in case of Narray!!!
         init_centrs = [
-            set(np.random.choice(cls_row_idxs, 1)) for cls_row_idxs in trn_subsplt
+            np.random.choice(cls_row_idxs, 1) for cls_row_idxs in trn_subsplt
         ]
-
-        print 'ml & cl cons count', len(must_lnk), len(cannot_lnk)
+        # init_centrs = np.array(init_centrs)
+        # For Cyhton version.
+        init_centrs = np.hstack(np.array(init_centrs))
 
         # Initializing the HMRF Kmeans Semi-Supervised Clustering Model upon params argument and...
         # k-clusters expected, Must-Link and Cannot-Link constraints.
@@ -67,7 +92,7 @@ class HMRFKmeans_Wrapped(object):
             ml_wg=0.99, cl_wg=0.99, max_iter=params['max_iter'],
             cvg=params['converg_diff'], lrn_rate=params['learing_rate'], ray_sigma=0.5,
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
-            norm_part=False, globj='non-normed'
+            norm_part=False, globj_norm=False
         )
 
         if params['train_split_step_method'][2] == 'rndred_trn_fixed_test':
@@ -80,8 +105,11 @@ class HMRFKmeans_Wrapped(object):
             all_corp_idxs = set(range(corpus_mtrx.shape[0]))
             neg_subset_split_idxs = all_corp_idxs - srl_trn_spl - srl_tst_spl
 
+            # Only for Narray versions!!!
+            neg_subset_split_idxs = np.array(list(neg_subset_split_idxs), dtype=np.intp)
+
             # Doing the Semi-Supervised Clustering for this Corpus Split.
-            res = self.hkmeans.fit(corpus_mtrx, neg_idxs4clstring=neg_subset_split_idxs)
+            res = self.hkmeans.fit(np.array(corpus_mtrx), neg_idxs4clstring=neg_subset_split_idxs)
 
         elif params['train_split_step_method'][2] == 'rndred_trn_rest4_test':
 
@@ -95,16 +123,23 @@ class HMRFKmeans_Wrapped(object):
         # NOTE: mu_lst, clstr_idxs_set_lst, self.A.data  = res
 
         # Setting the place holder for the clusters-tag vector to be returned.
-        clstr_tags_arr = np.zeros(corpus_mtrx.shape[0], dtype=np.int)
+        # clstr_tags_arr = np.zeros(corpus_mtrx.shape[0], dtype=np.int)
 
         # Assigning the cluster tags per vector position.
-        for i, iset in enumerate(res[1]):
-            for idx in iset:
-                clstr_tags_arr[idx] = i+1
+        # for i, iset in enumerate(res[1]):
+        #    for idx in iset:
+        #        clstr_tags_arr[idx] = i+1
 
         # Keeping only the non-zero values which is the respective sample indeces given for...
         # ...clustering from the whole corpus.
-        clstr_tags_arr_nonzero = clstr_tags_arr[np.where(clstr_tags_arr != 0)]
+        # clstr_tags_arr_nonzero = clstr_tags_arr[np.where(clstr_tags_arr != 0)]
+
+        # Only for Narray versions!!!
+        clstr_tags_arr = res[1]
+
+        # Keeping only the samples indeces used clustering from the whole corpus. That is every...
+        # ...sample taged with any integer other than -9 which means non-used sampel in clustering.
+        clstr_tags_arr_used_only = clstr_tags_arr[np.where(clstr_tags_arr != -9)]
 
         # model_specific_d = {
         #     'max_sim_scores_per_iter': results[2],
@@ -112,7 +147,7 @@ class HMRFKmeans_Wrapped(object):
         # }
 
         # Return results.
-        return clstr_tags_arr_nonzero
+        return clstr_tags_arr_used_only
 
     def get_params(self):
         return self.hkmeans.get_params()
