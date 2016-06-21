@@ -105,10 +105,12 @@ def select_stratified_kfolds(smpls_num, kfolds):
 
         smpl_idxs_choice = smpl_idxs_choice[np.where(smpl_idxs_choice != test_smpls)]
 
-        k_tt_splts_lst.append((np.delete(smpl_idxs_vect, test_smpls), test_smpls))
+        k_tt_splts_lst.append(
+            (smpl_idxs_vect[np.where(smpl_idxs_vect != test_smpls)], test_smpls)
+        )
 
     return k_tt_splts_lst
 
 
 for i in select_stratified_kfolds(10, 10):
-    print i[1]
+    print i[0], i[1]
