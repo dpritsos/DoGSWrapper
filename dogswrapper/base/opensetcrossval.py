@@ -107,7 +107,8 @@ class OpenSetParamGridSearchBase(object):
         # Returning the filename list and the tags array.
         return np.array(html_file_l), np.array(cls_tgs)
 
-    def SplitSamples(self, cls_tgs, trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
+    def SplitSamples(self, cls_tgs,
+                     trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
 
         # Checking trn_percent and decrease_step value constraints.
         if trn_percent < 0.001 or trn_percent > 1.0 or decrease_step < 0.001 or decrease_step > 1.0:
@@ -347,7 +348,8 @@ class OpenSetParamGridSearchBase(object):
             -------------------
             params_range = coll.OrderedDict([
                ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-               ('genre_split_step_method', [5, 1]),
+               ('onlytest_gnrs_splts', [1, 2, 3, 4, 5]),
+               ('onlytest_splt_itrs', [0, 1, 2, 3, 4, 5, 6]),
                ('vocab_size', [5000, 10000, 50000, 100000]),
                ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),
                ('Sigma', [0.5, 0.7, 0.9]),

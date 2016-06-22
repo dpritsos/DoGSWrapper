@@ -3,20 +3,81 @@ import numpy as np
 from sklearn import cross_validation
 
 
-def SplitSamples(cls_tgs, trn_percent=0.5, decrease_step=0.1, method='rndred_trn_fixed_test'):
+def select_stratified_kfolds(smpls_num, kfolds):
 
-    # Checking trn_percent and decrease_step value constraints.
-    if trn_percent < 0.001 or trn_percent > 1.0 or decrease_step < 0.001 or decrease_step > 1.0:
-        raise Exception("trm_percent and decrease_step values mast be in range [0.001, 1]")
+    tS_splt_lst = list()
+    Tr_splt_lst = list()
+    tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
 
-    # Two list of arrays where each array has the file indeces for training and testing...
-    # ...repspectivly splitted initially upon trn_percentage.
-    trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst = list(), list()
+    smpl_idxs_vect = np.arange(smpls_num)
+    smpl_idxs_choice = np.arange(smpls_num)
+
+    for k in np.arange(kfolds):
+
+        test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size, replace=False)
+
+        smpl_idxs_choice = smpl_idxs_choice[np.in1d(smpl_idxs_choice, test_smpls, invert=True)]
+
+        Tr_splt_lst.append(smpl_idxs_vect[np.in1d(smpl_idxs_vect, test_smpls, invert=True)])
+        tS_splt_lst.append(test_smpls)
+
+    return Tr_splt_lst, tS_splt_lst
+
+
+def OpennessSplitSamples(cls_tgs_lst, onlytest_clsnum, onlytest_splt_itrs, kfolds):
+
+    # Two list of arrays where each array has the file indeces for training and testing....
+    # ...Each list entry containts the kFold cross-validation splits for a random selection...
+    # ...of class-tags remaining Only-For-Testing. The Only-For-Testing class samples are...
+    # ...appended at the end of each test-samples-split in every kfold.
+    Tr_kfs_4_osplts, tS_kfs_4_osplts = list(), list()
+
+    # Starting Openness Random Selection Class Spliting.
+    for i in range(onlytest_splt_itrs):
+
+        # Selecting the Class tags tto be excluded from traing set kfold splits.
+        onlytest_clstags = np.random.choice(
+            np.unique(cls_tgs_lst), onlytest_clsnum, replace=False
+        )
+
+        # Getting the mask for class-samples to be excluded from traing set kfold splits.
+        onlytest_csampls_mask = np.in1d(onlytest_clstags, cls_tgs_lst)
+
+        # Getting the classes-samples indeces bind only for testing splits.
+        onlytest_csampls_idxs = np.where(onlytest_csampls_mask == True)
+
+        # Getting the classes-samples to be used for Kfold training/testing spliting.
+        tt_csampls_idxs = np.where(onlytest_csampls_mask == False)
+
+        # Getting the class-tags (per sapmles) which will be used for training/testing spliting.
+        tt_cls_tgs_lst = cls_tgs_lst[tt_csampls_idxs]
+
+        Tr_kfmatrx_per_cls, tS_kfmatrx_per_cls = list(), list()
+
+        for ctg in np.unique(cls_tgs_lst):
+
+            # Getting the class-samples indeces.
+            this_cls_idxs = np.where(cls_tgs == ctg)[0]
+
+            tr_iidx_lst, ts_iidx_lst = select_stratified_kfolds(this_cls_idxs.shape[0], kfolds)
+
+
+            Tr_kfmatrx_per_cls.append(
+                np.vstack(
+                    [this_cls_idxs[tr_iidx] for tr_iidx in tr_iidx_lst]
+                )
+            )
+            tS_kfmatrx_per_cls.append(
+                np.vstack(
+                    [this_cls_idxs[ts_iidx] for ts_iidx in ts_iidx_lst]
+                )
+            )
+
+
 
     for ctg in np.unique(cls_tgs):
 
-        # Getting the filename list indeces for this class (tag).
-        this_cls_idxs = np.where(cls_tgs == ctg)[0]
+
 
         # Calculating the amount of samples keeping for training for this class for the...
         # ...initial split.
@@ -40,77 +101,14 @@ def SplitSamples(cls_tgs, trn_percent=0.5, decrease_step=0.1, method='rndred_trn
             )
         )
 
-    # Two lists per sub-split one for training and one for testing. Every element of the...
-    # ...list is containing an array where the rows are containing the training and...
-    # ...testing index splits for every class (tag) respectively.
-    train_subsplits_arrlst, testing_subsplits_arrlst = list(), list()
-
-    for trn_decreased_perc in np.arange(trn_percent, 0.0, -decrease_step):
-
-        train_ctg_lst, test_ctg_lst = list(), list()
-
-        for trn_arr, tst_arr in zip(trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst):
-
-            smpls_num = int(
-                np.ceil(this_cls_idxs.shape[0] * trn_decreased_perc)
-            )
-
-            # Selecting the method to split the corpus to training and test sets.
-            if method == 'rndred_trn_fixed_test':
-
-                # Keeping only a partition of the training indeces split, while the...
-                # ...testning split remains the same.
-                train_ctg_lst.append(trn_arr[0:smpls_num])
-                test_ctg_lst.append(tst_arr)
-
-            elif method == 'rndred_trn_rest4_test':
-
-                # Keeping only a partition of the training indeces split, while the...
-                # ...testing split is extended with the rest of the training split.
-                train_ctg_lst.append(trn_arr[0:smpls_num])
-                test_ctg_lst.append(
-                    np.short(
-                        np.hstack(
-                            (tst_arr, trn_arr[smpls_num::])
-                        )
-                    )
-                )
-
-            else:
-                raise Exception("Non-implemented yet!")
-
-        # Keeping the sub-splits array lists.
-        train_subsplits_arrlst.append(
-            np.vstack(train_ctg_lst)
-        )
-
-        testing_subsplits_arrlst.append(
-            np.vstack(test_ctg_lst)
-        )
 
     return train_subsplits_arrlst, testing_subsplits_arrlst
 
 
-def select_stratified_kfolds(smpls_num, kfolds):
-
-    k_tt_splts_lst = list()
-    tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
-
-    smpl_idxs_vect = np.arange(smpls_num)
-    smpl_idxs_choice = np.arange(smpls_num)
-
-    for k in np.arange(kfolds):
-
-        test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size)
-
-        smpl_idxs_choice = smpl_idxs_choice[np.where(smpl_idxs_choice != test_smpls)]
-
-        k_tt_splts_lst.append(
-            (smpl_idxs_vect[np.where(smpl_idxs_vect != test_smpls)], test_smpls)
-        )
-
-    return k_tt_splts_lst
 
 
-for i in select_stratified_kfolds(10, 10):
-    print i[0], i[1]
+l = list()
+for i in select_stratified_kfolds(100, 10):
+    l.append(i[1])
+
+print np.sort(np.hstack(l))
