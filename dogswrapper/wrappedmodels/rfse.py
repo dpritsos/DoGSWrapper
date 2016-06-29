@@ -70,11 +70,11 @@ class RFSE_Wrapped(object):
         params = args[3]
 
         # Store the argument 5 (6th) to the proper variable
-        if self.bagging and isinstance(args[5], np.ndarray):
-            trn_idxs = args[5]
+        if self.bagging and isinstance(args[4], np.ndarray):
+            trn_idxs = args[4]
 
-        elif not self.bagging and isinstance(args[5], dict):
-            gnr_classes = args[5]
+        elif not self.bagging and isinstance(args[4], dict):
+            gnr_classes = args[4]
 
         else:
             raise Exception(
