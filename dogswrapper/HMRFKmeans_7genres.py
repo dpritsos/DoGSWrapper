@@ -31,7 +31,7 @@ if not os.path.exists(state_saving_path):
 
 genres = ["blog", "eshop", "faq", "frontpage", "listing", "php", "spage"]
 
-# Creating or opeding existing file for saving the resaults.
+# Creating or opeding existing file for saving the results.
 method_results = tb.open_file(state_saving_path + 'HMRFKmeans_3W_7Genres_10%_50k_text_cy.h5', 'a')
 
 params_range = coll.OrderedDict([
@@ -62,9 +62,9 @@ semisupervised_model = HMRFKmeans_Wrapped()
 
 # SemiSPGridSearch = SemiSupervisedParamGridSearchBase(
 SemiSPGridSearch = SemiSupervisedParamGridSearchTables(
-                    semisupervised_model, tables_wng, genres,
-                    method_results, corpus_filepath, state_saving_path
-               )
+    semisupervised_model, tables_wng, genres,
+    method_results, corpus_filepath, state_saving_path
+)
 
 results_h5 = SemiSPGridSearch.EvaluateAll(params_range, encoding='utf-8')
 

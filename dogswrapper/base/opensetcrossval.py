@@ -15,10 +15,10 @@ from html2vect.base.io.basefilehandlers import file_list_frmpaths
 
 class OpenSetParamGridSearchBase(object):
 
-    def __init__(self, semisupervised_model, terms_tf_module, class_names_lst,
+    def __init__(self, model, terms_tf_module, class_names_lst,
                  h5_file_results, raw_corpus_files_path, process_state_saving_path):
 
-        self.semisuper_model = semisupervised_model
+        self.model = model
         self.terms_tf = terms_tf_module
         self.classes_lst = class_names_lst
         self.classes_num = len(class_names_lst)
@@ -107,93 +107,98 @@ class OpenSetParamGridSearchBase(object):
         # Returning the filename list and the tags array.
         return np.array(html_file_l), np.array(cls_tgs)
 
-    def SplitSamples(self, cls_tgs,
-                     trn_percent=0.5, decrease_step=0.1, method='rndred-trn-fixed-test'):
+    def SelectStratifiedKfolds(self, smpls_num, kfolds):
 
-        # Checking trn_percent and decrease_step value constraints.
-        if trn_percent < 0.001 or trn_percent > 1.0 or decrease_step < 0.001 or decrease_step > 1.0:
-            raise Exception("trm_percent and decrease_step values mast be in range [0.001, 1]")
+        tS_splt_lst = list()
+        Tr_splt_lst = list()
+        tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
 
-        # Two list of arrays where each array has the file indeces for training and testing...
-        # ...repspectivly splitted initially upon trn_percentage.
-        trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst = list(), list()
+        smpl_idxs_vect = np.arange(smpls_num)
+        smpl_idxs_choice = np.arange(smpls_num)
 
-        for ctg in np.unique(cls_tgs):
+        for k in np.arange(kfolds):
 
-            # Getting the filename list indeces for this class (tag).
-            this_cls_idxs = np.where(cls_tgs == ctg)[0]
+            # If the samples choice list is not empty. This option is for preveting the for...
+            # ...loop to return error when the samples number is too small.
+            if smpl_idxs_choice.shape[0] == 0:
+                break  # smpl_idxs_choice = np.arange(smpls_num)
 
-            # Calculating the amount of samples keeping for training for this class for the...
-            # ...initial split.
-            smpls_num = int(np.ceil(this_cls_idxs.shape[0] * trn_percent))
+            test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size, replace=False)
 
-            # NOTE: Here the training indeces are selected Randomly! Thus, it is easy to...
-            # ...use this python-class-method into Cross-Validation experimental set-up....
-            # ...The list of indeces is sorted.
-            train_files_idxs_arr = np.sort(
-                np.random.choice(this_cls_idxs, smpls_num, replace=False)
+            smpl_idxs_choice = smpl_idxs_choice[np.in1d(smpl_idxs_choice, test_smpls, invert=True)]
+
+            Tr_splt_lst.append(smpl_idxs_vect[np.in1d(smpl_idxs_vect, test_smpls, invert=True)])
+            tS_splt_lst.append(test_smpls)
+
+        return Tr_splt_lst, tS_splt_lst
+
+    def OpennessSplitSamples(self, cls_tgs_lst, onlytest_clsnum, onlytest_splt_itrs, kfolds):
+
+        # Converting to numpy.array for compatibility with array operations.
+        cls_tgs_lst = np.array(cls_tgs_lst)
+
+        # Two list of arrays where each array has the file indeces for training and testing....
+        # ...Each list entry containts the kFold cross-validation splits for a random selection...
+        # ...of class-tags remaining Only-For-Testing. The Only-For-Testing class samples are...
+        # ...appended at the end of each test-samples-split in every kfold.
+        Tr_kfs_4_osplts, tS_kfs_4_osplts = list(), list()
+
+        # Starting Openness Random Selection Class Spliting.
+        for i in range(onlytest_splt_itrs):
+
+            # Selecting the Class tags tto be excluded from traing set kfold splits.
+            onlytest_clstags = np.random.choice(
+                np.unique(cls_tgs_lst), onlytest_clsnum, replace=False
             )
 
-            trn_splts_per_ctg_arrlst.append(train_files_idxs_arr)
+            # Getting the mask for class-samples to be excluded from traing set kfold splits.
+            onlytest_csampls_mask = np.in1d(cls_tgs_lst, onlytest_clstags)
 
-            # Keeping the indeces but the ones for training as testing indeces.
-            tst_splts_per_ctg_arrlst.append(
-                np.short(
-                    np.array(
-                        [tst_i for tst_i in this_cls_idxs if tst_i not in train_files_idxs_arr]
+            # Getting the classes-samples indeces bind only for testing splits.
+            onlytest_csampls_idxs = np.where(onlytest_csampls_mask == True)[0]
+
+            # Getting the classes-samples to be used for Kfold training/testing spliting.
+            tt_csampls_idxs = np.where(onlytest_csampls_mask == False)[0]
+
+            # Getting the class-tags (per sapmles) which will be used for training/testing spliting.
+            tt_cls_tgs_lst = cls_tgs_lst[tt_csampls_idxs]
+
+            Tr_kfmatrx_per_cls, tS_kfmatrx_per_cls = list(), list()
+
+            for ctg in np.unique(tt_cls_tgs_lst):
+
+                # Getting the class-samples indeces.
+                this_cls_idxs = np.where(tt_cls_tgs_lst == ctg)[0]
+                # print this_cls_idxs
+
+                # Statified Kfold Selection of samples in training and test sets.
+                tr_iidx_lst, ts_iidx_lst = self.SelectStratifiedKfolds(
+                    this_cls_idxs.shape[0], kfolds
+                )
+
+                Tr_kfmatrx_per_cls.append(
+                    np.vstack(
+                        [tt_csampls_idxs[this_cls_idxs[tr_iidx]] for tr_iidx in tr_iidx_lst]
                     )
                 )
-            )
 
-        # Two lists per sub-split one for training and one for testing. Every element of the...
-        # ...list is containing an array where the rows are containing the training and...
-        # ...testing index splits for every class (tag) respectively.
-        train_subsplits_arrlst, testing_subsplits_arrlst = list(), list()
-
-        for trn_decreased_perc in np.arange(trn_percent, 0.0, -decrease_step):
-
-            train_ctg_lst, test_ctg_lst = list(), list()
-
-            for trn_arr, tst_arr in zip(trn_splts_per_ctg_arrlst, tst_splts_per_ctg_arrlst):
-
-                smpls_num = int(
-                    np.ceil(this_cls_idxs.shape[0] * trn_decreased_perc)
+                tS_kfmatrx_per_cls.append(
+                    np.vstack(
+                        [tt_csampls_idxs[this_cls_idxs[ts_iidx]] for ts_iidx in ts_iidx_lst]
+                    )
                 )
 
-                # Selecting the method to split the corpus to training and test sets.
-                if method == 'rndred_trn_fixed_test':
-
-                    # Keeping only a partition of the training indeces split, while the...
-                    # ...testning split remains the same.
-                    train_ctg_lst.append(trn_arr[0:smpls_num])
-                    test_ctg_lst.append(tst_arr)
-
-                elif method == 'rndred_trn_rest4_test':
-
-                    # Keeping only a partition of the training indeces split, while the...
-                    # ...testing split is extended with the rest of the training split.
-                    train_ctg_lst.append(trn_arr[0:smpls_num])
-                    test_ctg_lst.append(
-                        np.short(
-                            np.hstack(
-                                (tst_arr, trn_arr[smpls_num::])
-                            )
-                        )
+            Tr_kfs_4_osplts.append(np.hstack(Tr_kfmatrx_per_cls))
+            tS_kfs_4_osplts.append(
+                np.hstack((
+                    np.hstack(tS_kfmatrx_per_cls),
+                    np.vstack(
+                        [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
                     )
-
-                else:
-                    raise Exception("Non-implemented yet!")
-
-            # Keeping the sub-splits array lists.
-            train_subsplits_arrlst.append(
-                np.vstack(train_ctg_lst)
+                ))
             )
 
-            testing_subsplits_arrlst.append(
-                np.vstack(test_ctg_lst)
-            )
-
-        return train_subsplits_arrlst, testing_subsplits_arrlst
+        return Tr_kfs_4_osplts, tS_kfs_4_osplts
 
     def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst,
                          fnames_tpl=('Training_Splits.pkl', 'Testing_Splits.pkl'),
@@ -386,7 +391,7 @@ class OpenSetParamGridSearchBase(object):
 
             print "Params: ", params
 
-            # # # Create the group sequence respectively to the models parameters:
+            # # # Creating the group sequence respectively to the models parameters:
             # Assigning Feature number group to next_group parameter for initializing the loop
             next_group = self.h5_res.root
 
@@ -404,9 +409,8 @@ class OpenSetParamGridSearchBase(object):
 
             # Forming the Training/Testing Splits filename suffix. If it is the same with the...
             # ...previous iteration's one just skip the file loading, because it is already there.
-            splt_fname_suffix = '_'.join(
-                [str(elem) for elem in params['train_split_step_method']]
-            ).replace('.', '')
+            splt_fname_suffix = '_S' + str(params['onlytest_gnrs_splts']) + '_I' +\
+                str(params_range['onlytest_splt_itrs'])
 
             if last_splt_fname_suffix != splt_fname_suffix:
 
@@ -421,11 +425,11 @@ class OpenSetParamGridSearchBase(object):
                 if not (train_splts and test_splts):
 
                     # Building the splits.
-                    train_splts, test_splts = self.SplitSamples(
+                    train_splts, test_splts = self.OpennessSplitSamples(
                         cls_tgs,
-                        trn_percent=params['train_split_step_method'][0],
-                        decrease_step=params['train_split_step_method'][1],
-                        method=params['train_split_step_method'][2]
+                        onlytest_clsnum=params['onlytest_gnrs_splts'],
+                        onlytest_splt_itrs=len(params_range['onlytest_splt_itrs']),
+                        kfolds=len(params_range['kfolds'])
                     )
 
                     # Saving the splits.
@@ -437,179 +441,126 @@ class OpenSetParamGridSearchBase(object):
             # ...a file has been loaded in the exact previous iteration.
             last_corpus_fname = ''
 
-            # Running experiments for THIS params for each Sub-Split.
-            for subsplt_cnt, (trn_subsplt, tst_subsplt) in enumerate(zip(train_splts, test_splts)):
+            # Skipping the states that have already been tested.
+            this_state_params = params.values()
+            # print last_goodstate_lst
+            if this_state_params in last_goodstate_lst:
+                print "Skipping already tested state: ", this_state_params
+                continue
 
-                # Skipping the states that have already been tested.
-                this_state_params = params.values()
-                this_state_params.append(subsplt_cnt)
-                # print last_goodstate_lst
-                if this_state_params in last_goodstate_lst:
-                    print "Skipping already tested state: ", this_state_params
-                    continue
+            # Loading corpus matrix for this Sub-Split.
+            split_suffix = '_S' + str(params['onlytest_gnrs_splts']) +\
+                '_I' + str(params['onlytest_splt_itrs']) +\
+                '_kF' + str(params['kfolds'])
 
-                # Appending the Group for this sub-split.
-                try:
-                    save_group = self.h5_res.get_node(next_group, '#'+str(subsplt_cnt))
-                except:
-                    save_group = self.h5_res.create_group(next_group, '#'+str(subsplt_cnt))
+            corpus_fname = self.state_save_path + 'Corpus_' +\
+                'VS' + str(params['vocab_size']) + split_suffix
 
-                # Loading corpus matrix for this Sub-Split.
-                corpus_fname = self.state_save_path + 'Corpus_' +\
-                    'VS' + str(params['vocab_size']) +\
-                    '_Splt_' + splt_fname_suffix +\
-                    '_#' + str(subsplt_cnt)
+            # If not already loading the corpus matrix.
+            if last_corpus_fname != corpus_fname:
 
-                # If not already loading the corpus matrix.
-                if last_corpus_fname != corpus_fname:
+                # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
+                corpus_mtrx, file_obj = self.LoadCorpusMatrix(corpus_fname, '/')
 
-                    # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
-                    corpus_mtrx, file_obj = self.LoadCorpusMatrix(corpus_fname, '/')
+                # If 'None' corpus matrix has been loaded build it.
+                if corpus_mtrx is None:
 
-                    # If 'None' corpus matrix has been loaded build it.
-                    if corpus_mtrx is None:
+                    vocab_fname = self.state_save_path + 'Vocab_' + split_suffix
 
-                        vocab_fname = self.state_save_path + 'Vocab_' + 'Splt_' + splt_fname_suffix
+                    # Loading the proper Vocabulary.
+                    if os.path.exists(vocab_fname+'.pkl'):
 
-                        # Loading the proper Vocabulary.
-                        if os.path.exists(vocab_fname+'.pkl'):
+                        # Loading the vocabulary.
+                        print "Loading Vocabulary..."
+                        with open(vocab_fname+'.pkl', 'r') as f:
+                            tf_vocab = pickle.load(f)
 
-                            # Loading the vocabulary.
-                            print "Loading Vocabulary..."
-                            with open(vocab_fname+'.pkl', 'r') as f:
-                                tf_vocab = pickle.load(f)
+                    else:
+                        # Building the Vocabulary if not already exists.
+                        print "Building Vocabulary..."
 
-                        else:
-                            # Building the Vocabulary if not already exists.
-
-                            print "Building Vocabulary..."
-
-                            # Serializing the training split indeces.
-                            srl_trn_spl = trn_subsplt.reshape(
-                                (1, np.multiply(*trn_subsplt.shape))
-                            )[0]
-
-                            # Building the TF Vocabulary.
-                            tf_vocab = self.terms_tf.build_vocabulary(
-                                list(html_file_l[srl_trn_spl]),
-                                encoding=encoding, error_handling='replace'
-                            )
-
-                            # Saving TF Vocabulary in pickle and Json format.
-                            print "Saving Vocabulary..."
-                            with open(vocab_fname+'.pkl', 'w') as f:
-                                pickle.dump(tf_vocab, f)
-
-                            with open(vocab_fname+'.jsn', 'w') as f:
-                                json.dump(tf_vocab, f, encoding=encoding)
-
-                        # Get the Vocabulary keeping all the terms with same freq to the...
-                        # ...last feature of the requested size.
-                        resized_tf_vocab = tfdutils.keep_atleast(tf_vocab, params['vocab_size'])
-
-                        # Saving the real Vocabulary sizes for this experiment...
-                        # ...(i.e. this text representation, etc.) keep it as pytables group...
-                        # ...attribute the actual Vocabulary size.
-
-                        # DO I NEED IT?
-                        # vocab_size_group._v_attrs.real_voc_size = [(k, len(resized_tf_vocab))]
-
-                        # Creating the Terms-Index Vocabulary that is shorted by Frequency's...
-                        # ...descending order
-                        tid_vocab = tfdutils.tf2tidx(resized_tf_vocab)
-
-                        # Building the corpus matrix with a specific Normalizing function.
-                        # NOTE: The corpus is max-normalized.
-                        print 'Building Corpus Matrix...'
-
-                        corpus_mtrx, file_obj = self.BuildCorpusMatrix(
-                            list(html_file_l), corpus_fname, tid_vocab,
-                            norm_func=self.MaxNormalise, encoding=encoding
+                        # Building the TF Vocabulary.
+                        tf_vocab = self.terms_tf.build_vocabulary(
+                            list(
+                                html_file_l[
+                                    train_splts[params['onlytest_splt_itrs']][params['kfolds']]
+                                ]
+                            ),
+                            encoding=encoding, error_handling='replace'
                         )
 
-                        # NOTE: Saving the corpus matrix in normalized form.
-                        file_obj, corpus_mtrx = self.SaveCorpusMatrix(
-                            corpus_mtrx, corpus_fname, file_obj, '/'
-                        )
+                        # Saving TF Vocabulary in pickle and Json format.
+                        print "Saving Vocabulary..."
+                        with open(vocab_fname+'.pkl', 'w') as f:
+                            pickle.dump(tf_vocab, f)
+
+                        with open(vocab_fname+'.jsn', 'w') as f:
+                            json.dump(tf_vocab, f, encoding=encoding)
+
+                    # Get the Vocabulary keeping all the terms with same freq to the...
+                    # ...last feature of the requested size.
+                    resized_tf_vocab = tfdutils.keep_atleast(tf_vocab, params['vocab_size'])
+
+                    # Saving the real Vocabulary sizes for this experiment...
+                    # ...(i.e. this text representation, etc.) keep it as pytables group...
+                    # ...attribute the actual Vocabulary size.
+
+                    # DO I NEED IT?
+                    # vocab_size_group._v_attrs.real_voc_size = [(k, len(resized_tf_vocab))]
+
+                    # Creating the Terms-Index Vocabulary that is shorted by Frequency's...
+                    # ...descending order
+                    tid_vocab = tfdutils.tf2tidx(resized_tf_vocab)
+
+                    # Building the corpus matrix with a specific Normalizing function.
+                    # NOTE: The corpus is max-normalized.
+                    print 'Building Corpus Matrix...'
+
+                    corpus_mtrx, file_obj = self.BuildCorpusMatrix(
+                        list(html_file_l), corpus_fname, tid_vocab,
+                        norm_func=self.MaxNormalise, encoding=encoding
+                    )
+
+                    # NOTE: Saving the corpus matrix in normalized form.
+                    file_obj, corpus_mtrx = self.SaveCorpusMatrix(
+                        corpus_mtrx, corpus_fname, file_obj, '/'
+                    )
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
-                clusters_y = self.semisuper_model.DoSemiSupervdClustrering(
-                    trn_subsplt, tst_subsplt, corpus_mtrx, params
+                predicted_Y, predicted_scores, model_specific_d = self.model.eval(
+                    train_splts[params['onlytest_splt_itrs']][params['kfolds']],
+                    test_splts[params['onlytest_splt_itrs']][params['kfolds']],
+                    corpus_mtrx,
+                    cls_tgs,
+                    params
                 )
 
-                # Saving the assigned cluster labels for all the corpus subset under evaluation.
-                self.h5_res.create_array(
-                    save_group, 'clusters_y', clusters_y,
-                    "The assigned cluster labels after Semi-Supervised clustering."
-                )
-
-                # Saving the set-ip hyper-parameters and convergence parameters.
-                final_params = self.semisuper_model.get_params()
-
-                # rec_type = np.dtype([('keys', 'S18'), ('values', 'float64')])
-
-                # FOR Cosine-Kmeans
-                # d1_params = [
-                #     final_params['k_clusters'],
-                #     final_params['max_iter'],
-                #     final_params['final_iter'],
-                #     final_params['convg_diff']
-                # ]
-
-                # FOR HMRF-Kmeans
-                d1_params = [
-                    final_params['k_clusters'],
-                    final_params['max_iter'],
-                    final_params['final_iter'],
-                    final_params['ml_wg'],
-                    final_params['cl_wg'],
-                    final_params['convg_diff'],
-                    final_params['lrn_rate'],
-                    final_params['ray_sigma'],
-                    final_params['norm_part']
+                # Selecting Cross Validation Set.
+                expected_Y = cls_tgs[
+                    tst_subsplt[params['onlytest_splt_itrs']][params['kfolds']]
                 ]
 
+                # Saving results
                 self.h5_res.create_array(
-                    save_group, 'clustering_params',
-                    np.array(d1_params, dtype=np.float)
-                )
-
-                # FOR HMRF-Kmeans
-                self.h5_res.create_array(
-                    save_group,
-                    'dist_params',
-                    np.array(final_params['dist_msur_params'], dtype=np.float)
-                )
-
-                # Saving the expected class labels for all the corpus subset under evaluation.
-
-                # Serializing the training split indeces.
-                srl_trn_spl = trn_subsplt.reshape((1, np.multiply(*trn_subsplt.shape)))
-                srl_tst_spl = tst_subsplt.reshape((1, np.multiply(*tst_subsplt.shape)))
-
-                # Getting the class tags for the corpus subset used for the Semi-Supervised...
-                # ...Clustering Evaluation.
-                subset_classtags_y = cls_tgs[
-                    np.short(
-                        np.hstack((srl_trn_spl, srl_tst_spl))
-                    )
-                ]
-
-                self.h5_res.create_array(
-                    save_group, 'expected_y', subset_classtags_y,
+                    save_group, 'expected_Y', expected_Y,
                     "Expected Classes per Document (CrossValidation Set)"
                 )
+                self.h5_res.create_array(
+                    save_group, 'predicted_Y', predicted_Y,
+                    "Predicted Classes per Document (CrossValidation Set)"
+                )
+                self.h5_res.create_array(
+                    save_group, 'predicted_scores', predicted_scores,
+                    "Predicted Scores per Document (CrossValidation Set)"
+                )
 
-                print
-
-                # if model_specific_d:
-                #    pass
-                # for name, value in model_specific_d.items():
-                # self.h5_res.create_array(kfld_group, name, value, "<Comment>")[:]
+                if model_specific_d:
+                    for name, value in model_specific_d.items():
+                        self.h5_res.create_array(save_group, name, value, "<Comment>")[:]
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
-                if file_obj:
+                if file_obj is not None:
                     file_obj.close()
 
                 # Saving the last good state. Then the process can continue after this state in...
@@ -626,12 +577,12 @@ class OpenSetParamGridSearchBase(object):
 
 class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
 
-    def __init__(self, semisupervised_model, terms_tf_module, class_names_lst,
+    def __init__(self, model, terms_tf_module, class_names_lst,
                  h5_file_results, raw_corpus_files_path, process_state_saving_path):
 
         # Passing the argument to the Super-Class
-        super(SemiSupervisedParamGridSearchTables, self).__init__(
-            semisupervised_model, terms_tf_module, class_names_lst,
+        super(OpenSetParamGridSearchTables, self).__init__(
+            model, terms_tf_module, class_names_lst,
             h5_file_results, raw_corpus_files_path, process_state_saving_path
         )
 

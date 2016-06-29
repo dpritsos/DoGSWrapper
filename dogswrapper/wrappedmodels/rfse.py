@@ -36,11 +36,11 @@ class RFSE_Wrapped(object):
         inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
 
         gnr_classes = dict()
-        for g in self.genres_lst:
+        for g, inds in inds_per_gnr.items():
 
             if self.bagging and bagging_param:
                 # # # # # # #
-                shuffled_train_idxs = np.random.permutation(inds_per_gnr[g])
+                shuffled_train_idxs = np.random.permutation(inds)
                 # print shuffled_train_idxs
                 # keep bagging_parram percent
                 bg_trn_ptg = int(np.trunc(shuffled_train_idxs.size * bagging_param))
@@ -49,7 +49,7 @@ class RFSE_Wrapped(object):
                 # print bag_idxs
 
             elif not self.bagging and not bagging_param:
-                bag_idxs = inds_per_gnr[g]
+                bag_idxs = inds
 
             else:
                 raise Exception(
@@ -67,8 +67,7 @@ class RFSE_Wrapped(object):
         crv_idxs = args[0]
         corpus_mtrx = args[1]
         cls_gnr_tgs = args[2]
-        vocab_index_dct = args[3]  # tid
-        params = args[4]
+        params = args[3]
 
         # Store the argument 5 (6th) to the proper variable
         if self.bagging and isinstance(args[5], np.ndarray):
@@ -107,7 +106,7 @@ class RFSE_Wrapped(object):
                 )
 
             # Randomly select some of the available features
-            shuffled_vocabilary_idxs = np.random.permutation(np.array(vocab_index_dct.values()))
+            shuffled_vocabilary_idxs = np.random.permutation(np.arange(crossval_X.shape[1]))
             features_subspace = shuffled_vocabilary_idxs[0: params['features_size']]
 
             # Initialized Predicted Classes and Maximum Similarity Scores Array for this i iteration
@@ -186,14 +185,13 @@ class RFSE_Wrapped(object):
         crv_idxs = args[1]
         corpus_mtrx = args[2]
         cls_gnr_tgs = args[3]
-        vocab_index_dct = args[4]  # tid
-        params = args[5]
+        params = args[4]
 
         if self.bagging:
             # Execute predict() with 'trn_idxs' and 'cls_gnr_tgs' arguments which triggers...
             # ...Bagging mode of RFSE
             results = self.predict(
-                crv_idxs, corpus_mtrx, cls_gnr_tgs, vocab_index_dct, params, trn_idxs
+                crv_idxs, corpus_mtrx, cls_gnr_tgs, params, trn_idxs
             )
 
         else:
@@ -202,7 +200,7 @@ class RFSE_Wrapped(object):
 
             # Execute predict() with gnr_classes which triggers simple RFSE (non Bagging)
             results = self.predict(
-                crv_idxs, corpus_mtrx, cls_gnr_tgs, vocab_index_dct, params, gnr_classes
+                crv_idxs, corpus_mtrx, cls_gnr_tgs, params, gnr_classes
             )
 
         # Expected Results for the ParamGridCrossValBase class in paramgridcrossval module
