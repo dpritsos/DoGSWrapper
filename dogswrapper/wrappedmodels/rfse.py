@@ -21,19 +21,13 @@ class RFSE_Wrapped(object):
 
     def contruct_classes(self, trn_idxs, corpus_mtrx, cls_gnr_tgs, bagging_param=None):
         inds_per_gnr = dict()
-        inds = list()
-        last_gnr_tag = 1
+        # inds = list()
+        last_gnr_tag = None
 
-        for trn_idx in trn_idxs:
-
-            if cls_gnr_tgs[trn_idx] != last_gnr_tag:
-                inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
-                last_gnr_tag = cls_gnr_tgs[trn_idx]
-                inds = []
-
-            inds.append(trn_idx)
-
-        inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
+        for gnr_tag in np.unique(cls_gnr_tgs[trn_idxs]):
+            inds_per_gnr[self.genres_lst[gnr_tag - 1]] = trn_idxs[
+                np.where(cls_gnr_tgs[trn_idxs] == gnr_tag)[0]
+            ]
 
         gnr_classes = dict()
         for g, inds in inds_per_gnr.items():
@@ -124,7 +118,7 @@ class RFSE_Wrapped(object):
                 # print vect.shape
 
                 max_sim = self.sim_min_value
-                for cls_tag, g in enumerate(self.genres_lst):
+                for g in gnr_classes.keys():
 
                     # Convert TF vectors to Binary
                     # gnr_cls_bin = np.where(gnr_classes[g][:, features_subspace] > 0, 1, 0)
@@ -154,7 +148,7 @@ class RFSE_Wrapped(object):
                     # Assign the class tag this vector is most similar and keep the respective...
                     # ...similarity score.
                     if sim_score > max_sim:
-                        predicted_classes[i_vect] = cls_tag + 1
+                        predicted_classes[i_vect] = self.genres_lst.index(g) + 1
                         # ###plus 1 is the real class tag 0 means uncategorized.
                         max_sim_scores[i_vect] = sim_score
                         max_sim = sim_score

@@ -123,6 +123,11 @@ class OpenSetParamGridSearchBase(object):
             if smpl_idxs_choice.shape[0] == 0:
                 break  # smpl_idxs_choice = np.arange(smpls_num)
 
+            # Stopping the look when samples amount is smaller than samples required...
+            # ...to be selected
+            if len(smpl_idxs_choice) < tst_splt_size:
+                break
+
             test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size, replace=False)
 
             smpl_idxs_choice = smpl_idxs_choice[np.in1d(smpl_idxs_choice, test_smpls, invert=True)]
@@ -141,7 +146,7 @@ class OpenSetParamGridSearchBase(object):
         # ...Each list entry containts the kFold cross-validation splits for a random selection...
         # ...of class-tags remaining Only-For-Testing. The Only-For-Testing class samples are...
         # ...appended at the end of each test-samples-split in every kfold.
-        Tr_kfs_4_osplts, tS_kfs_4_osplts = list(), list()
+        Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts = list(), list(), list()
 
         # Starting Openness Random Selection Class Spliting.
         for i in range(onlytest_splt_itrs):
@@ -197,11 +202,16 @@ class OpenSetParamGridSearchBase(object):
                     )
                 ))
             )
+            oT_kfs_4_osplts.append(
+                np.vstack(
+                    [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
+                )
+            )
 
-        return Tr_kfs_4_osplts, tS_kfs_4_osplts
+        return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
 
-    def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst,
-                         fnames_tpl=('Training_Splits.pkl', 'Testing_Splits.pkl'),
+    def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst, ot_subsp_arrlst,
+                         fnames_tpl=('Trning_S.pkl', 'Tsting_Splts.pkl', 'OTing_Splts.pkl'),
                          process_state_saving_path=None):
 
         # Replace the default or create if required the path where Sample Splits will be saved.
@@ -216,6 +226,7 @@ class OpenSetParamGridSearchBase(object):
         # Set the file names for training and testing splits.
         train_splits_path = save_path + fnames_tpl[0]
         test_splits_path = save_path + fnames_tpl[1]
+        only_test_splits_path = save_path + fnames_tpl[2]
 
         # Pickleing the Training and Testing Splits.
         with open(train_splits_path, 'w') as f:
@@ -224,7 +235,10 @@ class OpenSetParamGridSearchBase(object):
         with open(test_splits_path, 'w') as f:
             pickle.dump(testing_subsplits_arrlst, f)
 
-    def LoadSplitSamples(self, fnames_tpl=('Training_Splits.pkl', 'Testing_Splits.pkl'),
+        with open(only_test_splits_path, 'w') as f:
+            pickle.dump(ot_subsp_arrlst, f)
+
+    def LoadSplitSamples(self, fnames_tpl=('Trning_S.pkl', 'Tsting_Splts.pkl', 'OTing_Splts.pkl'),
                          process_state_saving_path=None):
 
         # Replace the path where the process-state files was supposed to be saved.
@@ -241,6 +255,7 @@ class OpenSetParamGridSearchBase(object):
         # Set the file names for training and testing splits.
         train_splits_fname = save_path + fnames_tpl[0]
         test_splits_fname = save_path + fnames_tpl[1]
+        only_test_splits_fname = save_path + fnames_tpl[2]
 
         if os.path.exists(train_splits_fname) and os.path.exists(test_splits_fname):
 
@@ -250,11 +265,15 @@ class OpenSetParamGridSearchBase(object):
 
             with open(test_splits_fname, 'r') as f:
                 testing_subsplits_arrlst = pickle.load(f)
+
+            with open(only_test_splits_fname, 'r') as f:
+                only_testing_subsplits_arrlst = pickle.load(f)
+
         else:
 
-            return None, None
+            return None, None, None
 
-        return train_subsplits_arrlst, testing_subsplits_arrlst
+        return train_subsplits_arrlst, testing_subsplits_arrlst, only_testing_subsplits_arrlst
 
     def BuildCorpusMatrix(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
 
@@ -410,22 +429,26 @@ class OpenSetParamGridSearchBase(object):
             # Forming the Training/Testing Splits filename suffix. If it is the same with the...
             # ...previous iteration's one just skip the file loading, because it is already there.
             splt_fname_suffix = '_S' + str(params['onlytest_gnrs_splts']) + '_I' +\
-                str(params_range['onlytest_splt_itrs'])
+                str(len(params_range['onlytest_splt_itrs']))
 
             if last_splt_fname_suffix != splt_fname_suffix:
 
-                trn_fname = self.state_save_path + 'Training_Splits_' + splt_fname_suffix + '.pkl'
-                test_fname = self.state_save_path + 'Testing_Splits_' + splt_fname_suffix + '.pkl'
+                trn_fname = self.state_save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
+                test_fname = self.state_save_path + 'Testing_Splits' + splt_fname_suffix + '.pkl'
+                oTest_fname = self.state_save_path + 'OnlyTesting_Splits' +\
+                    splt_fname_suffix + '.pkl'
 
                 # Loading Training/Testing Splits.
-                train_splts, test_splts = self.LoadSplitSamples((trn_fname, test_fname), '/')
+                train_splts, test_splts, onlyt_splts = self.LoadSplitSamples(
+                    (trn_fname, test_fname, oTest_fname), '/'
+                )
 
                 # In case 'None' has been loaded: Building and saving splits upon params for...
                 # ...the next iteration will be needed.
-                if not (train_splts and test_splts):
+                if not (train_splts and test_splts and onlyt_splts):
 
                     # Building the splits.
-                    train_splts, test_splts = self.OpennessSplitSamples(
+                    train_splts, test_splts, onlyt_splts = self.OpennessSplitSamples(
                         cls_tgs,
                         onlytest_clsnum=params['onlytest_gnrs_splts'],
                         onlytest_splt_itrs=len(params_range['onlytest_splt_itrs']),
@@ -434,7 +457,8 @@ class OpenSetParamGridSearchBase(object):
 
                     # Saving the splits.
                     self.SaveSplitSamples(
-                        train_splts, test_splts, (trn_fname, test_fname), '/'
+                        train_splts, test_splts, onlyt_splts,
+                        (trn_fname, test_fname, oTest_fname), '/'
                     )
 
             # Setting initial value for the variable will be used also for not re-loading
@@ -465,7 +489,7 @@ class OpenSetParamGridSearchBase(object):
                 # If 'None' corpus matrix has been loaded build it.
                 if corpus_mtrx is None:
 
-                    vocab_fname = self.state_save_path + 'Vocab_' + split_suffix
+                    vocab_fname = self.state_save_path + 'Vocab' + split_suffix
 
                     # Loading the proper Vocabulary.
                     if os.path.exists(vocab_fname+'.pkl'):
@@ -537,27 +561,36 @@ class OpenSetParamGridSearchBase(object):
                 )
 
                 # Selecting Cross Validation Set.
-                expected_Y = cls_tgs[
-                    tst_subsplt[params['onlytest_splt_itrs']][params['kfolds']]
-                ]
+                # Getting the Indeces of samples for each part of the testing sub-split.
+                tsp_idxs = test_splts[params['onlytest_splt_itrs']][params['kfolds']]
+                onlysp_idxs = onlyt_splts[params['onlytest_splt_itrs']][params['kfolds']]
+
+                # Getting the full testing-samples class tags, including the original class..
+                # ...tags of the only-test classes.
+                expected_Y = cls_tgs[tsp_idxs]
+
+                # Preplacing with class tags of the sammples which are are belonging to the...
+                # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
+                # ...expected predictions.
+                expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
                 # Saving results
                 self.h5_res.create_array(
-                    save_group, 'expected_Y', expected_Y,
+                    next_group, 'expected_Y', expected_Y,
                     "Expected Classes per Document (CrossValidation Set)"
                 )
                 self.h5_res.create_array(
-                    save_group, 'predicted_Y', predicted_Y,
+                    next_group, 'predicted_Y', predicted_Y,
                     "Predicted Classes per Document (CrossValidation Set)"
                 )
                 self.h5_res.create_array(
-                    save_group, 'predicted_scores', predicted_scores,
+                    next_group, 'predicted_scores', predicted_scores,
                     "Predicted Scores per Document (CrossValidation Set)"
                 )
 
                 if model_specific_d:
                     for name, value in model_specific_d.items():
-                        self.h5_res.create_array(save_group, name, value, "<Comment>")[:]
+                        self.h5_res.create_array(next_group, name, value, "<Comment>")[:]
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
                 if file_obj is not None:
@@ -567,7 +600,6 @@ class OpenSetParamGridSearchBase(object):
                 # ...order not to start every Evaluation again.
                 with open(self.state_save_path+'last_good_sate.jsn', 'w') as f:
                     pram_vals = params.values()
-                    pram_vals.append(subsplt_cnt)
                     last_goodstate_lst.append(pram_vals)
                     json.dump(last_goodstate_lst, f)
 
