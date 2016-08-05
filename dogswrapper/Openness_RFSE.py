@@ -21,7 +21,7 @@ from wrappedmodels.rfse import minmax_similarity
 # Santini's 7-genres Corpus
 corpus_filepath = "/home/dimitrios/Synergy-Crawler/KI-04/"
 state_saving_path = "/home/dimitrios/Synergy-Crawler/KI-04/" +\
-    "Openness_RFSE_W1G_KI04/"
+    "Openness_RFSE_W3G_KI04/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -31,19 +31,19 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_RFSE_C4G_KI04.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_RFSE_W3G_KI04.h5', 'a')
 
 params_range = coll.OrderedDict([
-    ('vocab_size', [100000]),
-    ('features_size', [50000]),
+    ('vocab_size', [50000]),
+    ('features_size', [10000]),
     ('Sigma', [0.5]),
-    ('Iterations', [50]),
-    ('onlytest_gnrs_splts', [1, 2, 3, 4, 5]),
+    ('Iterations', [100]),
+    ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
     ('onlytest_splt_itrs', [0, 1, 2, 3]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
 
-word_n_gram_size = 1
+word_n_gram_size = 3
 tables_wng = h2v_wcng.Html2TF(
     word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
