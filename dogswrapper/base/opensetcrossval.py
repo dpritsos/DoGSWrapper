@@ -118,17 +118,22 @@ class OpenSetParamGridSearchBase(object):
 
         for k in np.arange(kfolds):
 
-            # If the samples choice list is not empty. This option is for preveting the for...
+            # If the samples choice list is not empty. This option is for preveting the...
             # ...loop to return error when the samples number is too small.
-            if smpl_idxs_choice.shape[0] == 0:
-                break  # smpl_idxs_choice = np.arange(smpls_num)
+            # if smpl_idxs_choice.shape[0] == 0:
+            #    print "Small"
+            #    break  # smpl_idxs_choice = np.arange(smpls_num)
 
             # Stopping the look when samples amount is smaller than samples required...
-            # ...to be selected
+            # ...to be selected. Thus, repeating a few indeces at random just for satisfing the...
+            # random.choice() function.
             if len(smpl_idxs_choice) < tst_splt_size:
-                break
-
-            test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size, replace=False)
+                apnd_sel = smpl_idxs_vect[np.in1d(smpl_idxs_vect, smpl_idxs_choice, invert=True)]
+                apnd_size = tst_splt_size - len(smpl_idxs_choice)
+                apnd_idxs = np.random.choice(apnd_sel, apnd_size, replace=False)
+                test_smpls = np.hstack((smpl_idxs_choice, apnd_idxs))
+            else:
+                test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size, replace=False)
 
             smpl_idxs_choice = smpl_idxs_choice[np.in1d(smpl_idxs_choice, test_smpls, invert=True)]
 
@@ -207,7 +212,6 @@ class OpenSetParamGridSearchBase(object):
                     [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
                 )
             )
-
         return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
 
     def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst, ot_subsp_arrlst,
