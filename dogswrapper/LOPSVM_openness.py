@@ -45,24 +45,24 @@ params_range = coll.OrderedDict([
     ('mrgn_nw', [0.3, 0.7]),
     ('mrgn_fw', [0.3, 0.7]),
     ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
-    ('onlytest_splt_itrs', [0, 1, 2, 3]),
+    ('onlytest_splt_itrs', [0, 1]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
 
 # Binary SVM
-params_range = coll.OrderedDict([
-    ('svm_type', ['binary']),
-    ('vocab_size', [100000]),
-    ('features_size', [1000, 5000, 10000]),
-    ('l', [0.3, 0.8]),
-    ('c1_w', [0.3, 0.7]),
-    ('c2_w', [0.3, 0.7]),
-    ('mrgn_nw', [0.3, 0.7]),
-    ('mrgn_fw', [0.3, 0.7]),
-    ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
-    ('onlytest_splt_itrs', [0, 1, 2, 3]),
-    ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-])
+# params_range = coll.OrderedDict([
+#     ('svm_type', ['binary']),
+#     ('vocab_size', [100000]),
+#     ('features_size', [1000, 5000, 10000]),
+#     ('l', [0.3, 0.8]),
+#     ('c1_w', [0.3, 0.7]),
+#     ('c2_w', [0.3, 0.7]),
+#     ('mrgn_nw', [0.3, 0.7]),
+#     ('mrgn_fw', [0.3, 0.7]),
+#     ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
+#     ('onlytest_splt_itrs', [0, 1, 2, 3]),
+#     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
+# ])
 
 word_n_gram_size = 3
 tables_wng = h2v_wcng.Html2TF(

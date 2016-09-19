@@ -1,8 +1,10 @@
 
-
 import numpy as np
 import scipy.spatial.distance as spd
-import svmrop
+import sys
+
+sys.path.append('../../SVMROp')
+import svmrop.svmrop as svmrop
 
 
 class LOPSVM_Wrapped(object):
