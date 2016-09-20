@@ -14,23 +14,20 @@ class LOPSVM_Wrapped(object):
         self.gnrs_num = len(genres)
 
     def contruct_classes(self, trn_idxs, corpus_mtrx, cls_gnr_tgs, params):
+
+        print "TRAINING"
+
         inds_per_gnr = dict()
         inds = list()
         last_gnr_tag = 1
 
-        for trn_idx in trn_idxs:
-
-            if cls_gnr_tgs[trn_idx] != last_gnr_tag:
-                inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
-                last_gnr_tag = cls_gnr_tgs[trn_idx]
-                inds = []
-
-            inds.append(trn_idx)
-        print self.genres_lst
-        inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
+        for gnr_tag in np.unique(cls_gnr_tgs[trn_idxs]):
+            inds_per_gnr[self.genres_lst[gnr_tag - 1]] = trn_idxs[
+                np.where(cls_gnr_tgs[trn_idxs] == gnr_tag)[0]
+            ]
 
         gnr_classes = dict()
-        for g in self.genres_lst:
+        for g, inds in inds_per_gnr.items():
 
             # Create the OC-SVM Model for this genre
             if params['svm_type'] == 'oneclass':
@@ -57,31 +54,37 @@ class LOPSVM_Wrapped(object):
             # ### Fitting Linear 1-vs-set SVM Model to Data of this genre. ###
 
             # Getting the positive samples for this split
-            yp_i = inds_per_gnr[g]
+            yp_i = inds
 
             # Getting some negative samples for this split.
-            yn_i = np.hstack([np.random.shuffle(inds_per_gnr[g])[0:5] for g in self.genres_lst])
-
-            print yn_i
-
-            0/0
+            yn_i = np.hstack(
+                [
+                    np.random.permutation(inds)[0:int(np.floor(inds.shape[0]/2.0))]
+                    for grn, inds in inds_per_gnr.items() if grn != g
+                ]
+            )
 
             # Not in use yet!
             yu_i = 0
 
-            y = np.hstack((yp_i, yn_i))
-
+            # Training the SVM 1-vs-set
             near_H, far_H = self.lopsvm.optimize(
-                corpus_mtrx[y, 0:params['features_size']], yp_i, yn_i, yu_i
+                corpus_mtrx[:, 0:params['features_size']], yp_i, yn_i, yu_i
             )
 
-            near_H, far_H = self.lopsvm.refine_planes(yp_i, yn_i)
+            # Refining the Hyperplanes based on the user expirience on the data set.
+            near_H, far_H = self.lopsvm.refine_planes(
+                corpus_mtrx[:, 0:params['features_size']], yp_i, yn_i
+            )
 
+            # Keeping the Decision function, i.e. the decision hyperplanes for the evaluation.
             gnr_classes[g] = [near_H, far_H]
 
         return gnr_classes
 
     def predict(self, *args):
+
+        print 'PREDICTING'
 
         # Get Input arguments in given sequence
         crv_idxs = args[0]
@@ -100,27 +103,33 @@ class LOPSVM_Wrapped(object):
 
         # Initialize Predicted-Classes-Arrays List
         predicted_Y_per_gnr = list()
-        predicted_dist_per_gnr = list()
+        predicted_d_near_per_gnr = list()
+        predicted_d_far_per_gnr = list()
+        gnr_cls_idx = list()
 
-        for g in self.genres_lst:
+        for g in gnr_classes.keys():
 
             # Converting TF vectors to Binary
             # cv_arr_bin = np.where(crossval_X.toarray() > 0, 1, 0)
 
             # Getting the predictions for each Vector for this genre
-            predicted_Y, predicted_D = self.lopsvm.predict(
+            predicted_Y, predicted_D_near, predicted_D_far = self.lopsvm.predict(
                 crossval_X, gnr_classes[g][0], gnr_classes[g][1]
             )
 
             # Keeping the prediction per genre
             predicted_Y_per_gnr.append(predicted_Y)
-            predicted_dist_per_gnr.append(predicted_D)
+            predicted_d_near_per_gnr.append(predicted_D_near)
+            predicted_d_far_per_gnr.append(predicted_D_far)
+            gnr_cls_idx.append(self.genres_lst.index(g) + 1)
 
         # Converting it to Array before returning
         predicted_Y_per_gnr = np.vstack(predicted_Y_per_gnr)
-        predicted_dist_per_gnr = np.vstack(predicted_dist_per_gnr)
+        predicted_d_near_per_gnr = np.vstack(predicted_d_near_per_gnr)
+        predicted_d_far_per_gnr = np.vstack(predicted_d_far_per_gnr)
+        gnr_cls_idx = np.hstack(gnr_cls_idx)
 
-        return predicted_Y_per_gnr, predicted_dist_per_gnr
+        return predicted_Y_per_gnr, predicted_d_near_per_gnr, predicted_d_far_per_gnr, gnr_cls_idx
 
     def eval(self, *args):
 
@@ -129,8 +138,7 @@ class LOPSVM_Wrapped(object):
         crv_idxs = args[1]
         corpus_mtrx = args[2]
         cls_gnr_tgs = args[3]
-        vocab_index_dct = args[4]  # tid
-        params = args[5]
+        params = args[4]
 
         # Build Genre Classes given the training vectors
         gnr_classes = self.contruct_classes(trn_idxs, corpus_mtrx, cls_gnr_tgs, params)
@@ -140,8 +148,9 @@ class LOPSVM_Wrapped(object):
 
         # Expected Results for the ParamGridCrossValBase class in paramgridcrossval module
         predicted_Y = results[0]
-        predicted_scores = results[1]
-        model_specific_d = None
+        predicted_d_near_per_gnr = results[1]
+        predicted_d_far_per_gnr = results[2]
+        gnr_cls_idx = results[3]
 
         # Return results as expected form ParamGridCrossValBase class
-        return predicted_Y, predicted_scores
+        return predicted_Y, predicted_d_near_per_gnr, predicted_d_far_per_gnr, gnr_cls_idx

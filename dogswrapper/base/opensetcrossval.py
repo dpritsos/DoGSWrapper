@@ -556,7 +556,7 @@ class OpenSetParamGridSearchBase(object):
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
-                predicted_Y, predicted_scores, model_specific_d = self.model.eval(
+                predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
                     train_splts[params['onlytest_splt_itrs']][params['kfolds']],
                     test_splts[params['onlytest_splt_itrs']][params['kfolds']],
                     corpus_mtrx,
@@ -578,20 +578,31 @@ class OpenSetParamGridSearchBase(object):
                 # ...expected predictions.
                 expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
+                print 'P Y', predicted_Y.shape
+                print 'E Y', expected_Y.shape
+                print 'P Score Near', predicted_d_near.shape
+                print 'P Score Far', predicted_d_far.shape
+                print gnr_cls_idx
+
                 # Saving results
                 self.h5_res.create_array(
                     next_group, 'expected_Y', expected_Y,
-                    "Expected Classes per Document (CrossValidation Set)"
+                    ""
                 )
                 self.h5_res.create_array(
-                    next_group, 'predicted_Y', predicted_Y,
-                    "Predicted Classes per Document (CrossValidation Set)"
+                    next_group, 'predicted_Y_per_gnr', predicted_Y,
+                    ""
                 )
                 self.h5_res.create_array(
-                    next_group, 'predicted_scores', predicted_scores,
-                    "Predicted Scores per Document (CrossValidation Set)"
+                    next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
+                    ""
+                )
+                self.h5_res.create_array(
+                    next_group, 'predicted_Fs_per_gnr', predicted_d_far,
+                    ""
                 )
 
+                model_specific_d = None
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]

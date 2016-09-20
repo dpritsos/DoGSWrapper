@@ -31,12 +31,12 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_RFSE_W3G_KI04_minmax_F1.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_RFSE_W3G_KI04.h5', 'a')
 
 params_range = coll.OrderedDict([
     ('vocab_size', [50000]),
-    ('features_size', [5000]),
-    ('Sigma', [0.7]),
+    ('features_size', [10000]),
+    ('Sigma', [0.5]),
     ('Iterations', [100]),
     ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
     ('onlytest_splt_itrs', [0, 1, 2, 3]),
@@ -53,7 +53,7 @@ tables_wng = h2v_wcng.Html2TF(
 # char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 # )
 
-openness_model = RFSE_Wrapped(minmax_similarity, -1.0, genres, bagging=False)
+openness_model = RFSE_Wrapped(cosine_similarity, -1.0, genres, bagging=False)
 # If no test_only_tgs is given as input 'genres' tag list should be given full not genres[0:-1]
 # cosine_similarity, -1.0
 # minmax_similarity, 0.0
