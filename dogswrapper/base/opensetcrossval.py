@@ -554,16 +554,6 @@ class OpenSetParamGridSearchBase(object):
                         corpus_mtrx, corpus_fname, file_obj, '/'
                     )
 
-                # Evaluating Semi-Supervised Classification Method.
-                print "EVALUATING"
-                predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
-                    train_splts[params['onlytest_splt_itrs']][params['kfolds']],
-                    test_splts[params['onlytest_splt_itrs']][params['kfolds']],
-                    corpus_mtrx,
-                    cls_tgs,
-                    params
-                )
-
                 # Selecting Cross Validation Set.
                 # Getting the Indeces of samples for each part of the testing sub-split.
                 tsp_idxs = test_splts[params['onlytest_splt_itrs']][params['kfolds']]
@@ -578,11 +568,21 @@ class OpenSetParamGridSearchBase(object):
                 # ...expected predictions.
                 expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
+                # Evaluating Semi-Supervised Classification Method.
+                print "EVALUATING"
+                predicted_Y, predicted_scores, model_specific_d = self.model.eval(
+                    train_splts[params['onlytest_splt_itrs']][params['kfolds']],
+                    test_splts[params['onlytest_splt_itrs']][params['kfolds']],
+                    corpus_mtrx,
+                    cls_tgs,
+                    params
+                )
+
                 print 'P Y', predicted_Y.shape
                 print 'E Y', expected_Y.shape
-                print 'P Score Near', predicted_d_near.shape
-                print 'P Score Far', predicted_d_far.shape
-                print gnr_cls_idx
+
+                'max_sim_scores_per_iter'
+                'predicted_classes_per_iter'
 
                 # Saving results
                 self.h5_res.create_array(
@@ -590,9 +590,16 @@ class OpenSetParamGridSearchBase(object):
                     ""
                 )
                 self.h5_res.create_array(
-                    next_group, 'predicted_Y_per_gnr', predicted_Y,
+                    next_group, 'predicted_Y', predicted_Y,
                     ""
                 )
+
+                self.h5_res.create_array(
+                    next_group, 'predicted_scores', predicted_scores,
+                    ""
+                )
+
+                """
                 self.h5_res.create_array(
                     next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
                     ""
@@ -601,8 +608,12 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'predicted_Fs_per_gnr', predicted_d_far,
                     ""
                 )
+                self.h5_res.create_array(
+                    next_group, 'gnr_cls_idx', gnr_cls_idx,
+                    ""
+                )
+                """
 
-                model_specific_d = None
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]

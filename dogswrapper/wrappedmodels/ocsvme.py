@@ -13,22 +13,16 @@ class OCSVME_Wrapped(object):
 
     def contruct_classes(self, trn_idxs, corpus_mtrx, cls_gnr_tgs, params):
         inds_per_gnr = dict()
-        inds = list()
-        last_gnr_tag = 1
+        # inds = list()
+        last_gnr_tag = None
 
-        for trn_idx in trn_idxs:
-
-            if cls_gnr_tgs[trn_idx] != last_gnr_tag:
-                inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
-                last_gnr_tag = cls_gnr_tgs[trn_idx]
-                inds = []
-
-            inds.append(trn_idx)
-        print self.genres_lst
-        inds_per_gnr[self.genres_lst[last_gnr_tag - 1]] = inds
+        for gnr_tag in np.unique(cls_gnr_tgs[trn_idxs]):
+            inds_per_gnr[self.genres_lst[gnr_tag - 1]] = trn_idxs[
+                np.where(cls_gnr_tgs[trn_idxs] == gnr_tag)[0]
+            ]
 
         gnr_classes = dict()
-        for g in self.genres_lst:
+        for g, inds in inds_per_gnr.items():
 
             # Create the OC-SVM Model for this genre
             gnr_classes[g] = svm.OneClassSVM(
@@ -66,7 +60,7 @@ class OCSVME_Wrapped(object):
         predicted_Y_per_gnr = list()
         predicted_dist_per_gnr = list()
 
-        for cls_tag, g in enumerate(self.genres_lst):
+        for g in gnr_classes.keys():
 
             # Converting TF vectors to Binary
             # cv_arr_bin = np.where(crossval_X.toarray() > 0, 1, 0)
@@ -78,7 +72,7 @@ class OCSVME_Wrapped(object):
             # For Sparse Matrices it might require crossval_X.toarray()
 
             # Assigning Genre-Class tag to Predicted_Y(s)
-            predicted_Y = np.where(predicted_Y == 1, cls_tag + 1, 0)
+            predicted_Y = np.where(predicted_Y == 1, self.genres_lst.index(g) + 1, 0)
 
             # Keeping the prediction per genre
             predicted_Y_per_gnr.append(predicted_Y)
@@ -106,8 +100,7 @@ class OCSVME_Wrapped(object):
         crv_idxs = args[1]
         corpus_mtrx = args[2]
         cls_gnr_tgs = args[3]
-        vocab_index_dct = args[4]  # tid
-        params = args[5]
+        params = args[4]
 
         # Build Genre Classes given the training vectors
         gnr_classes = self.contruct_classes(trn_idxs, corpus_mtrx, cls_gnr_tgs, params)

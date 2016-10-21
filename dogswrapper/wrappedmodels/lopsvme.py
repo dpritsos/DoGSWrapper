@@ -57,6 +57,8 @@ class LOPSVM_Wrapped(object):
             yp_i = inds
 
             # Getting some negative samples for this split.
+            # print inds_per_gnr.items()
+            # print [inds for grn, inds in inds_per_gnr.items() if grn != g]
             yn_i = np.hstack(
                 [
                     np.random.permutation(inds)[0:int(np.floor(inds.shape[0]/2.0))]
