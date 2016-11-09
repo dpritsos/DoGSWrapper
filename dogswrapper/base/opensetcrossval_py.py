@@ -570,9 +570,10 @@ class OpenSetParamGridSearchBase(object):
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
-                predicted_Y, predicted_scores, model_specific_d = self.model.eval(
+                predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
                     train_splts[params['onlytest_splt_itrs']][params['kfolds']],
                     test_splts[params['onlytest_splt_itrs']][params['kfolds']],
+                    expected_Y,
                     corpus_mtrx,
                     cls_tgs,
                     params
@@ -589,6 +590,8 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'expected_Y', expected_Y,
                     ""
                 )
+
+                """
                 self.h5_res.create_array(
                     next_group, 'predicted_Y', predicted_Y,
                     ""
@@ -598,8 +601,8 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'predicted_scores', predicted_scores,
                     ""
                 )
-
                 """
+
                 self.h5_res.create_array(
                     next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
                     ""
@@ -612,11 +615,12 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'gnr_cls_idx', gnr_cls_idx,
                     ""
                 )
-                """
 
+                """
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]
+                """
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
                 if file_obj is not None:
