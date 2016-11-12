@@ -54,8 +54,8 @@ params_range = coll.OrderedDict([
     ('svm_type', ['binary']),
     ('vocab_size', [1000]),
     ('features_size', [1000]),
-    ('mrgn_nw', [0.15]),
-    ('mrgn_fw', [0.15]),
+    ('mrgn_nw', [0.5]),
+    ('mrgn_fw', [0.5]),
     ('onlytest_gnrs_splts', [1]),
     ('onlytest_splt_itrs', [0, 1, 2, 3]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -63,7 +63,7 @@ params_range = coll.OrderedDict([
 
 
 word_n_gram_size = 1
-RootTerm_size = 3
+RootTerm_size = 5
 tables_wng = h2v_wng.Html2TV(
     word_n_gram_size, RootTerm_size, html_attrib=["text"], str_case='lower', valid_html=False
 )

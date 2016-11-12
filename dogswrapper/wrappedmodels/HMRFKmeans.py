@@ -89,7 +89,7 @@ class HMRFKmeans_Wrapped(object):
 
         self.hkmeans = HMRFKmeans(
             k_clusters, must_lnk, cannot_lnk, init_centroids=init_centrs,
-            ml_wg=0.80, cl_wg=0.10, max_iter=params['max_iter'],
+            ml_wg=0.80, cl_wg=0.20, max_iter=params['max_iter'],
             cvg=params['converg_diff'], lrn_rate=params['learing_rate'], ray_sigma=1.5,
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
             norm_part=True, norm_part_val=1000.0, globj_norm=True
