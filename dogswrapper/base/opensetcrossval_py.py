@@ -142,10 +142,59 @@ class OpenSetParamGridSearchBase(object):
 
         return Tr_splt_lst, tS_splt_lst
 
-    def OpennessSplitSamples(self, cls_tgs_lst, onlytest_clsnum, onlytest_splt_itrs, kfolds):
+    def OpennessSplitSamples(self, cls_tgs_lst, uknw_ctgs_num, uknw_ctgs_num_splt_itrs, kfolds):
 
         # Converting to numpy.array for compatibility with array operations.
         cls_tgs_lst = np.array(cls_tgs_lst)
+
+        # Getting the unique class tags.
+        unq_ctgs = np.unique(cls_tgs_lst)
+
+        # Calculating the number of all posible splits iterations on uknown class-tags. Only...
+        # ...if the number of split iterations is requested to be the MAX possible.
+        if uknw_ctgs_num_splt_itrs == 'MAX':
+            fc = np.math.factorial
+            uknw_ctgs_num_splt_itrs = \
+                fc(unq_ctgs.size) / (fc(ukwn_cls_num) * fc(unq_ctgs.size - uknw_ctgs_num))
+
+        # Selecting Randomly the Class-tags Splits. Every Randome seletion should be...
+        # ...a unique combination.
+        itr = 0
+        knw_uknw_tgs_combs = list()
+
+        while True:
+
+            # Selecting the unkown Class tags.
+            unkwn_ctags = np.random.choice(unq_ctgs, uknw_ctgs_num, replace=False)
+
+            # Validating the uniqueness of the randomly selected class-tag as uknown split...
+            # ...Then increasing the number of interation only if are all unique, else skip the...
+            # ...rest of the this loop and find and other combination in order to be unique.
+            ucomb_found = False
+            for i in range(len(knw_uknw_tgs_combs)):
+                if np.array_equal(uknw_cls_tgs, knw_uknw_tgs_combs[i]):
+                    ucomb_found = True
+
+            if ucomb_found:
+                continue
+            else:
+                itr += 1
+
+            # Getting the known class tags.
+            known_ctgs = unq_ctgs[
+                np.where(np.in1d(unq_ctgs, unkwn_ctags) == False)[0]
+            ]
+
+            # Keeping the combinations for unique Known/Uknown class-tags.
+            knw_uknw_tgs_combs.append((known_ctgs, unkwn_ctags))
+
+            # When unique iteration have reached the requiered number.
+            if itr == uknw_ctgs_num_splt_itrs:
+                break
+
+        # Creating Stratified Kfolds for cross-validation with uknown selection appended...
+        # ...at the end of every Index combination of samples combination of the Validation...
+        # ...set only (Non-Training set).
 
         # Two list of arrays where each array has the file indeces for training and testing....
         # ...Each list entry containts the kFold cross-validation splits for a random selection...
@@ -153,49 +202,55 @@ class OpenSetParamGridSearchBase(object):
         # ...appended at the end of each test-samples-split in every kfold.
         Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts = list(), list(), list()
 
-        # Starting Openness Random Selection Class Spliting.
-        for i in range(onlytest_splt_itrs):
+        for known_ctgs, unkwn_ctags in knw_uknw_tgs_combs:
 
-            # Selecting the Class tags tto be excluded from traing set kfold splits.
-            onlytest_clstags = np.random.choice(
-                np.unique(cls_tgs_lst), onlytest_clsnum, replace=False
-            )
+            # Getting the unkown classes-samples indeces.
+            unkwn_csmpls_idxs = np.where(
+                np.in1d(cls_tgs_lst, unkwn_ctags) == True
+            )[0]
 
-            # Getting the mask for class-samples to be excluded from traing set kfold splits.
-            onlytest_csampls_mask = np.in1d(cls_tgs_lst, onlytest_clstags)
+            # Getting the known classes-samples to be used for Stratified kfold Training/Testing...
+            # ...samples splitting.
+            known_csmpls_idxs = np.where(
+                np.in1d(cls_tgs_lst, known_ctgs) == True
+            )[0]
 
-            # Getting the classes-samples indeces bind only for testing splits.
-            onlytest_csampls_idxs = np.where(onlytest_csampls_mask == True)[0]
-
-            # Getting the classes-samples to be used for Kfold training/testing spliting.
-            tt_csampls_idxs = np.where(onlytest_csampls_mask == False)[0]
-
-            # Getting the class-tags (per sapmles) which will be used for training/testing spliting.
-            tt_cls_tgs_lst = cls_tgs_lst[tt_csampls_idxs]
-
+            # Executing a Stratified Kfold selection of Samples Indeces per Class-Tag on the...
+            # ...Kown set of Class-Tag indeces.
+            # ...Every set of Sampled indeces for each KFold is appneded to a separate list...
+            # ...for training and testing splits, respectively.
             Tr_kfmatrx_per_cls, tS_kfmatrx_per_cls = list(), list()
 
-            for ctg in np.unique(tt_cls_tgs_lst):
+            # Getting only the class tags from the list of all the class tags for this experiment...
+            # ...for only the known class-tag indeces.
+            known_ctgs_lst = cls_tgs_lst[known_csmpls_idxs]
 
-                # Getting the class-samples indeces.
-                this_cls_idxs = np.where(tt_cls_tgs_lst == ctg)[0]
-                # print this_cls_idxs
+            for kwn_ctg in known_ctgs_lst:
+
+                # Getting the Indeces from the Known Class-Samples-Indeces-Array for...
+                # ...ONLY this class tag.
+                this_cls_idxs = known_csmpls_idxs[
+                    np.where(known_ctgs_lst == kwn_ctg)[0]
+                ]
 
                 # Statified Kfold Selection of samples in training and test sets.
+                # NOTE: Returns the indeces for the Training and Testing samples as selected from...
+                # ...the Stratified function() where these indeces will be used for selecting...
+                # ...the sub-set of Known-Indeces for this class ONLY!
                 tr_iidx_lst, ts_iidx_lst = self.SelectStratifiedKfolds(
                     this_cls_idxs.shape[0], kfolds
                 )
 
+                # Creating list-of-IndecesList for the training/testing sub-set for this...
+                # ...Class-tag. Then trasforming it to a 2D arrays for Folds in rows and...
+                # ...Samples indeces per fold in columns. Finnally storing the Array to...
+                # ...a perClass list.
                 Tr_kfmatrx_per_cls.append(
-                    np.vstack(
-                        [tt_csampls_idxs[this_cls_idxs[tr_iidx]] for tr_iidx in tr_iidx_lst]
-                    )
+                    np.vstack([this_cls_idxs[tr_iidx] for tr_iidx in tr_iidx_lst])
                 )
 
                 tS_kfmatrx_per_cls.append(
-                    np.vstack(
-                        [tt_csampls_idxs[this_cls_idxs[ts_iidx]] for ts_iidx in ts_iidx_lst]
-                    )
+                    np.vstack([this_cls_idxs[ts_iidx] for ts_iidx in ts_iidx_lst])
                 )
 
             Tr_kfs_4_osplts.append(np.hstack(Tr_kfmatrx_per_cls))
@@ -203,15 +258,16 @@ class OpenSetParamGridSearchBase(object):
                 np.hstack((
                     np.hstack(tS_kfmatrx_per_cls),
                     np.vstack(
-                        [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
+                        [known_csmpls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
                     )
                 ))
             )
             oT_kfs_4_osplts.append(
                 np.vstack(
-                    [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
+                    [known_csmpls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
                 )
             )
+
         return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
 
     def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst, ot_subsp_arrlst,
@@ -376,8 +432,8 @@ class OpenSetParamGridSearchBase(object):
             -------------------
             params_range = coll.OrderedDict([
                ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-               ('onlytest_gnrs_splts', [1, 2, 3, 4, 5]),
-               ('onlytest_splt_itrs', [0, 1, 2, 3, 4, 5, 6]),
+               ('uknw_ctgs_num', [1, 2, 3, 4, 5]),
+               ('uknw_ctgs_num_splt_itrs', [0, 1, 2, 3, 4, 5, 6]),
                ('vocab_size', [5000, 10000, 50000, 100000]),
                ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),
                ('Sigma', [0.5, 0.7, 0.9]),
@@ -432,8 +488,8 @@ class OpenSetParamGridSearchBase(object):
 
             # Forming the Training/Testing Splits filename suffix. If it is the same with the...
             # ...previous iteration's one just skip the file loading, because it is already there.
-            splt_fname_suffix = '_S' + str(params['onlytest_gnrs_splts']) + '_I' +\
-                str(len(params_range['onlytest_splt_itrs']))
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' +\
+                str(len(params_range['uknw_ctgs_num_splt_itrs']))
 
             if last_splt_fname_suffix != splt_fname_suffix:
 
@@ -454,8 +510,8 @@ class OpenSetParamGridSearchBase(object):
                     # Building the splits.
                     train_splts, test_splts, onlyt_splts = self.OpennessSplitSamples(
                         cls_tgs,
-                        onlytest_clsnum=params['onlytest_gnrs_splts'],
-                        onlytest_splt_itrs=len(params_range['onlytest_splt_itrs']),
+                        uknw_ctgs_num=params['uknw_ctgs_num'],
+                        uknw_ctgs_num_splt_itrs=len(params_range['uknw_ctgs_num_splt_itrs']),
                         kfolds=len(params_range['kfolds'])
                     )
 
@@ -477,8 +533,8 @@ class OpenSetParamGridSearchBase(object):
                 continue
 
             # Loading corpus matrix for this Sub-Split.
-            split_suffix = '_S' + str(params['onlytest_gnrs_splts']) +\
-                '_I' + str(params['onlytest_splt_itrs']) +\
+            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
+                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
                 '_kF' + str(params['kfolds'])
 
             corpus_fname = self.state_save_path + 'Corpus_' +\
@@ -511,7 +567,7 @@ class OpenSetParamGridSearchBase(object):
                         tf_vocab = self.terms_tf.build_vocabulary(
                             list(
                                 html_file_l[
-                                    train_splts[params['onlytest_splt_itrs']][params['kfolds']]
+                                    train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
                                 ]
                             ),
                             encoding=encoding, error_handling='replace'
@@ -556,28 +612,35 @@ class OpenSetParamGridSearchBase(object):
 
                 # Selecting Cross Validation Set.
                 # Getting the Indeces of samples for each part of the testing sub-split.
-                tsp_idxs = test_splts[params['onlytest_splt_itrs']][params['kfolds']]
-                onlysp_idxs = onlyt_splts[params['onlytest_splt_itrs']][params['kfolds']]
+                tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+                onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
 
                 # Getting the full testing-samples class tags, including the original class..
                 # ...tags of the only-test classes.
                 expected_Y = cls_tgs[tsp_idxs]
 
-                # Preplacing with class tags of the sammples which are are belonging to the...
+                # Replacing with class tags of the sammples which are are belonging to the...
                 # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
                 # ...expected predictions.
                 expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
-                predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
-                    train_splts[params['onlytest_splt_itrs']][params['kfolds']],
-                    test_splts[params['onlytest_splt_itrs']][params['kfolds']],
-                    expected_Y,
+                predicted_Y, predicted_R, optimal_RT = self.model(
+                    train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                    test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                     corpus_mtrx,
                     cls_tgs,
                     params
                 )
+                # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
+                #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     expected_Y,
+                #     corpus_mtrx,
+                #     cls_tgs,
+                #     params
+                # )
 
                 print 'P Y', predicted_Y.shape
                 print 'E Y', expected_Y.shape
@@ -588,6 +651,18 @@ class OpenSetParamGridSearchBase(object):
                 # Saving results
                 self.h5_res.create_array(
                     next_group, 'expected_Y', expected_Y,
+                    ""
+                )
+                self.h5_res.create_array(
+                    next_group, 'predicted_Y', predicted_Y,
+                    ""
+                )
+                self.h5_res.create_array(
+                    next_group, 'predicted_R', predicted_R,
+                    ""
+                )
+                self.h5_res.create_array(
+                    next_group, 'optimal_RT', np.array([optimal_RT]),
                     ""
                 )
 
@@ -601,7 +676,7 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'predicted_scores', predicted_scores,
                     ""
                 )
-                """
+
 
                 self.h5_res.create_array(
                     next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
@@ -616,7 +691,6 @@ class OpenSetParamGridSearchBase(object):
                     ""
                 )
 
-                """
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]

@@ -10,17 +10,19 @@ sys.path.append('../../html2vectors')
 sys.path.append('../dogswrapper')
 
 # import html2vect.sparse.cngrams as h2v_cng
-# import html2vect.sparse.wngrams as h2v_wcng
+# import html2vect.sparse.wngrams as h2v_wng
 import html2vect.tables.cngrams as h2v_cng
 # import html2vect.tables.wngrams as h2v_wng
-from base.opensetcrossval import OpenSetParamGridSearchBase, OpenSetParamGridSearchTables
-from wrappedmodels.ocsvme import OCSVME_Wrapped
+# NOTE: base.opensetcrossval_py
+from base.opensetcrossval_py import OpenSetParamGridSearchBase, OpenSetParamGridSearchTables
+from wrappedmodels.nnrd import nnrd_eval
+from wrappedmodels.rfse import minmax_similarity
 
 
 # Santini's 7-genres Corpus
 corpus_filepath = "/media/dimitrios/TurnstoneDisk/KI-04/"
 state_saving_path = "/media/dimitrios/TurnstoneDisk/KI-04/" +\
-    "Openness_OCSVME_C4G_KI04_8Iter_MaxNorm/"
+    "Openness_NNRD_C4G_KI04/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -30,16 +32,25 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_KI04_8Iter_2016_02_04.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_NNRD_C4G_KI04_2017_TESTING_DROP_IT.h5', 'a')
 
 params_range = coll.OrderedDict([
-    ('vocab_size', [50000]),
-    ('features_size', [10000]),
-    ('nu', [0.07, 0.1]),  # 0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9
-    ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
-    ('onlytest_splt_itrs', [0, 1, 2, 3, 4, 5, 6, 7]),
+    ('vocab_size', [500]),
+    # ('features_size', [10000]),
+    ('split_ptg', [0.2]),
+    ('ukwn_slt_ptg', [0.5]),
+    ('rt_lims_stp', [[0.3, 0.9, 0.2]]),
+    ('lmda', [0.5]),
+    ('uknw_ctgs_num', [1]),
+    ('uknw_ctgs_num_splt_itrs', [0]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
+
+# word_n_gram_size = 1
+# # RootTerm_size = 4
+# tables_wng = h2v_wng.Html2TF(
+#     word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
+# )
 
 # word_n_gram_size = 1
 # tables_wng = h2v_wng.Html2TF(
@@ -51,10 +62,8 @@ tables_cng = h2v_cng.Html2TF(
     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
 
-openness_model = OCSVME_Wrapped(genres)
-
 openness_searchgrid = OpenSetParamGridSearchTables(
-    openness_model, tables_cng, genres, method_results, corpus_filepath, state_saving_path
+    nnrd_eval, tables_cng, genres, method_results, corpus_filepath, state_saving_path
 )
 
 results_h5 = openness_searchgrid.EvaluateAll(params_range, encoding='utf-8')

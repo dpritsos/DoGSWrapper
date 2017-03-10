@@ -11,17 +11,17 @@ sys.path.append('../dogswrapper')
 
 # import html2vect.sparse.cngrams as h2v_cng
 # import html2vect.sparse.wngrams as h2v_wng
-import html2vect.tables.cngrams as h2v_cng
-# import html2vect.tables.wngrams as h2v_wng
+# import html2vect.tables.cngrams as h2v_cng
+import html2vect.tables.wngrams as h2v_wng
 from base.opensetcrossval import OpenSetParamGridSearchBase, OpenSetParamGridSearchTables
 from wrappedmodels.rfse import RFSE_Wrapped, cosine_similarity, cosine_similarity_sparse
 from wrappedmodels.rfse import minmax_similarity
 
 
 # Santini's 7-genres Corpus
-corpus_filepath = "/home/dimitrios/Synergy-Crawler/KI-04/"
-state_saving_path = "/home/dimitrios/Synergy-Crawler/KI-04/" +\
-    "Openness_RFSE_COS_and_MinMax_W3G_KI04_8Iter_MaxNorm/"
+corpus_filepath = "/media/dimitrios/TurnstoneDisk/KI-04/"
+state_saving_path = "/media/dimitrios/TurnstoneDisk/KI-04/" +\
+    "Openness_RFSE_MinMax_W1G_KI04_8Iter_MaxNorm/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -31,12 +31,12 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_RFSE_COS_W3G_KI04_8Iter_2016_12_01.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_RFSE_MinMaxOnly_W1G_KI04_8Iter_2016_12_07.h5', 'a')
 
 params_range = coll.OrderedDict([
     ('vocab_size', [50000]),
-    ('features_size', [10000]),
-    ('Sigma', [0.5]),
+    ('features_size', [5000]),
+    ('Sigma', [0.7]),
     ('Iterations', [100]),
     ('onlytest_gnrs_splts', [1, 2, 3, 4, 5, 6, 7]),
     ('onlytest_splt_itrs', [0, 1, 2, 3, 4, 5, 6, 7]),
@@ -49,7 +49,7 @@ params_range = coll.OrderedDict([
 #     word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 # )
 
-word_n_gram_size = 3
+word_n_gram_size = 1
 tables_wng = h2v_wng.Html2TF(
     word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
@@ -59,7 +59,7 @@ tables_wng = h2v_wng.Html2TF(
 #     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 # )
 
-openness_model = RFSE_Wrapped(cosine_similarity, -1.0, genres, bagging=False)
+openness_model = RFSE_Wrapped(minmax_similarity, 0.0, genres, bagging=False)
 # If no test_only_tgs is given as input 'genres' tag list should be given full not genres[0:-1]
 # cosine_similarity, -1.0
 # minmax_similarity, 0.0
