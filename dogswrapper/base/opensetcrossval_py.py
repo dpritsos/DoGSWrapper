@@ -208,12 +208,14 @@ class OpenSetParamGridSearchBase(object):
             unkwn_csmpls_idxs = np.where(
                 np.in1d(cls_tgs_lst, unkwn_ctags) == True
             )[0]
+            print unkwn_csmpls_idxs
 
             # Getting the known classes-samples to be used for Stratified kfold Training/Testing...
             # ...samples splitting.
             known_csmpls_idxs = np.where(
                 np.in1d(cls_tgs_lst, known_ctgs) == True
             )[0]
+            # print known_csmpls_idxs
 
             # Executing a Stratified Kfold selection of Samples Indeces per Class-Tag on the...
             # ...Kown set of Class-Tag indeces.
@@ -258,15 +260,18 @@ class OpenSetParamGridSearchBase(object):
                 np.hstack((
                     np.hstack(tS_kfmatrx_per_cls),
                     np.vstack(
-                        [known_csmpls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
+                        [unkwn_csmpls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
                     )
                 ))
             )
             oT_kfs_4_osplts.append(
                 np.vstack(
-                    [known_csmpls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
+                    [unkwn_csmpls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
                 )
             )
+
+        print "Spliting Done"
+        print tS_kfs_4_osplts
 
         return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
 
