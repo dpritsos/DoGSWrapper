@@ -17,9 +17,9 @@ numpy_matrix = gensim.matutils.corpus2dense(corpus, num_terms=5)
 print numpy_matrix
 
 mdl = gensim.models.LsiModel(
-        [[(0, 1), (1, 1)], [(0, 2), (1, 5)]],
+        gensim.matutils.Dense2Corpus(np.array([[1, 1], [2, 5]])),
         id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
-        #num_topics=4
+        num_topics=4
     )
 
 print mdl.__dict__
