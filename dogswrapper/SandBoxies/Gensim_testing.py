@@ -3,26 +3,51 @@
 import gensim
 import numpy as np
 
-dic = gensim.corpora.Dictionary([['1', 'e'], ['a', 'b']])
+dic = gensim.corpora.Dictionary([
+    ['qw', 'e', 'f'], ['a', 'b', 'o']
+])
 
-print dic.__dict__
+print dict(zip(dic.token2id.values(), dic.token2id.keys()))
 
-numpy_matrix = np.random.randint(10, size=[5, 2])
-print numpy_matrix
+# numpy_matrix = np.random.randint(10, size=[5, 2])
+# print "numpy", numpy_matrix
 
-corpus = gensim.matutils.Dense2Corpus(numpy_matrix)
-print corpus.__dict__
+# corpus = gensim.matutils.Dense2Corpus(numpy_matrix)
+# print "corpus", corpus
 
-numpy_matrix = gensim.matutils.corpus2dense(corpus, num_terms=5)
-print numpy_matrix
+# numpy_matrix = gensim.matutils.corpus2dense(corpus, num_terms=5)
+# print "numpy", numpy_matrix
+
+train = gensim.matutils.Dense2Corpus(
+    np.array(
+        [[.1, .1, .0, .1, .0],
+         [.2, .5, .5, .0, .0],
+         [.0, .0, .1, .6, .1],
+         [.2, .0, .0, .3, .5],
+         [.1, .0, .0, .1, .1],
+         [.1, .0, .0, .1, .1], # After this line a segmentation fault is cased
+         [.1, .0, .0, .1, .1]]
+    ).T
+)
+
+# print train
 
 mdl = gensim.models.LsiModel(
-        gensim.matutils.Dense2Corpus(np.array([[1, 1], [2, 5]])),
-        id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
-        num_topics=4
-    )
+    train,
+    num_topics=5
+)
 
-print mdl.__dict__
+# print mdl.print_topics(2)
+# gensim.models.LsiModel.print_topics()
+
+# print dic.doc2bow('1 e a b'.split())
+print gensim.matutils.corpus2dense(mdl[train], num_terms=5).T
+print list(mdl[train])
+# print mdl[train]
+# print mdl.projection.u
+# print mdl.projection.s
+
+
 
 # lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=2)
 
