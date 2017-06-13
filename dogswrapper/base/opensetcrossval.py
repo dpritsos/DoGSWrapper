@@ -634,6 +634,14 @@ class OpenSetParamGridSearchBase(object):
                     cls_tgs,
                     params
                 )
+                # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
+                #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     expected_Y,
+                #     corpus_mtrx,
+                #     cls_tgs,
+                #     params
+                # )
 
                 print 'P Y', predicted_Y.shape
                 print 'E Y', expected_Y.shape
@@ -650,13 +658,27 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'predicted_Y', predicted_Y,
                     ""
                 )
+                self.h5_res.create_array(
+                    next_group, 'predicted_R', predicted_R,
+                    ""
+                )
+                self.h5_res.create_array(
+                    next_group, 'optimal_RT', np.array([optimal_RT]),
+                    ""
+                )
+
+                """
+                self.h5_res.create_array(
+                    next_group, 'predicted_Y', predicted_Y,
+                    ""
+                )
 
                 self.h5_res.create_array(
                     next_group, 'predicted_scores', predicted_scores,
                     ""
                 )
 
-                """
+
                 self.h5_res.create_array(
                     next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
                     ""
@@ -669,11 +691,11 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'gnr_cls_idx', gnr_cls_idx,
                     ""
                 )
-                """
 
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]
+                """
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
                 if file_obj is not None:
