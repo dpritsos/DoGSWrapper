@@ -594,9 +594,16 @@ class OpenSetParamGridSearchBase(object):
                         num_topics=400
                     )
 
-                    corpus_mtrx_new = gensim.matutils.corpus2dense(
-                        lsi_mdl[gsim_corpus], num_terms=400
-                    ).T
+                    lda_mdl = gensim.models.LdaModel(
+                        gsim_corpus,
+                        # id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
+                        num_topics=400
+                    )
+
+                    corpus_mtrx_new = np.hstack(
+                        gensim.matutils.corpus2dense(lsi_mdl[gsim_corpus], num_terms=400).T,
+                        gensim.matutils.corpus2dense(lda_mdl[gsim_corpus], num_terms=400).T,
+                    )
 
                     # print corpus_mtrx_new[10, :]
 
@@ -627,7 +634,7 @@ class OpenSetParamGridSearchBase(object):
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
-                predicted_Y, predicted_scores, model_specific_d = self.model(
+                predicted_Y, predicted_R, optimal_RT = self.model(
                     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                     corpus_mtrx,
