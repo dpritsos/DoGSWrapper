@@ -32,10 +32,12 @@ train = gensim.matutils.Dense2Corpus(
 
 # print train
 
-mdl = gensim.models.LsiModel(
-    train,
-    num_topics=5
-)
+# mdl = gensim.models.LsiModel(
+#     train,
+#     num_topics=5
+# )
+
+mdl = gensim.models.doc2vec.Doc2Vec(train, size=3)
 
 # print mdl.print_topics(2)
 # gensim.models.LsiModel.print_topics()

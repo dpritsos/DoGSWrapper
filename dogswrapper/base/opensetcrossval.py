@@ -588,11 +588,11 @@ class OpenSetParamGridSearchBase(object):
                         # ...narray/matrix.
                     )
 
-                    lsi_mdl = gensim.models.LsiModel(
-                        gsim_corpus,
-                        # id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
-                        num_topics=400
-                    )
+                    # lsi_mdl = gensim.models.LsiModel(
+                    #     gsim_corpus,
+                    #     # id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
+                    #     num_topics=400
+                    # )
 
                     lda_mdl = gensim.models.LdaModel(
                         gsim_corpus,
@@ -600,10 +600,16 @@ class OpenSetParamGridSearchBase(object):
                         num_topics=400
                     )
 
-                    corpus_mtrx_new = np.hstack(
-                        gensim.matutils.corpus2dense(lsi_mdl[gsim_corpus], num_terms=400).T,
-                        gensim.matutils.corpus2dense(lda_mdl[gsim_corpus], num_terms=400).T,
-                    )
+                    # corpus_mtrx_new = np.hstack(
+                    #     (
+                    #         gensim.matutils.corpus2dense(lsi_mdl[gsim_corpus], num_terms=400).T,
+                    #         gensim.matutils.corpus2dense(lda_mdl[gsim_corpus], num_terms=400).T,
+                    #     )
+                    # )
+
+                    corpus_mtrx_new = gensim.matutils.corpus2dense(
+                        lda_mdl[gsim_corpus], num_terms=400
+                    ).T
 
                     # print corpus_mtrx_new[10, :]
 
