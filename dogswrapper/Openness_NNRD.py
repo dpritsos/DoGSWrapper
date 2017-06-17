@@ -37,9 +37,9 @@ method_results = tb.open_file(state_saving_path + 'Openness_NNRD_W1G_KI04_2017_T
 params_range = coll.OrderedDict([
     ('vocab_size', [100000]),
     # ('features_size', [10000]),
-    ('split_ptg', [0.5]),
+    ('split_ptg', [0.3]),
     ('ukwn_slt_ptg', [0.5]),
-    ('rt_lims_stp', [[0.3, 0.5, 0.7]]),
+    ('rt_lims_stp', [[0.6, 0.9, 0.2]]),
     ('lmda', [0.5]),
     ('uknw_ctgs_num', [1]),
     ('uknw_ctgs_num_splt_itrs', [0]),

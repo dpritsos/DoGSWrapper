@@ -545,10 +545,50 @@ class SemiSupervisedParamGridSearchBase(object):
                             norm_func=self.MaxNormalise, encoding=encoding
                         )
 
+                        # ################ LSi Patching ##################
+                        import gensim
+
+                        # print corpus_mtrx[10, :]
+
+                        gsim_corpus = gensim.matutils.Dense2Corpus(
+                            corpus_mtrx[:, :].T
+                            # NOTE: For my experiments should always been given as trasposed...
+                            # ...narray/matrix.
+                        )
+
+                        lsi_mdl = gensim.models.LsiModel(
+                            gsim_corpus,
+                            # id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
+                            num_topics=30
+                        )
+
+                        # lda_mdl = gensim.models.LdaModel(
+                        #     gsim_corpus,
+                        #     # id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
+                        #     num_topics=50
+                        # )
+
+                        # corpus_mtrx_new = np.hstack(
+                        #     (
+                        #         gensim.matutils.corpus2dense(lsi_mdl[gsim_corpus], num_terms=400).T,
+                        #         gensim.matutils.corpus2dense(lda_mdl[gsim_corpus], num_terms=400).T,
+                        #     )
+                        # )
+
+                        corpus_mtrx_new = gensim.matutils.corpus2dense(
+                            lsi_mdl[gsim_corpus], num_terms=30
+                        ).T
+
+                        # print corpus_mtrx_new[10, :]
+
+                        # ################################################
+
                         # NOTE: Saving the corpus matrix in normalized form.
                         file_obj, corpus_mtrx = self.SaveCorpusMatrix(
-                            corpus_mtrx, corpus_fname, file_obj, '/'
+                            corpus_mtrx_new, corpus_fname, file_obj, '/'
                         )
+
+                        # ################################################
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
@@ -669,6 +709,7 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
         return (corpus_mtrx, h5f)
 
+    """"
     def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
 
         # Does Nothing. It is only usfull for Numpy/Scipy.sparse Arrays/Matrices.
@@ -678,6 +719,23 @@ class SemiSupervisedParamGridSearchTables(SemiSupervisedParamGridSearchBase):
         file_obj.close()
         file_obj = tb.open_file(filename+'.h5', 'r+')
         corpus_mtrx = file_obj.get_node('/',  'corpus_earray')
+
+        return file_obj, corpus_mtrx
+    """
+
+    def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
+
+        # Does Nothing. It is only usfull for Numpy/Scipy.sparse Arrays/Matrices.
+        process_state_saving_path = None
+
+        corpus_mtrx = file_obj.create_array(
+            '/', 'corpus_earray_updated', corpus_mtrx
+        )
+
+        # Closing and re-opening file just for safety.
+        file_obj.close()
+        file_obj = tb.open_file(filename + '.h5', 'r+')
+        corpus_mtrx = file_obj.get_node('/',  'corpus_earray_updated')
 
         return file_obj, corpus_mtrx
 
