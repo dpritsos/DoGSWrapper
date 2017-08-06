@@ -7,7 +7,7 @@ dic = gensim.corpora.Dictionary([
     ['qw', 'e', 'f'], ['a', 'b', 'o']
 ])
 
-print dict(zip(dic.token2id.values(), dic.token2id.keys()))
+# print dict(zip(dic.token2id.values(), dic.token2id.keys()))
 
 # numpy_matrix = np.random.randint(10, size=[5, 2])
 # print "numpy", numpy_matrix
@@ -18,6 +18,7 @@ print dict(zip(dic.token2id.values(), dic.token2id.keys()))
 # numpy_matrix = gensim.matutils.corpus2dense(corpus, num_terms=5)
 # print "numpy", numpy_matrix
 
+"""
 train = gensim.matutils.Dense2Corpus(
     np.array(
         [[.1, .1, .0, .1, .0],
@@ -29,6 +30,7 @@ train = gensim.matutils.Dense2Corpus(
          [.1, .0, .0, .1, .1]]
     ).T
 )
+"""
 
 # print train
 
@@ -37,7 +39,25 @@ train = gensim.matutils.Dense2Corpus(
 #     num_topics=5
 # )
 
-mdl = gensim.models.doc2vec.Doc2Vec(train, size=3)
+mdl = gensim.models.doc2vec.Doc2Vec(size=3, iter=55)
+
+train = [
+    gensim.models.doc2vec.TaggedDocument(["hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd"], [0]),
+    gensim.models.doc2vec.TaggedDocument(["hello", "fsfff3", "hello", "fsdfsd", "fsfo", "fsdsd", "ello", "fsdfs", "heo", "fsd", "helo", "fssd", "llo", "fsd"], [1])
+]
+
+test = [["hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd"], ["hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd", "hello", "fsdfsd"]]
+
+mdl.build_vocab(train)
+mdl.train(train, total_examples=mdl.corpus_count, epochs=mdl.iter)
+
+
+print mdl.infer_vector(test[0])
+
+0/0
+
+# print 'VOC', voc
+
 
 # print mdl.print_topics(2)
 # gensim.models.LsiModel.print_topics()

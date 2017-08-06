@@ -34,7 +34,7 @@ class OCSVME_Wrapped(object):
             # crp_arr_bin = np.where(corpus_mtrx[inds_per_gnr[g], :].toarray() > 0, 1, 0)
 
             # Fit OC-SVM Model to Data of this genre
-            gnr_classes[g].fit(corpus_mtrx[inds_per_gnr[g], 0:params['features_size']])
+            gnr_classes[g].fit(corpus_mtrx[inds_per_gnr[g], 0::])  # params['features_size']])
             # ###for Sparse Matrix it might require corpus_mtrx[inds_per_gnr[g], :].toarray()
 
         return gnr_classes
@@ -48,7 +48,7 @@ class OCSVME_Wrapped(object):
         gnr_classes = args[3]
 
         # Get the part of matrices or arrays required for the model prediction phase
-        crossval_X = corpus_mtrx[crv_idxs, 0:params['features_size']]
+        crossval_X = corpus_mtrx[crv_idxs, 0::]  # params['features_size']]
         # EXTREMELY IMPORTANT: corpus_mtrx[X] where X=[<idx1>,<idx2>,...,<idxN>] returns ERROR...
         # ...HDF5 when using pytables Earray. For scipy.sparse there is no such a problem....
         # Therefore it always should be used this expression corpus_mtrx[X, :]

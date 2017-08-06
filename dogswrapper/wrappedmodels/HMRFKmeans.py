@@ -3,7 +3,7 @@ import tables
 import numpy as np
 import sys
 sys.path.append('../../Djumble/djumble/')
-from cy.hmrf_km_semi import HMRFKmeans
+from cymp.hmrf_km_semi import HMRFKmeans
 
 
 class HMRFKmeans_Wrapped(object):
@@ -89,10 +89,10 @@ class HMRFKmeans_Wrapped(object):
 
         self.hkmeans = HMRFKmeans(
             k_clusters, must_lnk, cannot_lnk, init_centroids=init_centrs,
-            ml_wg=0.80, cl_wg=0.40, max_iter=params['max_iter'],
-            cvg=params['converg_diff'], lrn_rate=params['learing_rate'], ray_sigma=1.5,
+            ml_wg=0.30, cl_wg=0.20, max_iter=params['max_iter'],
+            cvg=params['converg_diff'], lrn_rate=params['learing_rate'], ray_sigma=5.0,
             d_params=np.random.uniform(1.0, 1.0, size=corpus_mtrx.shape[1]),
-            norm_part=True, norm_part_val=1000.0, globj_norm=True
+            norm_part=False, globj_norm=False
         )
 
         if params['train_split_step_method'][2] == 'rndred_trn_fixed_test':
@@ -109,8 +109,10 @@ class HMRFKmeans_Wrapped(object):
             neg_subset_split_idxs = np.array(list(neg_subset_split_idxs), dtype=np.intp)
 
             # Doing the Semi-Supervised Clustering for this Corpus Split.
-            print np.array(corpus_mtrx)
-            res = self.hkmeans.fit(np.array(corpus_mtrx), neg_idxs4clstring=neg_subset_split_idxs)
+            print corpus_mtrx
+            res = self.hkmeans.fit(
+                np.array(corpus_mtrx, dtype=np.float64), neg_idxs4clstring=neg_subset_split_idxs
+            )
 
         elif params['train_split_step_method'][2] == 'rndred_trn_rest4_test':
 

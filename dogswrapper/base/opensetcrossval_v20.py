@@ -8,9 +8,9 @@ import tables as tb
 import scipy.sparse as ssp
 import param_combs
 import sys
-sys.path.append('../../../html2vectors/')
-from html2vect.utils import tfdutils
-from html2vect.base.io.basefilehandlers import file_list_frmpaths
+sys.path.append('../../../')
+from html2vec.utils import tfdutils
+from html2vec.base.io.basefilehandlers import file_list_frmpaths
 
 
 class OpenSetParamGridSearchBase(object):
@@ -279,6 +279,7 @@ class OpenSetParamGridSearchBase(object):
 
         return train_subsplits_arrlst, testing_subsplits_arrlst, only_testing_subsplits_arrlst
 
+    """
     def BuildCorpusMatrix(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
 
         # Does nothing. It is only usefull for pyTables.
@@ -294,6 +295,7 @@ class OpenSetParamGridSearchBase(object):
 
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
         return (corpus_mtrx, filename)
+
 
     def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
 
@@ -369,6 +371,7 @@ class OpenSetParamGridSearchBase(object):
             corpus_mtrx = corpus_mtrx / max_val
 
         return corpus_mtrx
+    """
 
     def SubSamplingNorm(self, corpus_mtrx, vocab_len, sb_t=0.0001):
 
@@ -573,8 +576,11 @@ class OpenSetParamGridSearchBase(object):
                     print 'Building Corpus Matrix...'
 
                     corpus_mtrx, file_obj = self.BuildCorpusMatrix(
-                        list(html_file_l), corpus_fname, tid_vocab,
-                        norm_func=self.MaxNormalise, encoding=encoding
+                        list(html_file_l),
+                        dims=100, min_trm_fq=0, win_size=8, algo='PV-DM',
+                        alpha=0.025, min_alpha=0.025, epochs=10, decay=0.002,
+                        h5_fname=corpus_fname, tid_vocabulary=tid_vocab,
+                        norm_func=None, encoding=encoding
                     )
 
                     # NOTE: Saving the corpus matrix in normalized form.
@@ -598,6 +604,14 @@ class OpenSetParamGridSearchBase(object):
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
+                # predicted_Y, predicted_scores, model_specific_d = self.model(
+                #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     corpus_mtrx,
+                #     cls_tgs,
+                #     params
+                # )
+
                 predicted_Y, predicted_R, optimal_RT = self.model(
                     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
@@ -605,6 +619,7 @@ class OpenSetParamGridSearchBase(object):
                     cls_tgs,
                     params
                 )
+
                 # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
                 #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
@@ -614,13 +629,14 @@ class OpenSetParamGridSearchBase(object):
                 #     params
                 # )
 
-                print 'P Y', predicted_Y.shape
-                print 'E Y', expected_Y.shape
+                print 'P Y shape:', predicted_Y.shape
+                print 'E Y shape:', expected_Y.shape
 
                 'max_sim_scores_per_iter'
                 'predicted_classes_per_iter'
 
                 # Saving results
+
                 self.h5_res.create_array(
                     next_group, 'expected_Y', expected_Y,
                     ""
@@ -649,7 +665,6 @@ class OpenSetParamGridSearchBase(object):
                     ""
                 )
 
-
                 self.h5_res.create_array(
                     next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
                     ""
@@ -666,6 +681,7 @@ class OpenSetParamGridSearchBase(object):
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]
+
                 """
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
@@ -694,21 +710,27 @@ class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
             h5_file_results, raw_corpus_files_path, process_state_saving_path
         )
 
-    def BuildCorpusMatrix(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
+    def BuildCorpusMatrix(self, html_file_l,
+                          dims, min_trm_fq, win_size, algo,
+                          alpha, min_alpha, epochs, decay,
+                          h5_fname, tid_vocabulary, norm_func, encoding='utf-8'):
 
         # Setting the pyTables suffix, just for separating them from Numpy pickled Arrays/Matrices.
-        filename = filename + '.h5'
+        h5_fname = h5_fname + '.h5'
 
         print "Building the Corpus Matrix (Tables)..."
 
         # Creating TF Vectors Matrix (pyTables TF EArray)
-        corpus_mtrx, h5f = self.terms_tf.from_files(
-            xhtml_file_l=html_file_l, h5_fname=filename, tid_vocabulary=tid_vocab,
+        corpus_mtrx_gsm, corpus_mtrx_fq, h5f = self.terms_tf.from_files(
+            xhtml_file_l=html_file_l,
+            dims=dims, min_trm_fq=min_trm_fq, win_size=win_size, algo=algo,
+            alpha=alpha, min_alpha=min_alpha, epochs=epochs, decay=decay,
+            h5_fname=h5_fname, tid_vocabulary=tid_vocabulary,
             norm_func=norm_func, encoding=encoding, error_handling='replace'
-        )[0:2]  # <--- Getting only 2 of the 3 returned values.
+        )[0:3]  # <--- Getting only 2 of the 3 returned values.
 
         # Returning the Corpus Matrix aligned upon the given Vocabulary.
-        return (corpus_mtrx, h5f)
+        return (corpus_mtrx_gsm, h5f)
 
     def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
 
@@ -718,7 +740,7 @@ class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
         # Closing and re-opening file just for safety.
         file_obj.close()
         file_obj = tb.open_file(filename + '.h5', 'r+')
-        corpus_mtrx = file_obj.get_node('/',  'corpus_earray')
+        corpus_mtrx = file_obj.get_node('/',  'corpus_GsmDoc2Vec_array')
 
         return file_obj, corpus_mtrx
 
@@ -745,7 +767,7 @@ class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
             # Loading Coprus Matrix (pyTables TF EArray).
             h5f = tb.open_file(corpus_mtrx_fname, 'r+')
 
-            corpus_mtrx = h5f.get_node('/',  'corpus_earray')  # h5f.root.corpus_earray
+            corpus_mtrx = h5f.get_node('/',  'corpus_GsmDoc2Vec_array')  # h5f.root.corpus_earray
 
         else:
             return None, None

@@ -8,9 +8,9 @@ import tables as tb
 import scipy.sparse as ssp
 import param_combs
 import sys
-sys.path.append('../../../html2vectors/')
-from html2vect.utils import tfdutils
-from html2vect.base.io.basefilehandlers import file_list_frmpaths
+sys.path.append('../../')
+from html2vec.utils import tfdutils
+from html2vec.base.io.basefilehandlers import file_list_frmpaths
 
 
 class SemiSupervisedParamGridSearchBase(object):
@@ -559,7 +559,7 @@ class SemiSupervisedParamGridSearchBase(object):
                         lsi_mdl = gensim.models.LsiModel(
                             gsim_corpus,
                             # id2word={0: '1', 2: 'a', 3: 'b', 1: 'e'},
-                            num_topics=30
+                            num_topics=100
                         )
 
                         # lda_mdl = gensim.models.LdaModel(
@@ -576,7 +576,7 @@ class SemiSupervisedParamGridSearchBase(object):
                         # )
 
                         corpus_mtrx_new = gensim.matutils.corpus2dense(
-                            lsi_mdl[gsim_corpus], num_terms=30
+                            lsi_mdl[gsim_corpus], num_terms=100
                         ).T
 
                         # print corpus_mtrx_new[10, :]

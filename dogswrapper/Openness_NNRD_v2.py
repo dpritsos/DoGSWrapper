@@ -14,7 +14,7 @@ sys.path.append('../dogswrapper')
 # import html2vec.tables.cngrams as h2v_cng
 import html2vec.tables.wngrams as h2v_wng
 # NOTE: base.opensetcrossval_py
-from base.opensetcrossval import OpenSetParamGridSearchBase, OpenSetParamGridSearchTables
+from base.opensetcrossval_v20 import OpenSetParamGridSearchBase, OpenSetParamGridSearchTables
 from wrappedmodels.nnrd import nnrd_eval
 from wrappedmodels.rfse import minmax_similarity
 
@@ -32,14 +32,16 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_NNRD_W1G_KI04_2017_TESTING_DROP_IT.h5', 'a')
+method_results = tb.open_file(
+    state_saving_path + 'Openness_NNRD_W1G_KI04_2017_07_31_TESTING_DROP_IT.h5', 'a'
+)
 
 params_range = coll.OrderedDict([
     ('vocab_size', [100000]),
     # ('features_size', [10000]),
-    ('split_ptg', [0.3]),
+    ('split_ptg', [0.5]),
     ('ukwn_slt_ptg', [0.5]),
-    ('rt_lims_stp', [[0.6, 0.9, 0.2]]),
+    ('rt_lims_stp', [[0.9, 1.0, 0.1]]),
     ('lmda', [0.5]),
     ('uknw_ctgs_num', [1]),
     ('uknw_ctgs_num_splt_itrs', [0]),
@@ -53,7 +55,7 @@ params_range = coll.OrderedDict([
 # )
 
 word_n_gram_size = 1
-tables_wng = h2v_wng.Html2TF(
+tables_wng = h2v_wng.Html2GsmVec(
     word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
 
