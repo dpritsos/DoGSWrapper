@@ -13,6 +13,101 @@ from html2vec.utils import tfdutils
 from html2vec.base.io.basefilehandlers import file_list_frmpaths
 
 
+# BuildCorpusMatrixTables ###################
+
+# Creating TF Vectors Matrix (Tables)
+print "Building the Corpus Matrix (Tables)..."
+corpus_mtrx, h5f, tid_vocabulary, tf_vocabulary = docs_model.from_files(
+    xhtml_file_l=html_file_l, h5_fname=h5_fname, tid_vocabulary=tid_vocab, norm_func=norm_func,
+    encoding=encoding, error_handling='replace'
+)
+
+# #############################
+
+
+# BuildCorpusMatrixTables Doc2Vec Version###################
+
+# Creating TF Vectors Matrix (pyTables TF EArray)
+corpus_mtrx_gsm, corpus_mtrx_fq, h5f, tid_vocabulary, tf_vocabulary = self.terms_tf.from_files(
+    xhtml_file_l=html_file_l,
+
+    h5_fname=h5_fname, tid_vocabulary=tid_vocab, norm_func=norm_func,
+
+    dims=dims, min_trm_fq=min_trm_fq, win_size=win_size, algo=algo,
+    alpha=alpha, min_alpha=min_alpha, epochs=epochs, decay=decay,
+
+    encoding=encoding, error_handling='replace'
+)
+# #############################3
+
+
+# Saving TF Vocabulary in pickle and Json format.
+print "Saving Vocabulary..."
+with open(vocab_fname+'.pkl', 'w') as f:
+    pickle.dump(tf_vocab, f)
+
+with open(vocab_fname+'.jsn', 'w') as f:
+    json.dump(tf_vocab, f, encoding=encoding)
+
+
+
+def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
+
+    # Does nothing. It is only usefull for pyTables.
+    file_obj = None
+
+    # Replace the default or create if required the path where Corpus Matrix will be saved.
+    if process_state_saving_path:
+        save_path = process_state_saving_path
+    else:
+        save_path = self.state_save_path
+
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+
+    # Set the file names for the Corpus matrix.
+    corpus_mtrx_fname = save_path + filename + '.pkl'
+
+    # Saving TF Vectors Corpus Matrix
+    print "Saving the Corpus TF Matrix..."
+    with open(corpus_mtrx_fname, 'w') as f:
+        pickle.dump(corpus_mtrx, f)
+
+    return None, corpus_mtrx
+
+def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
+
+    # Replace the path where the process-state files was supposed to be saved.
+    if process_state_saving_path:
+        save_path = process_state_saving_path
+    else:
+        save_path = self.state_save_path
+
+    if not os.path.exists(save_path):
+        raise Exception(
+            "Loading Samples Splits Faild: process-state-saving-path does not exist"
+        )
+
+    # Setting the filename to load the Corpus Matrix (Spase).
+    corpus_mtrx_fname = save_path + filename + '.pkl'
+
+    if os.path.exists(corpus_mtrx_fname):
+
+        print "Loading Corpus Matrix..."
+
+        # Loading Coprus Matrix.
+        with open(corpus_mtrx_fname, 'r') as f:
+            corpus_mtrx = pickle.load(f)
+
+    else:
+        return None, None
+
+    return (corpus_mtrx, None)
+
+
+
+
+
 class OpenSetParamGridSearchBase(object):
 
     def __init__(self, model, terms_tf_module, class_names_lst,
@@ -107,287 +202,9 @@ class OpenSetParamGridSearchBase(object):
         # Returning the filename list and the tags array.
         return np.array(html_file_l), np.array(cls_tgs)
 
-    def SelectStratifiedKfolds(self, smpls_num, kfolds):
 
-        tS_splt_lst = list()
-        Tr_splt_lst = list()
-        tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
 
-        smpl_idxs_vect = np.arange(smpls_num)
-        smpl_idxs_choice = np.arange(smpls_num)
 
-        for k in np.arange(kfolds):
-
-            # If the samples choice list is not empty. This option is for preveting the...
-            # ...loop to return error when the samples number is too small.
-            # if smpl_idxs_choice.shape[0] == 0:
-            #    print "Small"
-            #    break  # smpl_idxs_choice = np.arange(smpls_num)
-
-            # Stopping the look when samples amount is smaller than samples required...
-            # ...to be selected. Thus, repeating a few indeces at random just for satisfing the...
-            # random.choice() function.
-            if len(smpl_idxs_choice) < tst_splt_size:
-                apnd_sel = smpl_idxs_vect[np.in1d(smpl_idxs_vect, smpl_idxs_choice, invert=True)]
-                apnd_size = tst_splt_size - len(smpl_idxs_choice)
-                apnd_idxs = np.random.choice(apnd_sel, apnd_size, replace=False)
-                test_smpls = np.hstack((smpl_idxs_choice, apnd_idxs))
-            else:
-                test_smpls = np.random.choice(smpl_idxs_choice, tst_splt_size, replace=False)
-
-            smpl_idxs_choice = smpl_idxs_choice[np.in1d(smpl_idxs_choice, test_smpls, invert=True)]
-
-            Tr_splt_lst.append(smpl_idxs_vect[np.in1d(smpl_idxs_vect, test_smpls, invert=True)])
-            tS_splt_lst.append(test_smpls)
-
-        return Tr_splt_lst, tS_splt_lst
-
-    def OpennessSplitSamples(self, cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, kfolds):
-
-        # Converting to numpy.array for compatibility with array operations.
-        cls_tgs_lst = np.array(cls_tgs_lst)
-
-        # Two list of arrays where each array has the file indeces for training and testing....
-        # ...Each list entry containts the kFold cross-validation splits for a random selection...
-        # ...of class-tags remaining Only-For-Testing. The Only-For-Testing class samples are...
-        # ...appended at the end of each test-samples-split in every kfold.
-        Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts = list(), list(), list()
-
-        # Starting Openness Random Selection Class Spliting.
-        for i in range(uknw_ctgs_num_splt_itrs):
-
-            # Selecting the Class tags tto be excluded from traing set kfold splits.
-            onlytest_clstags = np.random.choice(
-                np.unique(cls_tgs_lst), onlytest_clsnum, replace=False
-            )
-
-            # Getting the mask for class-samples to be excluded from traing set kfold splits.
-            onlytest_csampls_mask = np.in1d(cls_tgs_lst, onlytest_clstags)
-
-            # Getting the classes-samples indeces bind only for testing splits.
-            onlytest_csampls_idxs = np.where(onlytest_csampls_mask == True)[0]
-
-            # Getting the classes-samples to be used for Kfold training/testing spliting.
-            tt_csampls_idxs = np.where(onlytest_csampls_mask == False)[0]
-
-            # Getting the class-tags (per sapmles) which will be used for training/testing spliting.
-            tt_cls_tgs_lst = cls_tgs_lst[tt_csampls_idxs]
-
-            Tr_kfmatrx_per_cls, tS_kfmatrx_per_cls = list(), list()
-
-            for ctg in np.unique(tt_cls_tgs_lst):
-
-                # Getting the class-samples indeces.
-                this_cls_idxs = np.where(tt_cls_tgs_lst == ctg)[0]
-                # print this_cls_idxs
-
-                # Statified Kfold Selection of samples in training and test sets.
-                tr_iidx_lst, ts_iidx_lst = self.SelectStratifiedKfolds(
-                    this_cls_idxs.shape[0], kfolds
-                )
-
-                Tr_kfmatrx_per_cls.append(
-                    np.vstack(
-                        [tt_csampls_idxs[this_cls_idxs[tr_iidx]] for tr_iidx in tr_iidx_lst]
-                    )
-                )
-
-                tS_kfmatrx_per_cls.append(
-                    np.vstack(
-                        [tt_csampls_idxs[this_cls_idxs[ts_iidx]] for ts_iidx in ts_iidx_lst]
-                    )
-                )
-
-            Tr_kfs_4_osplts.append(np.hstack(Tr_kfmatrx_per_cls))
-            tS_kfs_4_osplts.append(
-                np.hstack((
-                    np.hstack(tS_kfmatrx_per_cls),
-                    np.vstack(
-                        [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
-                    )
-                ))
-            )
-            oT_kfs_4_osplts.append(
-                np.vstack(
-                    [onlytest_csampls_idxs for i in range(tS_kfmatrx_per_cls[0].shape[0])]
-                )
-            )
-        return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
-
-    def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst, ot_subsp_arrlst,
-                         fnames_tpl=('Trning_S.pkl', 'Tsting_Splts.pkl', 'OTing_Splts.pkl'),
-                         process_state_saving_path=None):
-
-        # Replace the default or create if required the path where Sample Splits will be saved.
-        if process_state_saving_path:
-            save_path = process_state_saving_path
-        else:
-            save_path = self.state_save_path
-
-        if not os.path.exists(save_path):
-            os.mkdir(save_path)
-
-        # Set the file names for training and testing splits.
-        train_splits_path = save_path + fnames_tpl[0]
-        test_splits_path = save_path + fnames_tpl[1]
-        only_test_splits_path = save_path + fnames_tpl[2]
-
-        # Pickleing the Training and Testing Splits.
-        with open(train_splits_path, 'w') as f:
-            pickle.dump(train_subsplits_arrlst, f)
-
-        with open(test_splits_path, 'w') as f:
-            pickle.dump(testing_subsplits_arrlst, f)
-
-        with open(only_test_splits_path, 'w') as f:
-            pickle.dump(ot_subsp_arrlst, f)
-
-    def LoadSplitSamples(self, fnames_tpl=('Trning_S.pkl', 'Tsting_Splts.pkl', 'OTing_Splts.pkl'),
-                         process_state_saving_path=None):
-
-        # Replace the path where the process-state files was supposed to be saved.
-        if process_state_saving_path:
-            save_path = process_state_saving_path
-        else:
-            save_path = self.state_save_path
-
-        if not os.path.exists(save_path):
-            raise Exception(
-                "Loading Samples Splits Faild: process-state-saving-path does not exist"
-            )
-
-        # Set the file names for training and testing splits.
-        train_splits_fname = save_path + fnames_tpl[0]
-        test_splits_fname = save_path + fnames_tpl[1]
-        only_test_splits_fname = save_path + fnames_tpl[2]
-
-        if os.path.exists(train_splits_fname) and os.path.exists(test_splits_fname):
-
-            # Unpickleing the Training and Testing Splits.
-            with open(train_splits_fname, 'r') as f:
-                train_subsplits_arrlst = pickle.load(f)
-
-            with open(test_splits_fname, 'r') as f:
-                testing_subsplits_arrlst = pickle.load(f)
-
-            with open(only_test_splits_fname, 'r') as f:
-                only_testing_subsplits_arrlst = pickle.load(f)
-
-        else:
-
-            return None, None, None
-
-        return train_subsplits_arrlst, testing_subsplits_arrlst, only_testing_subsplits_arrlst
-
-    """
-    def BuildCorpusMatrix(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
-
-        # Does nothing. It is only usefull for pyTables.
-        filename = None
-
-        print "Building the Corpus Matrix..."
-
-        # Creating TF Vectors Matrix
-        corpus_mtrx = self.terms_tf.from_files(
-            xhtml_file_l=html_file_l, tid_vocabulary=tid_vocab,
-            norm_func=norm_func, encoding=encoding, error_handling='replace'
-        )[0]  # <--- Be careful with zero index
-
-        # Returning the Corpus Matrix aligned upon the given Vocabulary.
-        return (corpus_mtrx, filename)
-
-
-    def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
-
-        # Does nothing. It is only usefull for pyTables.
-        file_obj = None
-
-        # Replace the default or create if required the path where Corpus Matrix will be saved.
-        if process_state_saving_path:
-            save_path = process_state_saving_path
-        else:
-            save_path = self.state_save_path
-
-        if not os.path.exists(save_path):
-            os.mkdir(save_path)
-
-        # Set the file names for the Corpus matrix.
-        corpus_mtrx_fname = save_path + filename + '.pkl'
-
-        # Saving TF Vectors Corpus Matrix
-        print "Saving the Corpus TF Matrix..."
-        with open(corpus_mtrx_fname, 'w') as f:
-            pickle.dump(corpus_mtrx, f)
-
-        return None, corpus_mtrx
-
-    def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
-
-        # Replace the path where the process-state files was supposed to be saved.
-        if process_state_saving_path:
-            save_path = process_state_saving_path
-        else:
-            save_path = self.state_save_path
-
-        if not os.path.exists(save_path):
-            raise Exception(
-                "Loading Samples Splits Faild: process-state-saving-path does not exist"
-            )
-
-        # Setting the filename to load the Corpus Matrix (Spase).
-        corpus_mtrx_fname = save_path + filename + '.pkl'
-
-        if os.path.exists(corpus_mtrx_fname):
-
-            print "Loading Corpus Matrix..."
-
-            # Loading Coprus Matrix.
-            with open(corpus_mtrx_fname, 'r') as f:
-                corpus_mtrx = pickle.load(f)
-
-        else:
-            return None, None
-
-        return (corpus_mtrx, None)
-
-    def MaxNormalise(self, corpus_mtrx, vocab_len):
-
-        # Getting the Maximum frequency for every document.
-        max_val = np.max(corpus_mtrx.todense())
-
-        if max_val == 0.0:
-
-            # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs...
-            # when a sub-Vocabulary is used for the experiment.
-            max_val = 1.0
-
-            # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
-            corpus_mtrx[:] = 1e-15
-
-        # Normalizing based on the matrix/array type.
-        if ssp.issparse(corpus_mtrx):
-            corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_val)
-        else:
-            corpus_mtrx = corpus_mtrx / max_val
-
-        return corpus_mtrx
-    """
-
-    def SubSamplingNorm(self, corpus_mtrx, vocab_len, sb_t=0.0001):
-
-        # Getting the Maximum frequency for every document.
-        max_val = np.max(corpus_mtrx.todense())
-
-        # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
-        corpus_mtrx[np.where(corpus_mtrx == 0.0)] = 1e-15
-
-        # Applying SubSampling with pre Max-Normalization.
-        if ssp.issparse(corpus_mtrx):
-            corpus_mtrx = ssp.csr_matrix(1 - np.sqrt(sb_t / (corpus_mtrx.todense() / max_val)))
-        else:
-            corpus_mtrx = 1 - np.sqrt(sb_t / (corpus_mtrx / max_val))
-
-        return corpus_mtrx
 
     def EvaluateAll(self, params_range, raw_corpus_files_path=None, encoding='utf-8'):
         """
@@ -604,20 +421,21 @@ class OpenSetParamGridSearchBase(object):
 
                 # Evaluating Semi-Supervised Classification Method.
                 print "EVALUATING"
-                predicted_Y, predicted_scores, model_specific_d = self.model(
-                    train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
-                    test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
-                    corpus_mtrx,
-                    cls_tgs,
-                    params
-                )
-                # predicted_Y, predicted_R, optimal_RT = self.model(
+                # predicted_Y, predicted_scores, model_specific_d = self.model(
                 #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 #     corpus_mtrx,
                 #     cls_tgs,
                 #     params
                 # )
+
+                predicted_Y, predicted_R, optimal_RT = self.model(
+                    train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                    test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                    corpus_mtrx,
+                    cls_tgs,
+                    params
+                )
 
                 # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
                 #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
@@ -636,7 +454,6 @@ class OpenSetParamGridSearchBase(object):
 
                 # Saving results
 
-                """
                 self.h5_res.create_array(
                     next_group, 'expected_Y', expected_Y,
                     ""
@@ -665,7 +482,6 @@ class OpenSetParamGridSearchBase(object):
                     ""
                 )
 
-                """
                 self.h5_res.create_array(
                     next_group, 'predicted_Ns_per_gnr',  predicted_d_near,
                     ""
@@ -678,12 +494,12 @@ class OpenSetParamGridSearchBase(object):
                     next_group, 'gnr_cls_idx', gnr_cls_idx,
                     ""
                 )
-                """
 
                 if model_specific_d:
                     for name, value in model_specific_d.items():
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]
 
+                """
 
                 # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
                 if file_obj is not None:
@@ -711,27 +527,7 @@ class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
             h5_file_results, raw_corpus_files_path, process_state_saving_path
         )
 
-    def BuildCorpusMatrix(self, html_file_l,
-                          dims, min_trm_fq, win_size, algo,
-                          alpha, min_alpha, epochs, decay,
-                          h5_fname, tid_vocabulary, norm_func, encoding='utf-8'):
 
-        # Setting the pyTables suffix, just for separating them from Numpy pickled Arrays/Matrices.
-        h5_fname = h5_fname + '.h5'
-
-        print "Building the Corpus Matrix (Tables)..."
-
-        # Creating TF Vectors Matrix (pyTables TF EArray)
-        corpus_mtrx_gsm, corpus_mtrx_fq, h5f = self.terms_tf.from_files(
-            xhtml_file_l=html_file_l,
-            dims=dims, min_trm_fq=min_trm_fq, win_size=win_size, algo=algo,
-            alpha=alpha, min_alpha=min_alpha, epochs=epochs, decay=decay,
-            h5_fname=h5_fname, tid_vocabulary=tid_vocabulary,
-            norm_func=norm_func, encoding=encoding, error_handling='replace'
-        )[0:3]  # <--- Getting only 2 of the 3 returned values.
-
-        # Returning the Corpus Matrix aligned upon the given Vocabulary.
-        return (corpus_mtrx_gsm, h5f)
 
     def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
 

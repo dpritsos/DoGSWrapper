@@ -13,45 +13,45 @@ from html2vec.utils import tfdutils
 from html2vec.base.io.basefilehandlers import file_list_frmpaths
 
 
-def BuildCorpusMatrixTables(self, html_file_l, filename, tid_vocab, norm_func, encoding='utf-8'):
 
-    # Does nothing. It is only usefull for pyTables.
-    filename = None
+# BuildCorpusMatrixTables ###################
 
-    print "Building the Corpus Matrix..."
+# Creating TF Vectors Matrix (Tables)
+print "Building the Corpus Matrix (Tables)..."
+corpus_mtrx, h5f, tid_vocabulary, tf_vocabulary = docs_model.from_files(
+    xhtml_file_l=html_file_l,
+    h5_fname=h5_fname, tid_vocabulary=tid_vocab, norm_func=norm_func,
+    encoding=encoding, error_handling='replace'
+)
 
-    # Creating TF Vectors Matrix
-    corpus_mtrx = self.terms_tf.from_files(
-        xhtml_file_l=html_file_l, tid_vocabulary=tid_vocab,
-        norm_func=norm_func, encoding=encoding, error_handling='replace'
-    )[0]  # <--- Be careful with zero index
+# #############################
 
-    # Returning the Corpus Matrix aligned upon the given Vocabulary.
-    return (corpus_mtrx, filename)
+# BuildCorpusMatrixTables Doc2Vec Version ###################
+
+print "Building the Corpus Matrix (Tables) Doc2Vec..."
+
+# Creating TF Vectors Matrix (pyTables TF EArray)
+corpus_mtrx_gsm, corpus_mtrx_fq, h5f = self.terms_tf.from_files(
+    xhtml_file_l=html_file_l,
+
+    dims=dims, min_trm_fq=min_trm_fq, win_size=win_size, algo=algo,
+    alpha=alpha, min_alpha=min_alpha, epochs=epochs, decay=decay,
+
+    h5_fname=h5_fname, tid_vocabulary=tid_vocabulary, norm_func=norm_func,
+    encoding=encoding, error_handling='replace'
+)
+
+# #############################
 
 
-def BuildCorpusMatrix(self, html_file_l,
-                      dims, min_trm_fq, win_size, algo,
-                      alpha, min_alpha, epochs, decay,
-                      h5_fname, tid_vocabulary, norm_func, encoding='utf-8'):
 
-    # Setting the pyTables suffix, just for separating them from Numpy pickled Arrays/Matrices.
-    h5_fname = h5_fname + '.h5'
+# Saving TF Vocabulary in pickle and Json format.
+print "Saving Vocabulary..."
+with open(vocab_fname+'.pkl', 'w') as f:
+    pickle.dump(tf_vocab, f)
 
-    print "Building the Corpus Matrix (Tables)..."
-
-    # Creating TF Vectors Matrix (pyTables TF EArray)
-    corpus_mtrx_gsm, corpus_mtrx_fq, h5f = self.terms_tf.from_files(
-        xhtml_file_l=html_file_l,
-        dims=dims, min_trm_fq=min_trm_fq, win_size=win_size, algo=algo,
-        alpha=alpha, min_alpha=min_alpha, epochs=epochs, decay=decay,
-        h5_fname=h5_fname, tid_vocabulary=tid_vocabulary,
-        norm_func=norm_func, encoding=encoding, error_handling='replace'
-    )[0:3]  # <--- Getting only 2 of the 3 returned values.
-
-    # Returning the Corpus Matrix aligned upon the given Vocabulary.
-    return (corpus_mtrx_gsm, h5f)
-
+with open(vocab_fname+'.jsn', 'w') as f:
+    json.dump(tf_vocab, f, encoding=encoding)
 
 
 def SaveCorpusMatrix(self, corpus_mtrx, filename, file_obj, process_state_saving_path=None):
@@ -108,10 +108,7 @@ def LoadCorpusMatrix(self, filename, process_state_saving_path=None):
     return (corpus_mtrx, None)
 
 
-
-
-
-class OpenSetParamGridSearchBase(object):
+class OpennessParamGridSearch(object):
 
     def __init__(self, model, terms_tf_module, class_names_lst,
                  h5_file_results, raw_corpus_files_path, process_state_saving_path):
@@ -134,144 +131,9 @@ class OpenSetParamGridSearchBase(object):
             os.mkdir(self.state_save_path)
             print "New process-state saving path is: '" + self.state_save_path + "'"
 
-    def LoadCrpsFnamesTags(self, raw_corpus_files_path=None, process_state_saving_path=None):
-
-        # Replace the class instantiation defined variable self.corpus_files_path if any.
-        if raw_corpus_files_path:
-            self.corpus_files_path = raw_corpus_files_path
-
-        if not os.path.exists(self.corpus_files_path):
-            raise Exception("Corpus files path does not exist.")
-
-        # Replace and create if required the path where the process-state files will be saved.
-        if process_state_saving_path:
-            self.state_save_path = process_state_saving_path
-
-        if not os.path.exists(self.state_save_path):
-            os.mkdir(self.state_save_path)
-            print "New process-state saving path is: '" + self.state_save_path + "'"
-
-        # Set the file names for the Filenames and Tags lists to be Loaded or Saved.
-        corpus_files_lst_path = self.state_save_path + '/Corpus_filenames_sorted.lst'
-        corpus_tags_lst_path = self.state_save_path + '/Corpus_tags_sorted.lst'
-
-        if os.path.exists(corpus_files_lst_path) and os.path.exists(corpus_tags_lst_path):
-
-            print "Loading HTML Filenames list and Classes Tags array..."
-
-            # Load Filename and classes Tags.
-            with open(corpus_files_lst_path, 'r') as f:
-                html_file_l = json.load(f, encoding='utf-8')
-
-            with open(corpus_tags_lst_path, 'r') as f:
-                cls_tgs = json.load(f, encoding='utf-8')
-
-        else:
-
-            print "Loading HTML Filenames from given a file path..."
-
-            html_file_l = list()
-            cls_tgs = list()
-
-            # Get the list of Genre argument as given to this Class and build html-file-list...
-            # ...and class-genres-tags list
-            for i, g in enumerate(self.classes_lst):
-
-                # Get all files located to the genre's path 'g'
-                gnrs_file_lst = file_list_frmpaths(self.corpus_files_path, [str(g + "/html/")])
-
-                # Extends the list of html files with the set of files form genre 'g'.
-                html_file_l.extend(gnrs_file_lst)
-
-                # Extends the list of html files with the set of class tag form genre 'g',...
-                # ...i.e. the index of the genre's list given as argument to this class...
-                # ...(ParamGridCrossValBase()).
-                cls_tgs.extend([i+1]*len(gnrs_file_lst))
-
-            print "Saving Filenames list and Classes Tags Numpy array..."
-
-            # Saving Filename and classes Tags lists
-            with open(corpus_files_lst_path, 'w') as f:
-                # HTML File List as founded in the Ext4 file system by python built-it os...
-                # ...(python 2.7.x) lib
-                json.dump(html_file_l, f, encoding='utf-8')
-
-            with open(corpus_tags_lst_path, 'w') as f:
-                # Assigned Genre Tags to files list Array
-                json.dump(cls_tgs, f, encoding='utf-8')
-
-        print "Returning the Corpus Filenames list and Classes Tags Numpy array."
-
-        # Returning the filename list and the tags array.
-        return np.array(html_file_l), np.array(cls_tgs)
-
-
-
-    def MaxNormalise(self, corpus_mtrx, vocab_len):
-
-        # Getting the Maximum frequency for every document.
-        max_val = np.max(corpus_mtrx.todense())
-
-        if max_val == 0.0:
-
-            # NOTE: Preventing division-by-zero For Documents with zero terms. This case occurs...
-            # when a sub-Vocabulary is used for the experiment.
-            max_val = 1.0
-
-            # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
-            corpus_mtrx[:] = 1e-15
-
-        # Normalizing based on the matrix/array type.
-        if ssp.issparse(corpus_mtrx):
-            corpus_mtrx = ssp.csr_matrix(corpus_mtrx.todense() / max_val)
-        else:
-            corpus_mtrx = corpus_mtrx / max_val
-
-        return corpus_mtrx
-
-    def SubSamplingNorm(self, corpus_mtrx, vocab_len, sb_t=0.0001):
-
-        # Getting the Maximum frequency for every document.
-        max_val = np.max(corpus_mtrx.todense())
-
-        # NOTE: PATCH for preventing All-Zero-Values vectors stopping the experiments.
-        corpus_mtrx[np.where(corpus_mtrx == 0.0)] = 1e-15
-
-        # Applying SubSampling with pre Max-Normalization.
-        if ssp.issparse(corpus_mtrx):
-            corpus_mtrx = ssp.csr_matrix(1 - np.sqrt(sb_t / (corpus_mtrx.todense() / max_val)))
-        else:
-            corpus_mtrx = 1 - np.sqrt(sb_t / (corpus_mtrx / max_val))
-
-        return corpus_mtrx
-
     def EvaluateAll(self, params_range, raw_corpus_files_path=None, encoding='utf-8'):
-        """
-            Parameters Template
-            -------------------
-            params_range = coll.OrderedDict([
-               ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-               ('uknw_ctgs_num', [1, 2, 3, 4, 5]),
-               ('uknw_ctgs_num_splt_itrs', [0, 1, 2, 3, 4, 5, 6]),
-               ('vocab_size', [5000, 10000, 50000, 100000]),
-               ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),
-               ('Sigma', [0.5, 0.7, 0.9]),
-               ('Iterations', [10, 50, 100])
-            ])
 
-            params_range = coll.OrderedDict([
-                ('vocab_size', [100000]),
-                # ('features_size', [10000]),
-                ('split_ptg', [0.2]),
-                ('ukwn_slt_ptg', [0.5]),
-                ('rt_lims_stp', [[0.3, 0.9, 0.2]]),
-                ('lmda', [0.5]),
-                ('uknw_ctgs_num', [1]),
-                ('uknw_ctgs_num_splt_itrs', [0]),
-                ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-            ])
-
-        """
+        
 
         # Replace the class instantiation defined variable self.corpus_files_path if any.
         if raw_corpus_files_path:
