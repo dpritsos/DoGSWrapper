@@ -82,7 +82,7 @@ def OpennessSplitSamples(self, cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_
             # print this_cls_idxs
 
             # Statified Kfold Selection of samples in training and test sets.
-            tr_iidx_lst, ts_iidx_lst = self.SelectStratifiedKfolds(
+            tr_iidx_lst, ts_iidx_lst = SelectStratifiedKfolds(
                 this_cls_idxs.shape[0], kfolds
             )
 
@@ -115,68 +115,41 @@ def OpennessSplitSamples(self, cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_
     return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
 
 
-def SaveSplitSamples(self, train_subsplits_arrlst, testing_subsplits_arrlst, ot_subsp_arrlst,
-                     fnames_tpl=('Trning_S.pkl', 'Tsting_Splts.pkl', 'OTing_Splts.pkl'),
-                     process_state_saving_path=None):
+def SaveSplitSamples(train_splts, test_splts, onlyt_splts, ukn_cls_num, ukn_iters, save_path):
 
-    # Replace the default or create if required the path where Sample Splits will be saved.
-    if process_state_saving_path:
-        save_path = process_state_saving_path
-    else:
-        save_path = self.state_save_path
+    # Saving the splits.
+    splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
+    with open(trn_fname, 'w') as f:
+        pickle.dump(train_splts, f)
 
-    # Set the file names for training and testing splits.
-    train_splits_path = save_path + fnames_tpl[0]
-    test_splits_path = save_path + fnames_tpl[1]
-    only_test_splits_path = save_path + fnames_tpl[2]
+    test_fname = save_path + 'Testing_Splits' + splt_fname_suffix + '.pkl'
+    with open(test_fname, 'w') as f:
+        pickle.dump(test_splts, f)
 
-    # Pickleing the Training and Testing Splits.
-    with open(train_splits_path, 'w') as f:
-        pickle.dump(train_subsplits_arrlst, f)
-
-    with open(test_splits_path, 'w') as f:
-        pickle.dump(testing_subsplits_arrlst, f)
-
-    with open(only_test_splits_path, 'w') as f:
-        pickle.dump(ot_subsp_arrlst, f)
+    onlytest_fname = save_path + 'OnlyTesting_Splits' +\
+        splt_fname_suffix + '.pkl'
+    with open(onlytest_fname, 'w') as f:
+        pickle.dump(onlyt_splts, f)
 
 
-def LoadSplitSamples(self, fnames_tpl=('Trning_S.pkl', 'Tsting_Splts.pkl', 'OTing_Splts.pkl'),
-                     process_state_saving_path=None):
+def LoadSplitSamples(ukn_cls_num, ukn_iters, save_path):
 
-    # Replace the path where the process-state files was supposed to be saved.
-    if process_state_saving_path:
-        save_path = process_state_saving_path
-    else:
-        save_path = self.state_save_path
+    # Saving the splits.
+    splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
-    if not os.path.exists(save_path):
-        raise Exception(
-            "Loading Samples Splits Faild: process-state-saving-path does not exist"
-        )
+    trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
+    with open(trn_fname, 'w') as f:
+        train_splts = pickle.load(f)
 
-    # Set the file names for training and testing splits.
-    train_splits_fname = save_path + fnames_tpl[0]
-    test_splits_fname = save_path + fnames_tpl[1]
-    only_test_splits_fname = save_path + fnames_tpl[2]
+    test_fname = save_path + 'Testing_Splits' + splt_fname_suffix + '.pkl'
+    with open(test_fname, 'w') as f:
+        test_splts = pickle.load(f)
 
-    if os.path.exists(train_splits_fname) and os.path.exists(test_splits_fname):
+    onlytest_fname = save_path + 'OnlyTesting_Splits' +\
+        splt_fname_suffix + '.pkl'
+    with open(onlytest_fname, 'w') as f:
+        onlyt_splts = pickle.load(f)
 
-        # Unpickleing the Training and Testing Splits.
-        with open(train_splits_fname, 'r') as f:
-            train_subsplits_arrlst = pickle.load(f)
-
-        with open(test_splits_fname, 'r') as f:
-            testing_subsplits_arrlst = pickle.load(f)
-
-        with open(only_test_splits_fname, 'r') as f:
-            only_testing_subsplits_arrlst = pickle.load(f)
-
-    else:
-
-        return None, None, None
-
-    return train_subsplits_arrlst, testing_subsplits_arrlst, only_testing_subsplits_arrlst
+    return train_splts, test_splts, onlyt_splts

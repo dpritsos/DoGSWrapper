@@ -4,26 +4,21 @@ import numpy as np
 import json
 
 
-def LoadCrpsFnamesTags(raw_corpus_files_path=None, process_state_saving_path=None):
+def LoadCrpsFnamesTags(rawcrps_fpath, state_path):
 
-    # Replace the class instantiation defined variable self.corpus_files_path if any.
-    if raw_corpus_files_path:
-        self.corpus_files_path = raw_corpus_files_path
-
-    if not os.path.exists(self.corpus_files_path):
+    if not os.path.exists(rawcrps_fpath):
         raise Exception("Corpus files path does not exist.")
 
-    # Replace and create if required the path where the process-state files will be saved.
-    if process_state_saving_path:
-        self.state_save_path = process_state_saving_path
+    if state_path is None:
+        raise Exception("Missing arguent: State Saving path")
 
-    if not os.path.exists(self.state_save_path):
-        os.mkdir(self.state_save_path)
-        print "New process-state saving path is: '" + self.state_save_path + "'"
+    if not os.path.exists(state_path):
+        os.mkdir(state_path)
+        print "New process-state saving path is: '" + state_path + "'"
 
     # Set the file names for the Filenames and Tags lists to be Loaded or Saved.
-    corpus_files_lst_path = self.state_save_path + '/Corpus_filenames_sorted.lst'
-    corpus_tags_lst_path = self.state_save_path + '/Corpus_tags_sorted.lst'
+    corpus_files_lst_path = state_path + '/Corpus_filenames_sorted.lst'
+    corpus_tags_lst_path = state_path + '/Corpus_tags_sorted.lst'
 
     if os.path.exists(corpus_files_lst_path) and os.path.exists(corpus_tags_lst_path):
 
@@ -48,7 +43,7 @@ def LoadCrpsFnamesTags(raw_corpus_files_path=None, process_state_saving_path=Non
         for i, g in enumerate(self.classes_lst):
 
             # Get all files located to the genre's path 'g'
-            gnrs_file_lst = file_list_frmpaths(self.corpus_files_path, [str(g + "/html/")])
+            gnrs_file_lst = file_list_frmpaths(rawcrps_fpath, [str(g + "/html/")])
 
             # Extends the list of html files with the set of files form genre 'g'.
             html_file_l.extend(gnrs_file_lst)
