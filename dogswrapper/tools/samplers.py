@@ -3,10 +3,11 @@
 # Tools for spliting the Samples into Folds and Openness Splits
 #
 
+import cPickle as pickle
 import numpy as np
 
 
-def SelectStratifiedKfolds(self, smpls_num, kfolds):
+def SelectStratifiedKfolds(smpls_num, kfolds):
 
     tS_splt_lst = list()
     Tr_splt_lst = list()
@@ -42,7 +43,7 @@ def SelectStratifiedKfolds(self, smpls_num, kfolds):
     return Tr_splt_lst, tS_splt_lst
 
 
-def OpennessSplitSamples(self, cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, kfolds):
+def OpennessSplitSamples(cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, kfolds):
 
     # Converting to numpy.array for compatibility with array operations.
     cls_tgs_lst = np.array(cls_tgs_lst)
@@ -121,6 +122,8 @@ def SaveSplitSamples(train_splts, test_splts, onlyt_splts, ukn_cls_num, ukn_iter
     splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
     trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
+
+    print 'SAVE', trn_fname
     with open(trn_fname, 'w') as f:
         pickle.dump(train_splts, f)
 
@@ -140,16 +143,17 @@ def LoadSplitSamples(ukn_cls_num, ukn_iters, save_path):
     splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
     trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
-    with open(trn_fname, 'w') as f:
+    print 'LOAD', trn_fname
+    with open(trn_fname, 'r') as f:
         train_splts = pickle.load(f)
 
     test_fname = save_path + 'Testing_Splits' + splt_fname_suffix + '.pkl'
-    with open(test_fname, 'w') as f:
+    with open(test_fname, 'r') as f:
         test_splts = pickle.load(f)
 
     onlytest_fname = save_path + 'OnlyTesting_Splits' +\
         splt_fname_suffix + '.pkl'
-    with open(onlytest_fname, 'w') as f:
+    with open(onlytest_fname, 'r') as f:
         onlyt_splts = pickle.load(f)
 
     return train_splts, test_splts, onlyt_splts

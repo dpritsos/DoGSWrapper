@@ -31,4 +31,4 @@ def nnrd_eval(*args):
     pre_y, pre_r = osnndr.predict(corpus_mtrx[crv_idxs, :])
 
     # Returning the results.
-    return pre_y, pre_r, rt
+    return {'predicted_Y': pre_y, 'predictedR': pre_r, 'optimal_RT': rt}

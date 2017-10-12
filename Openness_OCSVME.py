@@ -6,13 +6,13 @@ import os
 import sys
 
 # sys.path.append('../../synergeticprocessing/src')
-sys.path.append('../../html2vectors')
+sys.path.append('../../')
 sys.path.append('../dogswrapper')
 
-# import html2vect.sparse.cngrams as h2v_cng
-# import html2vect.sparse.wngrams as h2v_wcng
-import html2vect.tables.cngrams as h2v_cng
-# import html2vect.tables.wngrams as h2v_wng
+# import html2vec.sparse.cngrams as h2v_cng
+# import html2vec.sparse.wngrams as h2v_wcng
+import html2vec.tables.cngrams as h2v_cng
+# import html2vec.tables.wngrams as h2v_wng
 from base.opensetcrossval import OpenSetParamGridSearchBase, OpenSetParamGridSearchTables
 from wrappedmodels.ocsvme import OCSVME_Wrapped
 

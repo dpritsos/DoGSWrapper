@@ -3,8 +3,12 @@ import os
 import numpy as np
 import json
 
+import sys
+sys.path.append('../../../')
+from html2vec.base.io.basefilehandlers import file_list_frmpaths
 
-def LoadCrpsFnamesTags(rawcrps_fpath, state_path):
+
+def LoadCrpsFnamesTags(rawcrps_fpath, state_path, classes_lst):
 
     if not os.path.exists(rawcrps_fpath):
         raise Exception("Corpus files path does not exist.")
@@ -40,7 +44,7 @@ def LoadCrpsFnamesTags(rawcrps_fpath, state_path):
 
         # Get the list of Genre argument as given to this Class and build html-file-list...
         # ...and class-genres-tags list
-        for i, g in enumerate(self.classes_lst):
+        for i, g in enumerate(classes_lst):
 
             # Get all files located to the genre's path 'g'
             gnrs_file_lst = file_list_frmpaths(rawcrps_fpath, [str(g + "/html/")])

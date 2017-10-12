@@ -6,17 +6,16 @@ import cPickle as pickle
 import numpy as np
 import tables as tb
 import scipy.sparse as ssp
+import collections as coll
 
-from ..tools.loaders import LoadCrpsFnameTags
+from ..tools.loaders import LoadCrpsFnamesTags
 from ..tools.samplers import OpennessSplitSamples, SelectStratifiedKfolds
 from ..tools.samplers import LoadSplitSamples, SaveSplitSamples
-from ..tools.param_combs import ParamGridIter
-from ..tools.normalizers import MaxNormalise, SubSamplingNorm
+from ..tools.paramcombs import ParamGridIter
 
 import sys
 sys.path.append('../../../')
 from html2vec.utils import tfdutils
-from html2vec.base.io.basefilehandlers import file_list_frmpaths
 
 
 class OpennessParamGridSearchTables(object):
@@ -34,7 +33,6 @@ class OpennessParamGridSearchTables(object):
         self.error_handling = error_handling
         self.encoding = encoding
         self.norm_func = norm_func
-        self.html_file_l = None
 
         self.corps_fpath = corpus_fpath
         if not os.path.exists(self.corps_fpath):
@@ -46,19 +44,29 @@ class OpennessParamGridSearchTables(object):
             os.mkdir(self.state_path)
             print "New process-state saving path is: '" + self.state_path + "'"
 
+        # Loading the Filename list of the corpus and their respective class tags.
+        self.html_file_l, self.cls_tgs = LoadCrpsFnamesTags(
+            self.corps_fpath, self.state_path, self.classes_lst
+        )
+
     def create_openness_iset(self):
 
-        ukn_iters = len(params_range['uknw_ctgs_num_splt_itrs'])
+        if not os.path.exists(self.corps_fpath):
+            raise Exception("Corpus files path does not exist.")
+
+        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
+        kfolds = len(self.params_range['kfolds'])
 
         # Creating the Openness Kfold-Splits.
-        for params in ParamGridIter(params_range):
+        # NOTE: KFolds here are given as a count not as part of Param Grid Iteratable sets.
+        for params in ParamGridIter(coll.OrderedDict(self.params_range.items()[0:-2])):
 
             # Building the splits.
             train_splts, test_splts, onlyt_splts = OpennessSplitSamples(
-                    cls_tgs,
+                    self.cls_tgs,
                     onlytest_clsnum=params['uknw_ctgs_num'],
                     uknw_ctgs_num_splt_itrs=ukn_iters,
-                    kfolds=len(params_range['kfolds'])
+                    kfolds=kfolds
             )
 
             SaveSplitSamples(
@@ -70,7 +78,10 @@ class OpennessParamGridSearchTables(object):
 
         # Building the Vocabularies for all Splits/Folds
         print "Building Vocabularies..."
-        for params in ParamGridIter(params_range):
+
+        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
+
+        for params in ParamGridIter(self.params_range):
 
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
                 params['uknw_ctgs_num'], ukn_iters, self.state_path
@@ -100,7 +111,7 @@ class OpennessParamGridSearchTables(object):
 
     def build_corpusmatrix_on_openness_iset(self):
 
-        for params in ParamGridIter(params_range):
+        for params in ParamGridIter(self.params_range):
 
             # Loading Vocabulary.
             split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
@@ -122,24 +133,23 @@ class OpennessParamGridSearchTables(object):
             # ...descending order
             tid_vocab = tfdutils.tf2tidx(resized_tf_vocab)
 
-            # Building the corpus matrix with a specific Normalizing function.
-            # NOTE: The corpus is max-normalized.
-            print "Building the Corpus Matrix (Tables) Doc2Vec..."
-
             corpus_fname = self.state_path + 'Corpus_' +\
-                'VS' + str(params['vocab_size']) + split_suffix + '.pkl'
+                'VS' + str(params['vocab_size']) + split_suffix + '.h5'
 
             # Creating TF Vectors Matrix (pyTables TF EArray)
-            corpus_mtrx, h5f = self.terms_model.from_files(
+            res = self.terms_model.from_files(
                 xhtml_file_l=list(self.html_file_l),
                 tid_vocabulary=tid_vocab, norm_func=self.norm_func,
                 h5_fname=corpus_fname,
                 encoding=self.encoding, error_handling=self.encoding
             )
 
+            corpus_mtrx = res[0]
+            h5f = res[1]
+
             # Saving TF Vectors Corpus Matrix
             h5f.close()
-            h5f = tb.open_file(filename + '.h5', 'r+')
+            h5f = tb.open_file(corpus_fname, 'r+')
             corpus_mtrx = h5f.get_node('/',  'corpus_earray')
 
             """
@@ -149,13 +159,46 @@ class OpennessParamGridSearchTables(object):
                 pickle.dump(corpus_mtrx, f)
             """
 
-    def evaluate_on_openness_iset(self):
+    def build_corpusmatrix_on_dlparams(self):
 
-        if not os.path.exists(self.corps_fpath):
-            raise Exception("Corpus files path does not exist.")
+        for params in ParamGridIter(self.params_range):
 
-        # Loading the Filename list of the corpus and their respective class tags.
-        self.html_file_l, cls_tgs = LoadCrpsFnamesTags(self.corps_fpath, self.state_path)
+            # Building the corpus matrix with a specific Normalizing function.
+            # NOTE: The corpus here will NOT be normalized.
+            print "Building the Corpus Matrix (Tables) GensimVec..."
+
+            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
+                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
+                '_kF' + str(params['kfolds'])
+
+            corpus_fname = self.state_path + 'Corpus_' +\
+                'GDims' + str(params['dims']) +\
+                'GParams' + str(params['min_trm_fq']) + '_' +\
+                str(params['win_size']) + '_' +\
+                str(params['algo']) + '_' +\
+                str(params['alpha']) + '_' +\
+                str(params['min_alpha']) + '_' +\
+                str(params['epochs']) + '_' +\
+                str(params['decay']) + '_' +\
+                split_suffix + '.h5'
+
+            corpus_mtrx, h5f = self.terms_model.from_files(
+                xhtml_file_l=list(self.html_file_l), norm_func=self.norm_func,
+
+                # Specific paramtera for Gensim.
+                dims=params['dims'], min_trm_fq=params['min_trm_fq'], win_size=params['win_size'],
+                algo=params['algo'], alpha=params['alpha'], min_alpha=params['min_alpha'],
+                epochs=params['epochs'], decay=params['decay'],
+
+                h5_fname=corpus_fname, encoding=self.encoding, error_handling=self.encoding
+            )
+
+            # Saving TF Vectors Corpus Matrix
+            h5f.close()
+            h5f = tb.open_file(corpus_fname, 'r+')
+            corpus_mtrx = h5f.get_node('/',  'corpus_earray')
+
+    def evaluate_on_openness_deepl(self):
 
         # Loading the last good states list for skipping the sates which already has been evaluated.
         last_goodstate_lst = list()
@@ -163,14 +206,12 @@ class OpennessParamGridSearchTables(object):
             with open(self.state_path+'last_good_sate.jsn', 'r') as f:
                 last_goodstate_lst = json.load(f)
 
-        # ukn_iters = len(params_range['uknw_ctgs_num_splt_itrs'])
-
         # Setting initial value for the variable will be used also for not re-loading a file has...
         # ...been loaded in the exact previous iteration.
         last_splt_fname_suffix = ''
 
         # Starting Parameters Grid Search
-        for gci, params in enumerate(param_combs.ParamGridIter(params_range)):
+        for gci, params in enumerate(ParamGridIter(self.params_range)):
 
             # Show how many Grid Search Parameter combinations are renaming.
             print "Param Grid Counts:", gci+1
@@ -187,7 +228,149 @@ class OpennessParamGridSearchTables(object):
                     next_group = self.h5_res.get_node(
                         next_group, pname+str(pvalue).replace('.', '')
                     )
-                except as exp_signal:
+                except Exception as exp_signal:
+                    next_group = self.h5_res.create_group(
+                        next_group, pname+str(pvalue).replace('.', ''), "<Comment>"
+                    )
+            # # # END- Group creation sequence
+
+            # Setting initial value for the variable will be used also for not re-loading
+            # ...a file has been loaded in the exact previous iteration.
+            last_corpus_fname = ''
+
+            # Skipping the states that have already been tested.
+            this_state_params = params.values()
+            # print last_goodstate_lst
+            if this_state_params in last_goodstate_lst:
+                print "Skipping already tested state: ", this_state_params
+                continue
+
+            # Loading corpus matrix for this Sub-Split.
+            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
+                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
+                '_kF' + str(params['kfolds'])
+
+            corpus_fname = self.state_path + 'Corpus_' +\
+                'GDims' + str(params['dims']) +\
+                'GParams' + str(params['min_trm_fq']) + '_' +\
+                str(params['win_size']) + '_' +\
+                str(params['algo']) + '_' +\
+                str(params['alpha']) + '_' +\
+                str(params['min_alpha']) + '_' +\
+                str(params['epochs']) + '_' +\
+                str(params['decay']) + '_' +\
+                split_suffix + '.pkl'
+
+            # If not already loading the corpus matrix.
+            if last_corpus_fname != corpus_fname:
+
+                # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
+                corpus_mtrx, file_obj = self.LoadCorpusMatrix(corpus_fname, '/')
+
+                # Selecting Cross Validation Set.
+                # Getting the Indeces of samples for each part of the testing sub-split.
+                tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+                onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+
+                # Getting the full testing-samples class tags, including the original class..
+                # ...tags of the only-test classes.
+                expected_Y = self.cls_tgs[tsp_idxs]
+
+                # Preplacing with class tags of the sammples which are are belonging to the...
+                # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
+                # ...expected predictions.
+                expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
+
+                # Evaluating Semi-Supervised Classification Method.
+                print "EVALUATING"
+                # predicted_Y, predicted_scores, model_specific_d = self.model(
+                #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     corpus_mtrx,
+                #     self.cls_tgs,
+                #     params
+                # )
+
+                res_d = self.model(
+                    train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                    test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                    expected_Y,
+                    corpus_mtrx,
+                    self.cls_tgs,
+                    params
+                )
+
+                # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
+                #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                #     expected_Y,
+                #     corpus_mtrx,
+                #     self.cls_tgs,
+                #     params
+                # )
+
+                print 'P Y shape:', predicted_Y.shape
+                print 'E Y shape:', expected_Y.shape
+
+                'max_sim_scores_per_iter'
+                'predicted_classes_per_iter'
+
+                # Saving results
+                for rname, rval in res_d.items():
+
+                    self.h5_res.create_array(
+                        next_group, rname, rval,
+                        ""
+                    )
+
+                # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
+                if file_obj is not None:
+                    file_obj.close()
+
+                # Saving the last good state. Then the process can continue after this state in...
+                # ...order not to start every Evaluation again.
+                with open(self.state_path+'last_good_sate.jsn', 'w') as f:
+                    pram_vals = params.values()
+                    last_goodstate_lst.append(pram_vals)
+                    json.dump(last_goodstate_lst, f)
+
+        # Return Results H5 File handler class
+        return self.h5_res
+
+    def evaluate_on_openness_iset(self):
+
+        if not os.path.exists(self.corps_fpath):
+            raise Exception("Corpus files path does not exist.")
+
+        # Loading the last good states list for skipping the sates which already has been evaluated.
+        last_goodstate_lst = list()
+        if os.path.exists(self.state_path + 'last_good_sate.jsn'):
+            with open(self.state_path + 'last_good_sate.jsn', 'r') as f:
+                last_goodstate_lst = json.load(f)
+
+        # Setting initial value for the variable will be used also for not re-loading a file has...
+        # ...been loaded in the exact previous iteration.
+        last_splt_fname_suffix = ''
+
+        # Starting Parameters Grid Search
+        for gci, params in enumerate(ParamGridIter(self.params_range)):
+
+            # Show how many Grid Search Parameter combinations are renaming.
+            print "Param Grid Counts:", gci+1
+
+            print "Params: ", params
+
+            # # # Creating the group sequence respectively to the models parameters:
+            # Assigning Feature number group to next_group parameter for initializing the loop
+            next_group = self.h5_res.root
+
+            # Start the loop of creating or getting group nodes in respect to model parameters
+            for pname, pvalue in params.items():
+                try:
+                    next_group = self.h5_res.get_node(
+                        next_group, pname+str(pvalue).replace('.', '')
+                    )
+                except Exception as exp_signal:
                     next_group = self.h5_res.create_group(
                         next_group, pname+str(pvalue).replace('.', ''), "<Comment>"
                     )
@@ -225,7 +408,7 @@ class OpennessParamGridSearchTables(object):
 
                 # Getting the full testing-samples class tags, including the original class..
                 # ...tags of the only-test classes.
-                expected_Y = cls_tgs[tsp_idxs]
+                expected_Y = self.cls_tgs[tsp_idxs]
 
                 # Preplacing with class tags of the sammples which are are belonging to the...
                 # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
@@ -238,15 +421,16 @@ class OpennessParamGridSearchTables(object):
                 #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 #     corpus_mtrx,
-                #     cls_tgs,
+                #     self.cls_tgs,
                 #     params
                 # )
+
 
                 predicted_Y, predicted_R, optimal_RT = self.model(
                     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                     corpus_mtrx,
-                    cls_tgs,
+                    self.cls_tgs,
                     params
                 )
 
@@ -255,7 +439,7 @@ class OpennessParamGridSearchTables(object):
                 #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 #     expected_Y,
                 #     corpus_mtrx,
-                #     cls_tgs,
+                #     self.cls_tgs,
                 #     params
                 # )
 
@@ -266,7 +450,25 @@ class OpennessParamGridSearchTables(object):
                 'predicted_classes_per_iter'
 
                 # Saving results
+                for rname, rval in res_d.items():
 
+                    self.h5_res.create_array(
+                        next_group, rname, rval,
+                        ""
+                    )
+
+                # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
+                if file_obj is not None:
+                    file_obj.close()
+
+                # Saving the last good state. Then the process can continue after this state in...
+                # ...order not to start every Evaluation again.
+                with open(self.state_path+'last_good_sate.jsn', 'w') as f:
+                    pram_vals = params.values()
+                    last_goodstate_lst.append(pram_vals)
+                    json.dump(last_goodstate_lst, f)
+
+                """
                 self.h5_res.create_array(
                     next_group, 'expected_Y', expected_Y,
                     ""
@@ -284,7 +486,6 @@ class OpennessParamGridSearchTables(object):
                     ""
                 )
 
-                """
                 self.h5_res.create_array(
                     next_group, 'predicted_Y', predicted_Y,
                     ""
@@ -313,22 +514,10 @@ class OpennessParamGridSearchTables(object):
                         self.h5_res.create_array(next_group, name, value, "<Comment>")[:]
 
                 """
-
-                # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
-                if file_obj is not None:
-                    file_obj.close()
-
-                # Saving the last good state. Then the process can continue after this state in...
-                # ...order not to start every Evaluation again.
-                with open(self.state_path+'last_good_sate.jsn', 'w') as f:
-                    pram_vals = params.values()
-                    last_goodstate_lst.append(pram_vals)
-                    json.dump(last_goodstate_lst, f)
-
         # Return Results H5 File handler class
         return self.h5_res
 
-
+"""
 class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
 
     def __init__(self, model, terms_model_module, class_names_lst,
@@ -378,3 +567,4 @@ class OpenSetParamGridSearchTables(OpenSetParamGridSearchBase):
             return None, None
 
         return (corpus_mtrx, h5f)
+"""
