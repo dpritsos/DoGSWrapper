@@ -35,6 +35,14 @@ params_range = coll.OrderedDict([
     ('vocab_size', [500]),
     ('features_size', [100]),
     ('nu', [0.07]),  # 0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9
+    ('dims', [300]),
+    ('min_trm_fq', [2]),
+    ('win_size', [8]),
+    ('algo', ['PV-DBOW']),
+    ('alpha', [0.025]),
+    ('min_alpha', [0.025]),
+    ('epochs', [3]),
+    ('decay', [0.002]),
     ('uknw_ctgs_num', [1]),
     ('uknw_ctgs_num_splt_itrs', [0, 1]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -46,7 +54,9 @@ params_range = coll.OrderedDict([
 # )
 
 char_n_gram_size = 4
-tables_cng = h2v_cng.Html2TF(
+
+# tables_cng = h2v_cng.Html2TF(
+tables_cng = h2v_cng.Html2GsmVec(
     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
 
@@ -57,10 +67,13 @@ openness_searchgrid = OpennessParamGridSearchTables(
     state_saving_path, norm_func=MaxNormalise, error_handling='replace', encoding='utf-8'
 )
 
-# openness_searchgrid.create_openness_iset()
+openness_searchgrid.create_openness_iset()
 # openness_searchgrid.build_vocabulary_on_openness_iset()
 # openness_searchgrid.build_corpusmatrix_on_openness_iset()
-results_h5 = openness_searchgrid.evaluate_on_openness_iset()
+# results_h5 = openness_searchgrid.evaluate_on_openness_iset()
+
+openness_searchgrid.build_corpusmatrix_on_dlparams()
+results_h5 = openness_searchgrid.evaluate_on_dlparams()
 
 print results_h5
 

@@ -123,7 +123,6 @@ def SaveSplitSamples(train_splts, test_splts, onlyt_splts, ukn_cls_num, ukn_iter
 
     trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
 
-    print 'SAVE', trn_fname
     with open(trn_fname, 'w') as f:
         pickle.dump(train_splts, f)
 
@@ -143,7 +142,7 @@ def LoadSplitSamples(ukn_cls_num, ukn_iters, save_path):
     splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
     trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
-    print 'LOAD', trn_fname
+
     with open(trn_fname, 'r') as f:
         train_splts = pickle.load(f)
 

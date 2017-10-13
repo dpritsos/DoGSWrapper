@@ -108,13 +108,10 @@ class OCSVME_Wrapped(object):
         # Execute predict() with gnr_classes which triggers simple RFSE (non Bagging)
         results = self.predict(crv_idxs, corpus_mtrx, params, gnr_classes)
 
-        # Expected Results for the ParamGridCrossValBase class in paramgridcrossval module
-        predicted_Y = results[0]
-        predicted_scores = results[1]
-        model_specific_d = {
+        # Return results as expected form ParamGridCrossValBase class
+        return {
+            'predicted_Y': results[0],
+            'predicted_scores': results[1],
             'predicted_Y_per_gnr': results[2],
             'predicted_dist_per_gnr': results[3]
         }
-
-        # Return results as expected form ParamGridCrossValBase class
-        return predicted_Y, predicted_scores, model_specific_d
