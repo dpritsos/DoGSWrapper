@@ -61,12 +61,17 @@ class OpennessParamGridSearchTables(object):
                     print "Skipping Index Splits/Folds Sets creation"
                     return
 
+        # NOTE: Selecting the required parameter ranges for this process only.
+        selected_params = coll.OrderedDict([
+            ('uknw_ctgs_num', self.params_range['uknw_ctgs_num']),
+        ])
+
         ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
         kfolds = len(self.params_range['kfolds'])
 
         # Creating the Openness Kfold-Splits.
         # NOTE: KFolds here are given as a count not as part of Param Grid Iteratable sets.
-        for params in ParamGridIter(coll.OrderedDict(self.params_range.items()[0:-2])):
+        for params in ParamGridIter(selected_params):
 
             # Building the splits.
             train_splts, test_splts, onlyt_splts = OpennessSplitSamples(
@@ -96,12 +101,19 @@ class OpennessParamGridSearchTables(object):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
 
+        # NOTE: Selecting the required parameter ranges for this process only.
+        selected_params = coll.OrderedDict([
+            ('uknw_ctgs_num', self.params_range['uknw_ctgs_num']),
+            ('uknw_ctgs_num_splt_itrs', self.params_range['uknw_ctgs_num_splt_itrs']),
+            ('kfolds', self.params_range['kfolds']),
+        ])
+
         ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
 
-        for params in ParamGridIter(self.params_range):
+        for params in ParamGridIter(selected_params):
 
             # Skipping the Creating of this Vocabulary if alaready created.
-            this_state = ['Vocabulary for: ' + str(params) + '- Created']
+            this_state = ['Vocabulary for: ' + str(params) + ' - Created']
             if this_state in last_goodstate:
                 print "Skipping Vocabulary creation for: " + str(params)
                 continue
@@ -147,10 +159,18 @@ class OpennessParamGridSearchTables(object):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
 
-        for params in ParamGridIter(self.params_range):
+        # NOTE: Selecting the required parameter ranges for this process only.
+        selected_params = coll.OrderedDict([
+            ('vocab_size', self.params_range['vocab_size']),
+            ('uknw_ctgs_num', self.params_range['uknw_ctgs_num']),
+            ('uknw_ctgs_num_splt_itrs', self.params_range['uknw_ctgs_num_splt_itrs']),
+            ('kfolds', self.params_range['kfolds']),
+        ])
+
+        for params in ParamGridIter(selected_params):
 
             # Skipping the Creating of this Corpus Matrix if alaready created.
-            this_state = ['Corpus Matrix for: ' + str(params) + '- Created']
+            this_state = ['Corpus Matrix for: ' + str(params) + ' - Created']
             if this_state in last_goodstate:
                 print "Skipping Corpus Matrix creation for: " + str(params)
                 continue
@@ -216,10 +236,22 @@ class OpennessParamGridSearchTables(object):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
 
-        for params in ParamGridIter(self.params_range):
+        # NOTE: Selecting the required parameter ranges for this process only.
+        selected_params = coll.OrderedDict([
+            ('dims', self.params_range['dims']),
+            ('min_trm_fq', self.params_range['min_trm_fq']),
+            ('win_size', self.params_range['win_size']),
+            ('algo', self.params_range['algo']),
+            ('alpha', self.params_range['alpha']),
+            ('min_alpha', self.params_range['min_alpha']),
+            ('epochs', self.params_range['epochs']),
+            ('decay', self.params_range['decay']),
+        ])
+
+        for params in ParamGridIter(selected_params):
 
             # Skipping the Creating of this Corpus Matrix if alaready created.
-            this_state = ['Corpus Matrix for: ' + str(params) + '- Created']
+            this_state = ['Corpus Matrix for: ' + str(params) + ' - Created']
             if this_state in last_goodstate:
                 print "Skipping Corpus Matrix creation for: " + str(params)
                 continue
@@ -227,10 +259,6 @@ class OpennessParamGridSearchTables(object):
             # Building the corpus matrix with a specific Normalizing function.
             # NOTE: The corpus here will NOT be normalized.
             print "Building the Corpus Matrix (Tables) GensimVec..."
-
-            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
-                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
-                '_kF' + str(params['kfolds'])
 
             corpus_fname = self.state_path + 'Corpus_' +\
                 'GDims' + str(params['dims']) +\
@@ -240,10 +268,9 @@ class OpennessParamGridSearchTables(object):
                 str(params['alpha']) + '_' +\
                 str(params['min_alpha']) + '_' +\
                 str(params['epochs']) + '_' +\
-                str(params['decay']) + '_' +\
-                split_suffix + '.h5'
+                str(params['decay']) + '.h5'
 
-            corpus_mtrx, h5f = self.terms_model.from_files(
+            res = self.terms_model.from_files(
                 xhtml_file_l=list(self.html_file_l), norm_func=self.norm_func,
 
                 # Specific paramtera for Gensim.
@@ -253,6 +280,9 @@ class OpennessParamGridSearchTables(object):
 
                 h5_fname=corpus_fname, encoding=self.encoding, error_handling=self.encoding
             )
+
+            corpus_mtrx = res[0]
+            h5f = res[1]
 
             # Saving TF Vectors Corpus Matrix
             h5f.close()
@@ -264,7 +294,7 @@ class OpennessParamGridSearchTables(object):
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
 
-    def evaluate_on_openness_deepl(self):
+    def evaluate_on_openness_dlparams(self):
 
         print "EVALUATING..."
 
@@ -272,6 +302,8 @@ class OpennessParamGridSearchTables(object):
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
+
+        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
 
         # Starting Parameters Grid Search
         for gci, params in enumerate(ParamGridIter(self.params_range)):
@@ -315,8 +347,7 @@ class OpennessParamGridSearchTables(object):
                 str(params['alpha']) + '_' +\
                 str(params['min_alpha']) + '_' +\
                 str(params['epochs']) + '_' +\
-                str(params['decay']) + '_' +\
-                split_suffix + '.pkl'
+                str(params['decay']) + '.h5'
 
             # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
             h5f = tb.open_file(corpus_fname, 'r+')
@@ -324,6 +355,10 @@ class OpennessParamGridSearchTables(object):
 
             # Selecting Cross Validation Set.
             # Getting the Indeces of samples for each part of the testing sub-split.
+            train_splts, test_splts, onlyt_splts = LoadSplitSamples(
+                params['uknw_ctgs_num'], ukn_iters, self.state_path
+            )
+
             tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
             onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
 
@@ -336,9 +371,12 @@ class OpennessParamGridSearchTables(object):
             # ...expected predictions.
             expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
+            # NOTE NOTE NOTE
+            self.h5_res.create_array(next_group, 'expected_Y', expected_Y, "")
+
             # Evaluating Semi-Supervised Classification Method.
             print "EVALUATING"
-            res_d = self.model(
+            res_d = self.model.eval(
                 train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 # expected_Y,
@@ -376,6 +414,8 @@ class OpennessParamGridSearchTables(object):
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
+
+        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
 
         # Starting Parameters Grid Search
         for gci, params in enumerate(ParamGridIter(self.params_range)):
@@ -420,7 +460,6 @@ class OpennessParamGridSearchTables(object):
 
             # Selecting Cross Validation Set.
             # Getting the Indeces of samples for each part of the testing sub-split.
-            ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
                 params['uknw_ctgs_num'], ukn_iters, self.state_path
             )

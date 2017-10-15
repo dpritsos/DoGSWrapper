@@ -33,7 +33,7 @@ class OCSVME_Wrapped(object):
             # Convert TF vectors to Binary
             # crp_arr_bin = np.where(corpus_mtrx[inds_per_gnr[g], :].toarray() > 0, 1, 0)
 
-            # Fit OC-SVM Model to Data of this genre
+            # Fit OC-SVM Model to Data of this genre.
             gnr_classes[g].fit(corpus_mtrx[inds_per_gnr[g], 0::])  # params['features_size']])
             # ###for Sparse Matrix it might require corpus_mtrx[inds_per_gnr[g], :].toarray()
 

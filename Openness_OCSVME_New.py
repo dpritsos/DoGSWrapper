@@ -19,7 +19,7 @@ from dogswrapper.wrappedmodels.ocsvme import OCSVME_Wrapped
 # Santini's 7-genres Corpus
 corpus_filepath = "/media/dimitrios/TurnstoneDisk/KI-04/"
 state_saving_path = "/media/dimitrios/TurnstoneDisk/KI-04/" +\
-    "Openness_OCSVME_C4G_KI04_8Iter_MaxNorm_TESTINGCODE_2017_10_11/"
+    "Openness_OCSVME_C4G_KI04_Gensim_2017_10_14/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -29,22 +29,22 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_KI04_1Iter_TESTINGCODE_2017_10_11.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_KI04_2017_10_11.h5', 'a')
 
 params_range = coll.OrderedDict([
     ('vocab_size', [500]),
-    ('features_size', [100]),
-    ('nu', [0.07]),  # 0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9
-    ('dims', [300]),
-    ('min_trm_fq', [2]),
+    ('features_size', [25]),
+    ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
+    ('dims', [50, 100, 250]),
+    ('min_trm_fq', [3]),
     ('win_size', [8]),
     ('algo', ['PV-DBOW']),
     ('alpha', [0.025]),
     ('min_alpha', [0.025]),
     ('epochs', [3]),
     ('decay', [0.002]),
-    ('uknw_ctgs_num', [1]),
-    ('uknw_ctgs_num_splt_itrs', [0, 1]),
+    ('uknw_ctgs_num', [1, 4, 7]),
+    ('uknw_ctgs_num_splt_itrs', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
 
@@ -64,7 +64,9 @@ openness_model = OCSVME_Wrapped(genres)
 
 openness_searchgrid = OpennessParamGridSearchTables(
     openness_model, tables_cng, params_range, genres, corpus_filepath, method_results,
-    state_saving_path, norm_func=MaxNormalise, error_handling='replace', encoding='utf-8'
+    state_saving_path, error_handling='replace', encoding='utf-8',
+    norm_func=MaxNormalise,
+    # norm_func=None,
 )
 
 openness_searchgrid.create_openness_iset()
@@ -73,7 +75,7 @@ openness_searchgrid.create_openness_iset()
 # results_h5 = openness_searchgrid.evaluate_on_openness_iset()
 
 openness_searchgrid.build_corpusmatrix_on_dlparams()
-results_h5 = openness_searchgrid.evaluate_on_dlparams()
+results_h5 = openness_searchgrid.evaluate_on_openness_dlparams()
 
 print results_h5
 
