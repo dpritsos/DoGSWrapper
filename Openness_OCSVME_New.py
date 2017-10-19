@@ -29,7 +29,7 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_KI04_CTG_2017_10_16.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_KI04_NoNorm_2017_10_16.h5', 'a')
 
 params_range = coll.OrderedDict([
     ('vocab_size', [500]),
@@ -60,8 +60,8 @@ tables_cng = h2v_cng.Html2GsmVec(
     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
 
-# openness_model = OCSVME_Wrapped(genres)
-openness_model = OCSVMEDMPG_Wrapped(genres)
+openness_model = OCSVME_Wrapped(genres)
+# openness_model = OCSVMEDMPG_Wrapped(genres)
 
 openness_searchgrid = OpennessParamGridSearchTables(
     openness_model, tables_cng, params_range, genres, corpus_filepath, method_results,
@@ -75,9 +75,10 @@ openness_searchgrid.create_openness_iset()
 # openness_searchgrid.build_corpusmatrix_on_openness_iset()
 # results_h5 = openness_searchgrid.evaluate_on_openness_iset()
 
-# openness_searchgrid.build_corpusmatrix_on_dlparams()
-openness_searchgrid.build_corpusmatrix_on_dlparams_per_gnr()
-results_h5 = openness_searchgrid.evaluate_on_openness_dlparams_per_gnr()
+openness_searchgrid.build_corpusmatrix_on_dlparams()
+# openness_searchgrid.build_corpusmatrix_on_dlparams_per_gnr()
+# results_h5 = openness_searchgrid.evaluate_on_openness_dlparams_per_gnr()
+results_h5 = openness_searchgrid.evaluate_on_openness_dlparams()
 
 print results_h5
 

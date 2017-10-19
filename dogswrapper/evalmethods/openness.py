@@ -278,7 +278,7 @@ class OpennessParamGridSearchTables(object):
                 algo=params['algo'], alpha=params['alpha'], min_alpha=params['min_alpha'],
                 epochs=params['epochs'], decay=params['decay'],
 
-                trn_idxs=None,
+                trn_idxs=[None],
 
                 h5_fname=corpus_fname, encoding=self.encoding, error_handling=self.encoding
             )
