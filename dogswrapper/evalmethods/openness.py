@@ -14,6 +14,8 @@ from ..tools.samplers import OpennessSplitSamples, SelectStratifiedKfolds
 from ..tools.samplers import LoadSplitSamples, SaveSplitSamples
 from ..tools.paramcombs import ParamGridIter
 
+import time as tm
+
 import sys
 sys.path.append('../../../')
 from html2vec.utils import tfdutils
@@ -388,10 +390,16 @@ class OpennessParamGridSearchTables(object):
         # Starting Parameters Grid Search
         for gci, params in enumerate(ParamGridIter(self.params_range)):
 
+            ############################################################
+            # Works only in for RFSE and OCSVME.
+            if params['features_size'] > params['dims']:
+                continue
+            ############################################################
+
             # Skipping the Evaluation for this Parameters Set.
             this_state = ['Evaluation for: ' + str(params) + '- Done']
             if this_state in last_goodstate:
-                print "Skipping Corpus Matrix creation for: " + str(params)
+                print "Skipping Classification Model Evaluation for: " + str(params)
                 continue
 
             # Show how many Grid Search Parameter combinations are renaming.
@@ -454,6 +462,9 @@ class OpennessParamGridSearchTables(object):
             # NOTE NOTE NOTE
             self.h5_res.create_array(next_group, 'expected_Y', expected_Y, "")
 
+            # TIME IT
+            # start_tm = tm.time()
+
             # Evaluating Semi-Supervised Classification Method.
             print "EVALUATING"
             res_d = self.model.eval(
@@ -465,8 +476,13 @@ class OpennessParamGridSearchTables(object):
                 params
             )
 
-            print 'P Y shape:', res_d['predicted_Y'].shape
-            print 'E Y shape:', expected_Y.shape
+            # TIME IT
+            # timel = tm.gmtime(tm.time() - start_tm)[3:6] + ((tm.time() - int(start_tm))*1000,)
+            # print "Time elapsed : %d:%d:%d:%d" % timel
+            # print
+
+            # print 'P Y shape:', res_d['predicted_Y'].shape
+            # print 'E Y shape:', expected_Y.shape
 
             'max_sim_scores_per_iter'
             'predicted_classes_per_iter'
@@ -501,9 +517,9 @@ class OpennessParamGridSearchTables(object):
         for gci, params in enumerate(ParamGridIter(self.params_range)):
 
             # Skipping the Evaluation for this Parameters Set.
-            this_state = ['Evaluation CTG for: ' + str(params) + '- Done']
+            this_state = ['Evaluation for: ' + str(params) + '- Done']
             if this_state in last_goodstate:
-                print "Skipping Corpus Matrix creation for: " + str(params)
+                print "Skipping Classification Model Evaluation for: " + str(params)
                 continue
 
             # Show how many Grid Search Parameter combinations are renaming.

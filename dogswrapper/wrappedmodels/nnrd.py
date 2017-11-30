@@ -7,7 +7,7 @@ sys.path.append('../../')
 import OpenNNDR.onndr.onndr as onndr
 
 
-def nnrd_eval(*args):
+def eval(*args):
 
     # Get Input arguments in given sequence
     trn_idxs = args[0]
@@ -31,4 +31,8 @@ def nnrd_eval(*args):
     pre_y, pre_r = osnndr.predict(corpus_mtrx[crv_idxs, :])
 
     # Returning the results.
-    return {'predicted_Y': pre_y, 'predictedR': pre_r, 'optimal_RT': rt}
+    return {
+        'predicted_Y': pre_y,
+        'predicted_R': pre_r,
+        'optimal_RT': rt
+    }

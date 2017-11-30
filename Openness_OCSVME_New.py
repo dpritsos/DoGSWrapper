@@ -19,7 +19,7 @@ from dogswrapper.wrappedmodels.ocsvme import OCSVME_Wrapped, OCSVMEDMPG_Wrapped
 # Santini's 7-genres Corpus
 corpus_filepath = "/media/dimitrios/TurnstoneDisk/KI-04/"
 state_saving_path = "/media/dimitrios/TurnstoneDisk/KI-04/" +\
-    "Openness_OCSVME_C4G_KI04_Gensim_2017_10_14/"
+    "Openness_C4G_KI04/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -29,21 +29,24 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_KI04_NoNorm_2017_10_16.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_Gensim_KI04_2017_11_13.h5', 'a')
 
 params_range = coll.OrderedDict([
-    ('vocab_size', [500]),
-    ('features_size', [25]),
+    ('vocab_size', [0]),
+    ('features_size', [25, 50, 100]),
+    ('sim_func', ['cosine_sim']),
+    # ('Sigma', [0.5, 0.7, 0.9]),
+    # ('Iterations', [10, 50, 100]),
     ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
-    ('dims', [50, 100, 250]),
-    ('min_trm_fq', [3]),
-    ('win_size', [8]),
+    ('dims', [50, 100, 250, 500, 1000]),
+    ('min_trm_fq', [3, 10]),
+    ('win_size', [3, 8, 20]),
     ('algo', ['PV-DBOW']),
     ('alpha', [0.025]),
     ('min_alpha', [0.025]),
-    ('epochs', [3]),
-    ('decay', [0.002]),
-    ('uknw_ctgs_num', [1, 4, 7]),
+    ('epochs', [1, 3, 10]),
+    ('decay', [0.002, 0.02]),
+    ('uknw_ctgs_num', [1, 2, 3, 4, 5, 6, 7]),
     ('uknw_ctgs_num_splt_itrs', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
@@ -71,15 +74,19 @@ openness_searchgrid = OpennessParamGridSearchTables(
 )
 
 openness_searchgrid.create_openness_iset()
+
 # openness_searchgrid.build_vocabulary_on_openness_iset()
 # openness_searchgrid.build_corpusmatrix_on_openness_iset()
 # results_h5 = openness_searchgrid.evaluate_on_openness_iset()
 
 openness_searchgrid.build_corpusmatrix_on_dlparams()
-# openness_searchgrid.build_corpusmatrix_on_dlparams_per_gnr()
-# results_h5 = openness_searchgrid.evaluate_on_openness_dlparams_per_gnr()
 results_h5 = openness_searchgrid.evaluate_on_openness_dlparams()
 
+# openness_searchgrid.build_corpusmatrix_on_dlparams_per_gnr()
+# results_h5 = openness_searchgrid.evaluate_on_openness_dlparams_per_gnr()
+
 print results_h5
+print "OCSVME Experiments Done!"
+
 
 method_results.close()
