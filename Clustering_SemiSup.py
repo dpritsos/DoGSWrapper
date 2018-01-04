@@ -35,8 +35,7 @@ genres = ["blog", "eshop", "faq", "frontpage", "listing", "php", "spage"]
 method_results = tb.open_file(state_saving_path + 'HMRFKmeans_W1G_7Genres_LSI30.h5', 'a')
 
 params_range = coll.OrderedDict([
-   #  ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
-   ('train_split_step_method', [
+   ('const_split_method', [
       # [0.3, 0.1, 'rndred_trn_rest4_test'],
       [0.50, 0.10, 'rndred_trn_fixed_test'],
    ]),

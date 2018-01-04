@@ -2,11 +2,13 @@
 import tables
 import numpy as np
 import sys
-sys.path.append('../../Djumble/djumble/')
-from cymp.hmrf_km_semi import HMRFKmeans
+sys.path.append('../../')
+from Djumble.djumble.semisupkmeans import HMRFKmeansSemiSup
 
 
-class HMRFKmeans_Wrapped(object):
+
+
+class HMRFKmeansSemiSup_Wrapped(object):
 
     def __init__(self):
         pass
@@ -86,6 +88,18 @@ class HMRFKmeans_Wrapped(object):
 
         # Initializing the HMRF Kmeans Semi-Supervised Clustering Model upon params argument and...
         # k-clusters expected, Must-Link and Cannot-Link constraints.
+
+        self.hkmss = HMRFKmeansSemiSup(
+            k_clusters,
+            must_lnk_con_arr, cannot_lnk_con_arr,
+            init_centroids=init_centrs_arr,
+            ml_wg=1.0, cl_wg=1.0,
+            max_iter=100,
+            cvg=0.001, lrn_rate=0.003,
+            ray_sigma=2.5, d_params=None,
+            icm_max_i=1000,
+            enable_norm=False
+        )
 
         self.hkmeans = HMRFKmeans(
             k_clusters, must_lnk, cannot_lnk, init_centroids=init_centrs,
