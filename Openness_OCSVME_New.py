@@ -29,7 +29,7 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_Gensim_KI04_2017_11_13.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_Gensim_KI04_2017_11_13_NEXT_PART.h5', 'a')
 
 params_range = coll.OrderedDict([
     ('vocab_size', [0]),
