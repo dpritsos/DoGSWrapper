@@ -11,10 +11,18 @@ def SelectStratifiedKfolds(smpls_num, kfolds):
 
     tS_splt_lst = list()
     Tr_splt_lst = list()
-    tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
 
-    smpl_idxs_vect = np.arange(smpls_num)
-    smpl_idxs_choice = np.arange(smpls_num)
+    if type(smpls_num) == int:
+
+        smpl_idxs_vect = np.arange(smpls_num)
+        smpl_idxs_choice = np.arange(smpls_num)
+        tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
+
+    else type(smpls_num) is list:
+
+        smpl_idxs_vect = smpls_num
+        smpl_idxs_choice = smpls_num
+        tst_splt_size = int(np.ceil(len(smpls_num)/float(kfolds)))
 
     for k in np.arange(kfolds):
 
@@ -41,6 +49,30 @@ def SelectStratifiedKfolds(smpls_num, kfolds):
         tS_splt_lst.append(test_smpls)
 
     return Tr_splt_lst, tS_splt_lst
+
+
+def OpenSetSplitSamples(uknw_ctg_lst, cls_tgs_lst, kfolds):
+
+    if not len(uknw_ctg_lst):
+        raise Exception("At lest one class-tag shoud be given as argument")
+
+    knwn_ctgs_idxs_lst = list()
+    uknw_ctgs_idxs_lst = list()
+
+    for i, tag in enumerate(cls_gnr_tgs):
+
+        if tag in uknw_ctg_lst:
+            uknw_ctgs_idxs_lst.append(i)
+        else:
+            knwn_ctgs_idxs_lst.append(i)
+
+    # Creating the Stratifies K-Folds using only the known indeces.
+    trn_slst, tst_slst = SelectStratifiedKfolds(knwn_ctgs_idxs_lst, kfolds)
+
+    # Appending the uknown indeces
+    tst_slst = [tst_l.extend(knwn_ctgs_idxs_lst) for tst_l in tst_slst]
+
+    ##### TO MANY CHANGES I CANNOT RECALL, I SHOULD RECONDICER THIS BY READING THE CODE AGAIN ####
 
 
 def OpennessSplitSamples(cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, kfolds):

@@ -146,6 +146,9 @@ class OpennessParamGridSearchTables(object):
             with open(vocab_fname + '.jsn', 'w') as f:
                 json.dump(tf_vocab, f)
 
+            print len(tf_vocab)
+            0/0
+
             # Saving the last good state.
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
