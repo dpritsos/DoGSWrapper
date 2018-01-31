@@ -12,7 +12,7 @@ sys.path.append('../')
 # import html2vec.tables.cngrams as h2v_cng
 # import html2vec.tables.wngrams as h2v_wng
 import html2vec.tables.posgrams as h2v_pos
-from dogswrapper.evalmethods.openness import OpennessParamGridSearchTables
+from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
 from dogswrapper.wrappedmodels import rfse
 # from dogswrapper.wrappedmodels.rfse_py import RFSE_Wrapped, RFSEDMPG_Wrapped, cosine_similarity

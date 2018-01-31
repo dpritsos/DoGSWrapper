@@ -10,7 +10,7 @@ import scipy.sparse as ssp
 import collections as coll
 
 from ..tools.loaders import LoadCrpsFnamesTags
-from ..tools.samplers import OpennessSplitSamples, SelectStratifiedKfolds
+from ..tools.samplers import OpennessSplitSamples
 from ..tools.samplers import LoadSplitSamples, SaveSplitSamples
 from ..tools.paramcombs import ParamGridIter
 

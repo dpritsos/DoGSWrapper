@@ -10,7 +10,7 @@ import scipy.sparse as ssp
 import collections as coll
 
 from ..tools.loaders import LoadCrpsFnamesTags
-from ..tools.samplers import OpennessSplitSamples, SelectStratifiedKfolds
+from ..tools.samplers import OpenSetUNoiseSpltSamples
 from ..tools.samplers import LoadSplitSamples, SaveSplitSamples
 from ..tools.paramcombs import ParamGridIter
 
@@ -21,7 +21,7 @@ sys.path.append('../../../')
 from html2vec.utils import tfdutils
 
 
-class OpennessParamGridSearchTables(object):
+class OpenSetParamGridSearchTables(object):
 
     def __init__(
         self, model, terms_model, params_range, class_names_lst, corpus_fpath, h5f_res, state_path,
@@ -52,9 +52,10 @@ class OpennessParamGridSearchTables(object):
             self.corps_fpath, self.state_path, self.classes_lst
         )
 
-    def create_open_iset(self):
+    def create_open_unstrd_noise_iset(self):
 
         # Loading State file and Skipping ISet creation if already done.
+        """
         this_state = ['Openness Index Splits/Folds Sets - Created']
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
@@ -62,6 +63,7 @@ class OpennessParamGridSearchTables(object):
                 if this_state in last_goodstate:
                     print "Skipping Index Splits/Folds Sets creation"
                     return
+        """
 
         # NOTE: Selecting the required parameter ranges for this process only.
         selected_params = coll.OrderedDict([
@@ -76,10 +78,9 @@ class OpennessParamGridSearchTables(object):
         for params in ParamGridIter(selected_params):
 
             # Building the splits.
-            train_splts, test_splts, onlyt_splts = OpennessSplitSamples(
+            train_splts, test_splts, marked_uknw_splts = OpenSetUNoiseSpltSamples(
                 self.cls_tgs,
-                onlytest_clsnum=params['uknw_ctgs_num'],
-                uknw_ctgs_num_splt_itrs=ukn_iters,
+                marked_uknw_ctg_lst=params['marked_uknw_ctg_lst'],
                 kfolds=kfolds
             )
 
@@ -89,9 +90,11 @@ class OpennessParamGridSearchTables(object):
             )
 
         # Saving the last good state.
+        """
         with open(self.state_path + 'last_good_sate.csv', 'a') as f:
             cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             cwriter.writerow(this_state)
+        """
 
     def build_vocabulary_on_openness_iset(self):
 

@@ -51,7 +51,7 @@ def SelectStratifiedKfolds(smpls_num, kfolds):
     return Tr_splt_lst, tS_splt_lst
 
 
-def OpenSetSplitSamples(uknw_ctg_lst, cls_tgs_lst, kfolds):
+def OpenSetUNoiseSpltSamples(cls_tgs_lst, marked_uknw_ctg_lst, kfolds):
 
     if not len(uknw_ctg_lst):
         raise Exception("At lest one class-tag shoud be given as argument")
@@ -62,7 +62,7 @@ def OpenSetSplitSamples(uknw_ctg_lst, cls_tgs_lst, kfolds):
     for i, tag in enumerate(cls_gnr_tgs):
 
         if tag in uknw_ctg_lst:
-            uknw_ctgs_idxs_lst.append(i)
+            marked_uknw_ctgs_idxs_lst.append(i)
         else:
             knwn_ctgs_idxs_lst.append(i)
 
@@ -70,9 +70,11 @@ def OpenSetSplitSamples(uknw_ctg_lst, cls_tgs_lst, kfolds):
     trn_slst, tst_slst = SelectStratifiedKfolds(knwn_ctgs_idxs_lst, kfolds)
 
     # Appending the uknown indeces
-    tst_slst = [tst_l.extend(knwn_ctgs_idxs_lst) for tst_l in tst_slst]
+    tst_slst = [tst_l.extend(marked_uknw_ctgs_idxs_lst) for tst_l in tst_slst]
 
-    ##### TO MANY CHANGES I CANNOT RECALL, I SHOULD RECONDICER THIS BY READING THE CODE AGAIN ####
+    # Returning the Training and Test Splits together with cls_tags where Known-Noise indeces...
+    # ...have been marked with '0' class tag, i.e. unknown-noise tag.
+    return trn_slst, tst_slst, marked_uknw_ctgs_idxs_lst
 
 
 def OpennessSplitSamples(cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, kfolds):
