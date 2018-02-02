@@ -54,6 +54,7 @@ params_range = coll.OrderedDict([
     # ('decay', [0.002, 0.02]),
     # ('uknw_ctgs_num', [1, 2, 3, 4, 5, 6, 7]),
     # ('uknw_ctgs_num_splt_itrs', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+    ('marked_uknw_ctg_lst', [12]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
 
@@ -78,24 +79,18 @@ tables_pos = h2v_pos.Html2TF(
 # openness_model = RFSEDMPG_Wrapped(cosine_similarity, -1.0, genres, bagging=False)
 openness_model = rfse
 
-openness_searchgrid = OpennessParamGridSearchTables(
+openset_unoise_searchgrid = OpenSetParamGridSearchTables(
     openness_model, tables_pos, params_range, genres, corpus_filepath, method_results,
     state_saving_path, error_handling='replace', encoding='utf-8',
     norm_func=MaxNormalise,
     # norm_func=None,
 )
 
-openness_searchgrid.create_openness_iset()
+openset_unoise_searchgrid.create_open_unstrd_noise_iset()
 
-openness_searchgrid.build_vocabulary_on_openness_iset()
-openness_searchgrid.build_corpusmatrix_on_openness_iset()
-results_h5 = openness_searchgrid.evaluate_on_openness_iset()
-
-# openness_searchgrid.build_corpusmatrix_on_dlparams()
-# results_h5 = openness_searchgrid.evaluate_on_openness_dlparams()
-
-# openness_searchgrid.build_corpusmatrix_on_dlparams_per_gnr()
-# results_h5 = openness_searchgrid.evaluate_on_openness_dlparams_per_gnr()
+openset_unoise_searchgrid.build_vocabulary_on_open_unstrd_noise_iset()
+openset_unoise_searchgrid.build_corpusmatrix_on_open_unstrd_noise_iset()
+results_h5 = openset_unoise_searchgrid.evaluate_on_open_unstrd_noise_iset()
 
 print results_h5
 print "RFSE POS Experiments Done!"

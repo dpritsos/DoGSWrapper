@@ -83,9 +83,9 @@ class OpennessParamGridSearchTables(object):
                 kfolds=kfolds
             )
 
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
             SaveSplitSamples(
-                train_splts, test_splts, onlyt_splts,
-                params['uknw_ctgs_num'], ukn_iters, self.state_path
+                train_splts, test_splts, onlyt_splts, splt_fname_suffix, self.state_path
             )
 
         # Saving the last good state.
@@ -120,8 +120,9 @@ class OpennessParamGridSearchTables(object):
                 print "Skipping Vocabulary creation for: " + str(params)
                 continue
 
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
-                params['uknw_ctgs_num'], ukn_iters, self.state_path
+                splt_fname_suffix, self.state_path
             )
 
             # Building the TF Vocabulary.
@@ -145,9 +146,6 @@ class OpennessParamGridSearchTables(object):
 
             with open(vocab_fname + '.jsn', 'w') as f:
                 json.dump(tf_vocab, f)
-
-            print len(tf_vocab)
-            0/0
 
             # Saving the last good state.
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
@@ -446,8 +444,9 @@ class OpennessParamGridSearchTables(object):
 
             # Selecting Cross Validation Set.
             # Getting the Indeces of samples for each part of the testing sub-split.
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
-                params['uknw_ctgs_num'], ukn_iters, self.state_path
+                splt_fname_suffix, self.state_path
             )
 
             tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
@@ -573,8 +572,9 @@ class OpennessParamGridSearchTables(object):
 
             # Selecting Cross Validation Set.
             # Getting the Indeces of samples for each part of the testing sub-split.
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
-                params['uknw_ctgs_num'], ukn_iters, self.state_path
+                splt_fname_suffix, self.state_path
             )
 
             tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
@@ -678,9 +678,11 @@ class OpennessParamGridSearchTables(object):
 
             # Selecting Cross Validation Set.
             # Getting the Indeces of samples for each part of the testing sub-split.
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
-                params['uknw_ctgs_num'], ukn_iters, self.state_path
+                splt_fname_suffix, self.state_path
             )
+
             tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
             onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
 

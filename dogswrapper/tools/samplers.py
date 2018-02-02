@@ -12,17 +12,17 @@ def SelectStratifiedKfolds(smpls_num, kfolds):
     tS_splt_lst = list()
     Tr_splt_lst = list()
 
-    if type(smpls_num) == int:
+    if type(smpls_num) is int:
 
         smpl_idxs_vect = np.arange(smpls_num)
         smpl_idxs_choice = np.arange(smpls_num)
-        tst_splt_size = int(np.ceil(smpls_num/float(kfolds)))
+        tst_splt_size = int(np.ceil(smpls_num / float(kfolds)))
 
-    else type(smpls_num) is list:
+    elif type(smpls_num) is np.ndarray:
 
         smpl_idxs_vect = smpls_num
         smpl_idxs_choice = smpls_num
-        tst_splt_size = int(np.ceil(len(smpls_num)/float(kfolds)))
+        tst_splt_size = int(np.ceil(len(smpls_num) / float(kfolds)))
 
     for k in np.arange(kfolds):
 
@@ -53,28 +53,28 @@ def SelectStratifiedKfolds(smpls_num, kfolds):
 
 def OpenSetUNoiseSpltSamples(cls_tgs_lst, marked_uknw_ctg_lst, kfolds):
 
-    if not len(uknw_ctg_lst):
+    if not len(marked_uknw_ctg_lst):
         raise Exception("At lest one class-tag shoud be given as argument")
 
     knwn_ctgs_idxs_lst = list()
-    uknw_ctgs_idxs_lst = list()
+    marked_uknw_ctgs_idxs_lst = list()
 
-    for i, tag in enumerate(cls_gnr_tgs):
+    for i, tag in enumerate(cls_tgs_lst):
 
-        if tag in uknw_ctg_lst:
+        if tag in marked_uknw_ctg_lst:
             marked_uknw_ctgs_idxs_lst.append(i)
         else:
             knwn_ctgs_idxs_lst.append(i)
 
     # Creating the Stratifies K-Folds using only the known indeces.
-    trn_slst, tst_slst = SelectStratifiedKfolds(knwn_ctgs_idxs_lst, kfolds)
+    trn_slst, tst_slst = SelectStratifiedKfolds(np.array(knwn_ctgs_idxs_lst), kfolds)
 
     # Appending the uknown indeces
-    tst_slst = [tst_l.extend(marked_uknw_ctgs_idxs_lst) for tst_l in tst_slst]
+    tst_slst = [np.hstack((tst_l, marked_uknw_ctgs_idxs_lst)) for tst_l in tst_slst]
 
     # Returning the Training and Test Splits together with cls_tags where Known-Noise indeces...
     # ...have been marked with '0' class tag, i.e. unknown-noise tag.
-    return trn_slst, tst_slst, marked_uknw_ctgs_idxs_lst
+    return trn_slst, tst_slst, np.array(marked_uknw_ctgs_idxs_lst)
 
 
 def OpennessSplitSamples(cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, kfolds):
@@ -150,13 +150,11 @@ def OpennessSplitSamples(cls_tgs_lst, onlytest_clsnum, uknw_ctgs_num_splt_itrs, 
     return Tr_kfs_4_osplts, tS_kfs_4_osplts, oT_kfs_4_osplts
 
 
-def SaveSplitSamples(train_splts, test_splts, onlyt_splts, ukn_cls_num, ukn_iters, save_path):
+def SaveSplitSamples(train_splts, test_splts, onlyt_splts, splt_fname_suffix, save_path):
 
     # Saving the splits.
-    splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
     trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
-
     with open(trn_fname, 'w') as f:
         pickle.dump(train_splts, f)
 
@@ -170,13 +168,11 @@ def SaveSplitSamples(train_splts, test_splts, onlyt_splts, ukn_cls_num, ukn_iter
         pickle.dump(onlyt_splts, f)
 
 
-def LoadSplitSamples(ukn_cls_num, ukn_iters, save_path):
+def LoadSplitSamples(splt_fname_suffix, save_path):
 
     # Saving the splits.
-    splt_fname_suffix = '_S' + str(ukn_cls_num) + '_I' + str(ukn_iters)
 
     trn_fname = save_path + 'Training_Splits' + splt_fname_suffix + '.pkl'
-
     with open(trn_fname, 'r') as f:
         train_splts = pickle.load(f)
 
