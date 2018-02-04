@@ -55,15 +55,13 @@ class OpenSetParamGridSearchTables(object):
     def create_open_unstrd_noise_iset(self):
 
         # Loading State file and Skipping ISet creation if already done.
-        """
-        this_state = ['Openness Index Splits/Folds Sets - Created']
+        this_state = ['Open-Set Unstructured-Noise Index Splits/Folds Sets - Created']
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
                 if this_state in last_goodstate:
                     print "Skipping Index Splits/Folds Sets creation"
                     return
-        """
 
         # NOTE: Selecting the required parameter ranges for this process only.
         # selected_params = coll.OrderedDict([
@@ -87,37 +85,31 @@ class OpenSetParamGridSearchTables(object):
         )
 
         # Saving the last good state.
-        """
         with open(self.state_path + 'last_good_sate.csv', 'a') as f:
             cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             cwriter.writerow(this_state)
-        """
 
     def build_vocabulary_on_open_unstrd_noise_iset(self):
 
         # Building the Vocabularies for all Splits/Folds
         print "Building Vocabularies..."
-        """
         # Loading the last good State.
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
-        """
+
         # NOTE: Selecting the required parameter ranges for this process only.
         selected_params = coll.OrderedDict([
-            # ('marked_uknw_ctg_lst', self.params_range['marked_uknw_ctg_lst']),
             ('kfolds', self.params_range['kfolds']),
         ])
 
         for params in ParamGridIter(selected_params):
 
             # Skipping the Creating of this Vocabulary if alaready created.
-            """
             this_state = ['Vocabulary for: ' + str(params) + ' - Created']
             if this_state in last_goodstate:
                 print "Skipping Vocabulary creation for: " + str(params)
                 continue
-            """
 
             splt_fname_suffix = '_MUCTGs' + "_".join(
                 [str(ct) for ct in self.params_range['marked_uknw_ctg_lst']]
@@ -142,12 +134,10 @@ class OpenSetParamGridSearchTables(object):
             with open(vocab_fname + '.jsn', 'w') as f:
                 json.dump(tf_vocab, f)
 
-            """
             # Saving the last good state.
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
-            """
 
     def build_corpusmatrix_on_open_unstrd_noise_iset(self):
 
@@ -155,11 +145,9 @@ class OpenSetParamGridSearchTables(object):
         print "Corpus Matrices..."
 
         # Loading the last good State.
-        """
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
-        """
 
         # NOTE: Selecting the required parameter ranges for this process only.
         selected_params = coll.OrderedDict([
@@ -170,12 +158,10 @@ class OpenSetParamGridSearchTables(object):
         for params in ParamGridIter(selected_params):
 
             # Skipping the Creating of this Corpus Matrix if alaready created.
-            """
             this_state = ['Corpus Matrix for: ' + str(params) + ' - Created']
             if this_state in last_goodstate:
                 print "Skipping Corpus Matrix creation for: " + str(params)
                 continue
-            """
 
             # Loading Vocabulary.
             split_suffix = '_MUCTGs' + "_".join(
@@ -206,7 +192,7 @@ class OpenSetParamGridSearchTables(object):
                 xhtml_file_l=list(self.html_file_l),
                 tid_vocabulary=tid_vocab, norm_func=self.norm_func,
                 h5_fname=corpus_fname,
-                encoding=self.encoding, error_handling=self.encoding
+                encoding=self.encoding, error_handling=self.error_handling
             )
 
             corpus_mtrx = res[0]
@@ -217,41 +203,35 @@ class OpenSetParamGridSearchTables(object):
             h5f = tb.open_file(corpus_fname, 'r+')
             corpus_mtrx = h5f.get_node('/',  'corpus_earray')
 
+            """
             corpus_fname = self.state_path + 'Corpus_' +\
                 'VS' + str(params['vocab_size']) + split_suffix + '.pkl'
             with open(corpus_fname, 'w') as f:
                 pickle.dump(corpus_mtrx, f)
-
             """
+
             # Saving the last good state.
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
-            """
 
     def evaluate_on_open_unstrd_noise_iset(self):
 
         print "EVALUATING..."
 
         # Loading the last good State.
-        """
         if os.path.exists(self.state_path + 'last_good_sate.csv'):
             with open(self.state_path + 'last_good_sate.csv', 'r') as f:
                 last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
-        """
-
-        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
 
         # Starting Parameters Grid Search
         for gci, params in enumerate(ParamGridIter(self.params_range)):
 
             # Skipping the Evaluation for this Parameters Set.
-            """
             this_state = ['Evaluation for: ' + str(params) + '- Done']
             if this_state in last_goodstate:
                 print "Skipping Evaluation for: " + str(params)
                 continue
-            """
 
             # Show how many Grid Search Parameter combinations are renaming.
             print "Param Grid Counts:", gci+1
@@ -305,6 +285,8 @@ class OpenSetParamGridSearchTables(object):
             expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
             # Evaluating Semi-Supervised Classification Method.
+            print train_splts[params['kfolds']]
+            print test_splts[params['kfolds']]
             res_d = self.model.eval(
                 train_splts[params['kfolds']],
                 test_splts[params['kfolds']],
@@ -337,11 +319,9 @@ class OpenSetParamGridSearchTables(object):
 
             # Saving the last good state. Then the process can continue after this state in...
             # ...order not to start every Evaluation again.
-            """
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
-            """
 
         # Return Results H5 File handler class
         return self.h5_res

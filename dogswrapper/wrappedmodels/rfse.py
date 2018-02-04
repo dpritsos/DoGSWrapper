@@ -29,6 +29,9 @@ def eval(*args):
     gnr_clz = rfse_mdl.fit(corpus_mtrx[trn_idxs, :], cls_gnr_tgs[trn_idxs])
 
     # Executing predict() and getting the predicted Class Tags. 0 means Unclassified!
+    print crv_idxs
+    print corpus_mtrx
+    print corpus_mtrx[crv_idxs, :]
     res = rfse_mdl.predict(corpus_mtrx[crv_idxs, :])
 
     # Returning the results.

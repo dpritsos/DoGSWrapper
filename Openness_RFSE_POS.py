@@ -35,11 +35,11 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'RFSE_POS_SANTINIS_2018_01_28_TESTONLY.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'RFSE_POS_SANTINIS_2018_02_04.h5', 'a')
 
 params_range = coll.OrderedDict([
-    ('vocab_size', [5000, 10000, 50000, 100000]),
-    ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),
+    ('vocab_size', [43]),
+    ('features_size', [4, 10, 20, 40]),
     ('sim_func', ['cosine_sim']),
     ('Sigma', [0.5, 0.7, 0.9]),
     ('Iterations', [10, 50, 100, 200, 300, 500]),
@@ -90,6 +90,7 @@ openset_unoise_searchgrid.create_open_unstrd_noise_iset()
 
 openset_unoise_searchgrid.build_vocabulary_on_open_unstrd_noise_iset()
 openset_unoise_searchgrid.build_corpusmatrix_on_open_unstrd_noise_iset()
+
 results_h5 = openset_unoise_searchgrid.evaluate_on_open_unstrd_noise_iset()
 
 print results_h5

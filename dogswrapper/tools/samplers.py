@@ -9,6 +9,10 @@ import numpy as np
 
 def SelectStratifiedKfolds(smpls_num, kfolds):
 
+    if kfolds < 2:
+        msg = "Stratified K-Fold random selection is only posible with more than one k-folds!"
+        raise Exception(msg)
+
     tS_splt_lst = list()
     Tr_splt_lst = list()
 
@@ -32,7 +36,7 @@ def SelectStratifiedKfolds(smpls_num, kfolds):
         #    print "Small"
         #    break  # smpl_idxs_choice = np.arange(smpls_num)
 
-        # Stopping the look when samples amount is smaller than samples required...
+        # Stopping the loop when samples amount is smaller than samples required...
         # ...to be selected. Thus, repeating a few indeces at random just for satisfing the...
         # random.choice() function.
         if len(smpl_idxs_choice) < tst_splt_size:

@@ -206,7 +206,7 @@ class OpennessParamGridSearchTables(object):
                 xhtml_file_l=list(self.html_file_l),
                 tid_vocabulary=tid_vocab, norm_func=self.norm_func,
                 h5_fname=corpus_fname,
-                encoding=self.encoding, error_handling=self.encoding
+                encoding=self.encoding, error_handling=self.error_handling
             )
 
             corpus_mtrx = res[0]
@@ -283,7 +283,7 @@ class OpennessParamGridSearchTables(object):
 
                 trn_idxs=[None],
 
-                h5_fname=corpus_fname, encoding=self.encoding, error_handling=self.encoding
+                h5_fname=corpus_fname, encoding=self.encoding, error_handling=self.error_handling
             )
 
             corpus_mtrx = res[0]
@@ -359,7 +359,8 @@ class OpennessParamGridSearchTables(object):
 
                     trn_idxs=self.cls_tgs[np.where((self.cls_tgs == ctg))],
 
-                    h5_fname=corpus_fname, encoding=self.encoding, error_handling=self.encoding
+                    h5_fname=corpus_fname, encoding=self.encoding,
+                    error_handling=self.error_handling
                 )
 
                 corpus_mtrx = res[0]
