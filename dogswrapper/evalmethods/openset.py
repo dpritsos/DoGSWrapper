@@ -273,7 +273,7 @@ class OpenSetParamGridSearchTables(object):
             )
 
             tsp_idxs = test_splts[params['kfolds']]
-            onlysp_idxs = onlyt_splts[params['kfolds']]
+            # onlysp_idxs = onlyt_splts[params['kfolds']]
 
             # Getting the full testing-samples class tags, including the original class..
             # ...tags of the only-test classes.
@@ -282,11 +282,11 @@ class OpenSetParamGridSearchTables(object):
             # Preplacing with class tags of the sammples which are are belonging to the...
             # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
             # ...expected predictions.
-            expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
+            expected_Y[np.in1d(tsp_idxs, onlyt_splts)] = 0
 
             # Evaluating Semi-Supervised Classification Method.
-            print train_splts[params['kfolds']]
-            print test_splts[params['kfolds']]
+            # print train_splts[params['kfolds']]
+            # print test_splts[params['kfolds']]
             res_d = self.model.eval(
                 train_splts[params['kfolds']],
                 test_splts[params['kfolds']],
@@ -313,6 +313,8 @@ class OpenSetParamGridSearchTables(object):
             # Saving results
             for rname, rval in res_d.items():
                 self.h5_res.create_array(next_group, rname, rval, "")
+
+            self.h5_res.create_array(next_group, 'expected_Y', expected_Y)
 
             # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
             h5f.close()

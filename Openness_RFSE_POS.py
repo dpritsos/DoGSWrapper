@@ -40,7 +40,7 @@ method_results = tb.open_file(state_saving_path + 'RFSE_POS_SANTINIS_2018_02_04.
 params_range = coll.OrderedDict([
     ('vocab_size', [43]),
     ('features_size', [4, 10, 20, 40]),
-    ('sim_func', ['cosine_sim']),
+    ('sim_func', ['minmax_sim']),  # ['cosine_sim']),
     ('Sigma', [0.5, 0.7, 0.9]),
     ('Iterations', [10, 50, 100, 200, 300, 500]),
     # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),

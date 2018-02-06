@@ -724,6 +724,8 @@ class OpennessParamGridSearchTables(object):
             for rname, rval in res_d.items():
                 self.h5_res.create_array(next_group, rname, rval, "")
 
+            self.h5_res.create_array(next_group, 'expected_Y', expected_Y)
+
             # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
             h5f.close()
 

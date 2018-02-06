@@ -166,8 +166,7 @@ def SaveSplitSamples(train_splts, test_splts, onlyt_splts, splt_fname_suffix, sa
     with open(test_fname, 'w') as f:
         pickle.dump(test_splts, f)
 
-    onlytest_fname = save_path + 'OnlyTesting_Splits' +\
-        splt_fname_suffix + '.pkl'
+    onlytest_fname = save_path + 'OnlyTesting_Splits' + splt_fname_suffix + '.pkl'
     with open(onlytest_fname, 'w') as f:
         pickle.dump(onlyt_splts, f)
 
@@ -184,8 +183,7 @@ def LoadSplitSamples(splt_fname_suffix, save_path):
     with open(test_fname, 'r') as f:
         test_splts = pickle.load(f)
 
-    onlytest_fname = save_path + 'OnlyTesting_Splits' +\
-        splt_fname_suffix + '.pkl'
+    onlytest_fname = save_path + 'OnlyTesting_Splits' + splt_fname_suffix + '.pkl'
     with open(onlytest_fname, 'r') as f:
         onlyt_splts = pickle.load(f)
 
