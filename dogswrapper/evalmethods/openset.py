@@ -100,6 +100,7 @@ class OpenSetParamGridSearchTables(object):
 
         # NOTE: Selecting the required parameter ranges for this process only.
         selected_params = coll.OrderedDict([
+            ('terms_type', self.params_range['terms_type']),
             ('kfolds', self.params_range['kfolds']),
         ])
 
@@ -125,7 +126,8 @@ class OpenSetParamGridSearchTables(object):
             )
 
             # Saving TF Vocabulary in pickle and Json format.
-            split_suffix = splt_fname_suffix + '_kF' + str(params['kfolds'])
+            split_suffix = splt_fname_suffix +\
+                '_' + str(params['terms_type']) + '_kF' + str(params['kfolds'])
             vocab_fname = self.state_path + 'Vocab' + split_suffix
 
             with open(vocab_fname + '.pkl', 'w') as f:
@@ -151,6 +153,7 @@ class OpenSetParamGridSearchTables(object):
 
         # NOTE: Selecting the required parameter ranges for this process only.
         selected_params = coll.OrderedDict([
+            ('terms_type', self.params_range['terms_type']),
             ('vocab_size', self.params_range['vocab_size']),
             ('kfolds', self.params_range['kfolds']),
         ])
@@ -166,10 +169,9 @@ class OpenSetParamGridSearchTables(object):
             # Loading Vocabulary.
             split_suffix = '_MUCTGs' + "_".join(
                 [str(ct) for ct in self.params_range['marked_uknw_ctg_lst']]
-            ) +\
-                '_kF' + str(params['kfolds'])
-            vocab_fname = self.state_path + 'Vocab' + split_suffix
+            ) + '_' + str(params['terms_type']) + '_kF' + str(params['kfolds'])
 
+            vocab_fname = self.state_path + 'Vocab' + split_suffix
             with open(vocab_fname + '.pkl', 'r') as f:
                 tf_vocab = pickle.load(f)
 

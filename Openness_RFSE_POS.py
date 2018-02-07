@@ -11,7 +11,7 @@ sys.path.append('../')
 # import html2vec.sparse.wngrams as h2v_wcng
 # import html2vec.tables.cngrams as h2v_cng
 # import html2vec.tables.wngrams as h2v_wng
-import html2vec.tables.posgrams as h2v_pos
+import html2vec.tables.posngrams as h2v_pos
 from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
 from dogswrapper.wrappedmodels import rfse
@@ -35,12 +35,13 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'RFSE_POS_SANTINIS_2018_02_04.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'RFSE_POS2G_SANTINIS_2018_02_07.h5', 'a')
 
 params_range = coll.OrderedDict([
+    ('terms_type', ['POS2G']),
     ('vocab_size', [43]),
     ('features_size', [4, 10, 20, 40]),
-    ('sim_func', ['minmax_sim']),  # ['cosine_sim']),
+    ('sim_func', ['cosine_sim', 'minmax_sim']),
     ('Sigma', [0.5, 0.7, 0.9]),
     ('Iterations', [10, 50, 100, 200, 300, 500]),
     # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
@@ -60,7 +61,8 @@ params_range = coll.OrderedDict([
 
 
 tables_pos = h2v_pos.Html2TF(
-    'english-bidirectional-distsim.tagger', html_attrib=["text"], str_case='lower', valid_html=False
+    tagger_cls='english-bidirectional-distsim.tagger', n=2,
+    html_attrib=["text"], str_case='lower', valid_html=False
 )
 
 # word_n_gram_size = 1
