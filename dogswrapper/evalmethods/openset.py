@@ -259,7 +259,8 @@ class OpenSetParamGridSearchTables(object):
             splt_fname_suffix = '_MUCTGs' + "_".join(
                 [str(ct) for ct in self.params_range['marked_uknw_ctg_lst']]
             )
-            split_suffix = splt_fname_suffix + '_kF' + str(params['kfolds'])
+            split_suffix = splt_fname_suffix + '_' + str(params['terms_type']) +\
+                '_kF' + str(params['kfolds'])
 
             corpus_fname = self.state_path + 'Corpus_' +\
                 'VS' + str(params['vocab_size']) + split_suffix + '.h5'
@@ -275,7 +276,6 @@ class OpenSetParamGridSearchTables(object):
             )
 
             tsp_idxs = test_splts[params['kfolds']]
-            # onlysp_idxs = onlyt_splts[params['kfolds']]
 
             # Getting the full testing-samples class tags, including the original class..
             # ...tags of the only-test classes.
@@ -287,8 +287,6 @@ class OpenSetParamGridSearchTables(object):
             expected_Y[np.in1d(tsp_idxs, onlyt_splts)] = 0
 
             # Evaluating Semi-Supervised Classification Method.
-            # print train_splts[params['kfolds']]
-            # print test_splts[params['kfolds']]
             res_d = self.model.eval(
                 train_splts[params['kfolds']],
                 test_splts[params['kfolds']],
