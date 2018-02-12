@@ -35,12 +35,12 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'RFSE_POS2G_SANTINIS_2018_02_09.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'RFSE_POS3G_SANTINIS_2018_02_12.h5', 'a')
 
 params_range = coll.OrderedDict([
-    ('terms_type', ['POS2G']),
-    ('vocab_size', [1330]),  # 1330, 16200
-    ('features_size', [4, 10, 20, 40, 100, 500, 1000]),
+    ('terms_type', ['POS3G']),
+    ('vocab_size', [16200]),  # 1330,
+    ('features_size', [4, 10, 20, 40, 100, 500, 1000, 5000, 10000, 15000]),  #
     ('sim_func', ['cosine_sim', 'minmax_sim']),
     ('Sigma', [0.5, 0.7, 0.9]),
     ('Iterations', [10, 50, 100, 200, 300, 500]),
@@ -59,7 +59,7 @@ params_range = coll.OrderedDict([
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
 
-pos_n_gram_size = 2
+pos_n_gram_size = 3
 tables_pos = h2v_pos.Html2TF(
     tagger_cls='english-bidirectional-distsim.tagger', n=pos_n_gram_size,
     html_attrib=["text"], str_case='lower', valid_html=False
@@ -91,7 +91,7 @@ openset_unoise_searchgrid = OpenSetParamGridSearchTables(
 openset_unoise_searchgrid.create_open_unstrd_noise_iset()
 
 openset_unoise_searchgrid.build_vocabulary_on_open_unstrd_noise_iset()
-openset_unoise_searchgrid.build_corpusmatrix_on_open_unstrd_noise_iset()
+# openset_unoise_searchgrid.build_corpusmatrix_on_open_unstrd_noise_iset()
 
 results_h5 = openset_unoise_searchgrid.evaluate_on_open_unstrd_noise_iset()
 
