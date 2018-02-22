@@ -3,6 +3,7 @@
 # Tools for spliting the Samples into Folds and Openness Splits
 #
 
+import json
 import cPickle as pickle
 import numpy as np
 
@@ -188,3 +189,53 @@ def LoadSplitSamples(splt_fname_suffix, save_path):
         onlyt_splts = pickle.load(f)
 
     return train_splts, test_splts, onlyt_splts
+
+
+def OldSplitIdxs_2_NewSplitSamples(save_splt_sufx, save_path, kfolds, marked_uknw_idx_lst,
+                                   load_path, load_idx_sufx, load_trn_prefx, load_tst_prefx):
+
+    train_splts = list()
+    for kf in range(kfolds):
+        read_trn_f = load_path + load_trn_prefx + str(kf) + load_idx_sufx
+        with open(read_trn_f, 'r') as f:
+            train_splts.append(np.array(json.load(f, encoding='utf8'), dtype=np.int))
+
+    trn_fname = save_path + 'Training_Splits' + save_splt_sufx + '.pkl'
+    with open(trn_fname, 'w') as f:
+        pickle.dump(train_splts, f)
+
+    test_splts = list()
+    for kf in range(kfolds):
+        read_tst_f = load_path + load_tst_prefx + str(kf) + load_idx_sufx
+        with open(read_tst_f, 'r') as f:
+            test_splts.append(np.array(json.load(f, encoding='utf8'), dtype=np.int))
+
+        test_fname = save_path + 'Testing_Splits' + save_splt_sufx + '.pkl'
+        with open(test_fname, 'w') as f:
+            pickle.dump(test_splts, f)
+
+    onlyt_splts = [np.array(marked_uknw_idx_lst, dtype=np.int) for k in range(kfolds)]
+    onlytest_fname = save_path + 'OnlyTesting_Splits' + save_splt_sufx + '.pkl'
+    with open(onlytest_fname, 'w') as f:
+        pickle.dump(onlyt_splts, f)
+
+    return train_splts, test_splts, onlyt_splts
+
+
+if __name__ == "__main__":
+
+    res = OldSplitIdxs_2_NewSplitSamples('_MUCTGs12',
+                                         '/media/dimitrios/TurnstoneDisk/SANTINIS/C4G_SANTINIS/',
+                                         10,
+                                         np.arange(1480, 2480),
+                                         '/media/dimitrios/TurnstoneDisk/SANTINIS/C4G_SANTINIS/',
+                                         '.idx',
+                                         'kfold_trn_',
+                                         'kfold_crv_',)
+
+    for arr in res[0]:
+        a = ''
+        for cell in arr:
+            a += str(cell) + ', '
+        print a
+        print

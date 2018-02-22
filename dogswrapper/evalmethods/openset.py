@@ -269,6 +269,15 @@ class OpenSetParamGridSearchTables(object):
             h5f = tb.open_file(corpus_fname, 'r+')
             corpus_mtrx = h5f.get_node('/',  'corpus_earray')
 
+            # ######################################## #
+            #      PATCH ONLY FOR THE OLD FILES        #
+            # ######################################## #
+            float64_matrix = np.array(corpus_mtrx.read(), dtype=np.float)
+            h5f.remove_node('/',  'corpus_earray')
+            corpus_mtrx = h5f.create_array('/', 'corpus_earray', float64_matrix, "")
+            h5f.flush()
+            # ######################################## #
+
             # Selecting Cross Validation Set.
             # Getting the Indeces of samples for each part of the testing sub-split.
             train_splts, test_splts, onlyt_splts = LoadSplitSamples(
@@ -313,8 +322,10 @@ class OpenSetParamGridSearchTables(object):
             # Saving results
             for rname, rval in res_d.items():
                 self.h5_res.create_array(next_group, rname, rval, "")
+                self.h5_res.flush()
 
             self.h5_res.create_array(next_group, 'expected_Y', expected_Y)
+            self.h5_res.flush()
 
             # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
             h5f.close()
