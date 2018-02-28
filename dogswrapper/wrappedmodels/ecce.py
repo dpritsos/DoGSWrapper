@@ -3,7 +3,7 @@ import numpy as np
 import sys
 
 sys.path.append('../../')
-import RFSE as rfse
+import ECCE as ecce
 
 
 def eval(*args):
@@ -16,27 +16,26 @@ def eval(*args):
     params = args[4]
 
     # Initilising the RFSE model.
-    rfse_mdl = rfse.RFSE(
+    ecce_mdl = ecce.ECCE(
         sim_func=params['sim_func'],
-        itrs=params['Iterations'],
-        sigma=params['Sigma'],
-        feat_size=params['features_size'],
-        bagging=0.0
+        inpt_vectz=1,
+        agg_comb='product'
     )
 
     # Fitting the data to the models. Accuatlly caclulating the Class Centroids in this case.
-    gnr_clz = rfse_mdl.fit(corpus_mtrx[trn_idxs, :], cls_gnr_tgs[trn_idxs])
+    gnr_clz = ecce_mdl.fit(corpus_mtrx[trn_idxs, :], cls_gnr_tgs[trn_idxs])
 
     # Executing predict() and getting the predicted Class Tags. 0 means Unclassified!
-    print crv_idxs
-    print corpus_mtrx
-    print corpus_mtrx[crv_idxs, :]
-    res = rfse_mdl.predict(corpus_mtrx[crv_idxs, :])
+    # print crv_idxs
+    # print corpus_mtrx
+    # print corpus_mtrx[crv_idxs, :]
+    res = ecce_mdl.predict(corpus_mtrx[crv_idxs, :])
 
     # Returning the results.
     return {
         'predicted_Y': res[0],
         'predicted_scores': res[1],
-        'max_sim_scores_per_iter': res[2],
-        'predicted_classes_per_iter': res[3]
+        # 'gnr_csums': res[2],
+        # 'gnr_ssums': res[3],
+        # 'grn_snum': res[4]
     }

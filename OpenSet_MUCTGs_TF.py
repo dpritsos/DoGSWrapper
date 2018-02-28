@@ -34,7 +34,9 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + 'RFSE_W1G_V100000_SANTINIS_2018_02_22_MoreIters.h5', 'a'
+####################################### TO DO THIS ##############
+    state_saving_path + 'RFSE_W1G_V100000_SANTINIS_2018_02_27_MoreIters.h5', 'a
+####################################### TO DO THIS ##############
 )
 
 params_range = coll.OrderedDict([
@@ -75,8 +77,8 @@ tables_wng = h2v_wng.Html2TF(
 # char_n_gram_size = 4
 # tables_cng = h2v_cng.Html2GsmVec(
 # tables_cng = h2v_cng.Html2TF(
-#    char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
-#)
+#     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
+# )
 
 openness_model = rfse
 
