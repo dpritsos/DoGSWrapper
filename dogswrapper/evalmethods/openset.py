@@ -295,6 +295,7 @@ class OpenSetParamGridSearchTables(object):
             # ...expected predictions.
             expected_Y[np.in1d(tsp_idxs, onlyt_splts)] = 0
 
+            print "Passing..."
             # Evaluating Semi-Supervised Classification Method.
             res_d = self.model.eval(
                 train_splts[params['kfolds']],

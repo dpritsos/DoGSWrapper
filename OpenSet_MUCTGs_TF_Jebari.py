@@ -7,18 +7,20 @@ import sys
 
 # sys.path.append('../../synergeticprocessing/src')
 sys.path.append('../')
-import html2vec.tables.cngrams as h2v_cng
+# import html2vec.tables.cngrams as h2v_cng
 # import html2vec.tables.wngrams as h2v_wng
-# import html2vec.tables.posngrams as h2v_pos
+import html2vec.tables.posngrams as h2v_pos
 from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
-from dogswrapper.wrappedmodels import rfse, ocsvme
+from dogswrapper.wrappedmodels import rfse, ocsvme, ecce
 # from dogswrapper.wrappedmodels.rfse_py import RFSE_Wrapped, RFSEDMPG_Wrapped, cosine_similarity
 
 
 # Santini's 7-genres Corpus
-corpus_filepath = "/media/dimitrios/TurnstoneDisk/SANTINIS/"
-state_saving_path = "/media/dimitrios/TurnstoneDisk/SANTINIS/" + "C4G_SANTINIS/"
+# corpus_filepath = "/media/dimitrios/TurnstoneDisk/SANTINIS/"
+# state_saving_path = "/media/dimitrios/TurnstoneDisk/SANTINIS/" + "C4G_SANTINIS/"
+corpus_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/"
+state_saving_path = "/home/dimitrios/Synergy-Crawler/SANTINIS/" + "POS_SANTINIS/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -34,21 +36,18 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + "RFSE_C4G_V100000_SANTINIS_2018_02_22_MoreIters.h5", 'a'
+    state_saving_path + "ECCE_POS2G_SANTINIS_2018_03_15.h5", 'a'
 )
 
-####################################### TO DO THIS ##############
-    #state_saving_path + 'RFSE_W1G_V100000_SANTINIS_2018_02_27_MoreIters.h5', 'a
-####################################### TO DO THIS ##############
-
 params_range = coll.OrderedDict([
-    ('terms_type', ['C4G']),
-    ('vocab_size', [100000]),  # 1330, 16200   10000, 50000, 100000
-    ('features_size', [1000]),  # , 5000, 10000, 50000, 90000
+    ('terms_type', ['POS1G']),
+    ('vocab_size', [43]),
+    # 1330, 16200   10000, 50000, 100000, 5000, 10000, 50000,
+    # ('features_size', [500, 1000, 5000, 10000, 50000, 90000]),  # , 5000, 10000, 50000, 90000
     # 4, 10, 20, 40, 100, 500, 1000, 5000, 10000, 15000
-    ('sim_func', ['cosine_sim', 'minmax_sim']),
-    ('Sigma', [0.5, 0.7, 0.9]),
-    ('Iterations', [200, 300, 500, 1000]),  # 10, 50, 100, 200, 300, 500
+    ('sim_func', ['cosine_sim', 'minmax_sim']), # 'minmax_sim'
+    # ('Sigma', [0.5, 0.7, 0.9]),
+    # ('Iterations', [10, 50, 100, 200, 300, 500, 1000]),  # 10, 50, 100, 200, 300, 500
     # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
     # ('dims', [50, 100, 250, 500, 1000]),
     # ('min_trm_fq', [3, 10]),
@@ -64,11 +63,11 @@ params_range = coll.OrderedDict([
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
 
-# pos_n_gram_size = 3
-# tables_pos = h2v_pos.Html2TF(
-# tagger_cls='english-bidirectional-distsim.tagger', n=pos_n_gram_size,
-#    html_attrib=["text"], str_case='lower', valid_html=False
-# )
+pos_n_gram_size = 3
+tables_pos = h2v_pos.Html2TF(
+    tagger_cls='english-bidirectional-distsim.tagger', n=pos_n_gram_size,
+    html_attrib=["text"], str_case='lower', valid_html=False
+)
 
 # word_n_gram_size = 3
 # tables_wng = h2v_wng.Html2GsmVec(
@@ -76,16 +75,16 @@ params_range = coll.OrderedDict([
 #    word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 #)
 
-char_n_gram_size = 4
+# char_n_gram_size = 4
 # tables_cng = h2v_cng.Html2GsmVec(
-tables_cng = h2v_cng.Html2TF(
-    char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
-)
+# tables_cng = h2v_cng.Html2TF(
+#    char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
+# )
 
-openness_model = rfse
+openset_model = ecce
 
 openset_unoise_searchgrid = OpenSetParamGridSearchTables(
-    openness_model, tables_cng, params_range, genres, corpus_filepath, method_results,
+    openset_model, tables_pos, params_range, genres, corpus_filepath, method_results,
     state_saving_path, error_handling='replace', encoding='utf-8',
     norm_func=MaxNormalise,
     # norm_func=None,
@@ -100,6 +99,6 @@ results_h5 = openset_unoise_searchgrid.evaluate_on_open_unstrd_noise_iset()
 
 print results_h5
 
-print "RFSE TF Experiments Done!"
+print "RFSE TF Openness Experiments Done!"
 
 method_results.close()

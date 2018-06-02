@@ -152,6 +152,46 @@ class OpennessParamGridSearchTables(object):
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
 
+    def build_vocabulary_on_fullcorpus(self):
+
+        # Building the Vocabularies for all Splits/Folds
+        print "Building Vocabulary on full corpus..."
+
+        # Loading the last good State.
+        if os.path.exists(self.state_path + 'last_good_sate.csv'):
+            with open(self.state_path + 'last_good_sate.csv', 'r') as f:
+                last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
+
+        # NOTE: Selecting the required parameter ranges for this process only.
+
+        # Skipping the Creating of this Vocabulary if alaready created.
+        this_state = ['Vocabulary for: ' + 'Full Corpus' + ' - Created']
+        if this_state in last_goodstate:
+            print "Skipping Vocabulary creation for: " + 'Full Corpus'
+            return
+
+        # Building the TF Vocabulary.
+        tf_vocab = self.terms_model.build_vocabulary(
+            list(self.html_file_l),
+            encoding=self.encoding,
+            error_handling=self.error_handling
+        )
+
+        # Saving TF Vocabulary in pickle and Json format.
+        split_suffix = '_FullCorpus'
+        vocab_fname = self.state_path + 'Vocab' + split_suffix
+
+        with open(vocab_fname + '.pkl', 'w') as f:
+            pickle.dump(tf_vocab, f)
+
+        with open(vocab_fname + '.jsn', 'w') as f:
+            json.dump(tf_vocab, f)
+
+        # Saving the last good state.
+        with open(self.state_path + 'last_good_sate.csv', 'a') as f:
+            cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            cwriter.writerow(this_state)
+
     def build_corpusmatrix_on_openness_iset(self):
 
         # Building the Vocabularies for all Splits/Folds
@@ -213,9 +253,10 @@ class OpennessParamGridSearchTables(object):
             h5f = res[1]
 
             # Saving TF Vectors Corpus Matrix
+            h5f.flush()
             h5f.close()
-            h5f = tb.open_file(corpus_fname, 'r+')
-            corpus_mtrx = h5f.get_node('/',  'corpus_earray')
+            # h5f = tb.open_file(corpus_fname, 'r+')
+            # corpus_mtrx = h5f.get_node('/',  'corpus_earray')
 
             """
             corpus_fname = self.state_path + 'Corpus_' +\
@@ -228,6 +269,281 @@ class OpennessParamGridSearchTables(object):
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
+
+    def build_corpusmatrix_on_fullcorpus(self):
+
+        # Building the Vocabularies for all Splits/Folds
+        print "Corpus Matrices..."
+
+        # Loading the last good State.
+        if os.path.exists(self.state_path + 'last_good_sate.csv'):
+            with open(self.state_path + 'last_good_sate.csv', 'r') as f:
+                last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
+
+        # Skipping the Creating of this Corpus Matrix if alaready created.
+        this_state = ['Corpus Matrix for: ' + 'Full Corpus' + ' - Created']
+        if this_state in last_goodstate:
+            print "Skipping Corpus Matrix creation for: " + 'Full Corpus'
+            return
+
+        # Loading Vocabulary.
+        split_suffix = '_FullCorpus'
+        vocab_fname = self.state_path + 'Vocab' + split_suffix
+
+        with open(vocab_fname + '.pkl', 'r') as f:
+            tf_vocab = pickle.load(f)
+
+        # Creating the Terms-Index Vocabulary that is shorted by Frequency's...
+        # ...descending order
+        tid_vocab = tfdutils.tf2tidx(tf_vocab)
+
+        corpus_fname = self.state_path + 'Corpus_' + 'VS' + 'full' + '.h5'
+
+        # Creating TF Vectors Matrix (pyTables TF EArray)
+        res = self.terms_model.from_files(
+            xhtml_file_l=list(self.html_file_l),
+            tid_vocabulary=tid_vocab, norm_func=self.norm_func,
+            h5_fname=corpus_fname,
+            encoding=self.encoding, error_handling=self.error_handling
+        )
+
+        corpus_mtrx = res[0]
+        h5f = res[1]
+
+        # Saving TF Vectors Corpus Matrix
+        h5f.flush()
+        h5f.close()
+        # h5f = tb.open_file(corpus_fname, 'r+')
+        # corpus_mtrx = h5f.get_node('/',  'corpus_earray')
+
+        """
+        corpus_fname = self.state_path + 'Corpus_' +\
+            'VS' + str(params['vocab_size']) + split_suffix + '.pkl'
+        with open(corpus_fname, 'w') as f:
+            pickle.dump(corpus_mtrx, f)
+        """
+
+        # Saving the last good state.
+        with open(self.state_path + 'last_good_sate.csv', 'a') as f:
+            cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            cwriter.writerow(this_state)
+
+    def evaluate_on_openness_iset(self):
+
+        print "EVALUATING..."
+
+        # Loading the last good State.
+        if os.path.exists(self.state_path + 'last_good_sate.csv'):
+            with open(self.state_path + 'last_good_sate.csv', 'r') as f:
+                last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
+
+        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
+
+        # Starting Parameters Grid Search
+        for gci, params in enumerate(ParamGridIter(self.params_range)):
+
+            # Skipping the Evaluation for this Parameters Set.
+            this_state = ['Evaluation for: ' + str(params) + '- Done']
+            if this_state in last_goodstate:
+                print "Skipping Evaluation for: " + str(params)
+                continue
+
+            # Show how many Grid Search Parameter combinations are renaming.
+            print "Param Grid Counts:", gci+1
+            print "Params: ", params
+
+            # # # Creating the group sequence respectively to the models parameters:
+            # Assigning Feature number group to next_group parameter for initializing the loop
+            next_group = self.h5_res.root
+
+            # Start the loop of creating or getting group nodes in respect to model parameters
+            for pname, pvalue in params.items():
+                try:
+                    next_group = self.h5_res.get_node(
+                        next_group, pname+str(pvalue).replace('.', '')
+                    )
+                except Exception as exp_signal:
+                    next_group = self.h5_res.create_group(
+                        next_group, pname+str(pvalue).replace('.', ''), "<Comment>"
+                    )
+            # # # END- Group creation sequence
+
+            # Loading corpus matrix for this Sub-Split.
+            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
+                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
+                '_kF' + str(params['kfolds'])
+
+            corpus_fname = self.state_path + 'Corpus_' +\
+                'VS' + str(params['vocab_size']) + split_suffix + '.h5'
+
+            # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
+            h5f = tb.open_file(corpus_fname, 'r+')
+            corpus_mtrx = h5f.get_node('/',  'corpus_earray')
+
+            # Selecting Cross Validation Set.
+            # Getting the Indeces of samples for each part of the testing sub-split.
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
+            train_splts, test_splts, onlyt_splts = LoadSplitSamples(
+                splt_fname_suffix, self.state_path
+            )
+
+            tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+            onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+
+            # Getting the full testing-samples class tags, including the original class..
+            # ...tags of the only-test classes.
+            expected_Y = self.cls_tgs[tsp_idxs]
+
+            # Preplacing with class tags of the sammples which are are belonging to the...
+            # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
+            # ...expected predictions.
+            expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
+
+            # Evaluating Semi-Supervised Classification Method.
+            res_d = self.model.eval(
+                train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                corpus_mtrx,
+                self.cls_tgs,
+                params
+            )
+
+            # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
+            #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+            #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+            #     expected_Y, # <------------------------------
+            #     corpus_mtrx,
+            #     self.cls_tgs,
+            #     params
+            # )
+
+            print 'P Y shape:', res_d['predicted_Y'].shape
+            print 'E Y shape:', expected_Y.shape
+
+            'max_sim_scores_per_iter'
+            'predicted_classes_per_iter'
+
+            # Saving results
+            for rname, rval in res_d.items():
+                self.h5_res.create_array(next_group, rname, rval, "")
+
+            self.h5_res.create_array(next_group, 'expected_Y', expected_Y)
+
+            # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
+            h5f.close()
+
+            # Saving the last good state. Then the process can continue after this state in...
+            # ...order not to start every Evaluation again.
+            with open(self.state_path + 'last_good_sate.csv', 'a') as f:
+                cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                cwriter.writerow(this_state)
+
+        # Return Results H5 File handler class
+        return self.h5_res
+
+    ############################
+    def evaluate_on_openness_iset_1cmatrix(self):
+
+        print "EVALUATING..."
+
+        # Loading the last good State.
+        if os.path.exists(self.state_path + 'last_good_sate.csv'):
+            with open(self.state_path + 'last_good_sate.csv', 'r') as f:
+                last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
+
+        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
+
+        # Starting Parameters Grid Search
+        for gci, params in enumerate(ParamGridIter(self.params_range)):
+
+            # Skipping the Evaluation for this Parameters Set.
+            this_state = ['Evaluation for: ' + str(params) + '- Done']
+            if this_state in last_goodstate:
+                print "Skipping Evaluation for: " + str(params)
+                continue
+
+            # Show how many Grid Search Parameter combinations are renaming.
+            print "Param Grid Counts:", gci+1
+            print "Params: ", params
+
+            # # # Creating the group sequence respectively to the models parameters:
+            # Assigning Feature number group to next_group parameter for initializing the loop
+            next_group = self.h5_res.root
+
+            # Start the loop of creating or getting group nodes in respect to model parameters
+            for pname, pvalue in params.items():
+                try:
+                    next_group = self.h5_res.get_node(
+                        next_group, pname+str(pvalue).replace('.', '')
+                    )
+                except Exception as exp_signal:
+                    next_group = self.h5_res.create_group(
+                        next_group, pname+str(pvalue).replace('.', ''), "<Comment>"
+                    )
+            # # # END- Group creation sequence
+
+            # Loading corpus matrix for this Sub-Split.
+            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
+                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
+                '_kF' + str(params['kfolds'])
+
+            corpus_fname = self.state_path + 'Corpus_' + 'VS' + 'full' + '.h5'
+
+            # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
+            h5f = tb.open_file(corpus_fname, 'r+')
+            corpus_mtrx = h5f.get_node('/',  'corpus_earray')
+
+            # Selecting Cross Validation Set.
+            # Getting the Indeces of samples for each part of the testing sub-split.
+            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
+            train_splts, test_splts, onlyt_splts = LoadSplitSamples(
+                splt_fname_suffix, self.state_path
+            )
+
+            tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+            onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
+
+            # Getting the full testing-samples class tags, including the original class..
+            # ...tags of the only-test classes.
+            expected_Y = self.cls_tgs[tsp_idxs]
+
+            # Preplacing with class tags of the sammples which are are belonging to the...
+            # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
+            # ...expected predictions.
+            expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
+
+            # Evaluating Semi-Supervised Classification Method.
+            res_d = self.model.eval(
+                train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
+                corpus_mtrx[:, 0:params['vocab_size']],
+                self.cls_tgs,
+                params
+            )
+
+            print 'P Y shape:', res_d['predicted_Y'].shape
+            print 'E Y shape:', expected_Y.shape
+
+            'max_sim_scores_per_iter'
+            'predicted_classes_per_iter'
+
+            # Saving results
+            for rname, rval in res_d.items():
+                self.h5_res.create_array(next_group, rname, rval, "")
+
+            self.h5_res.create_array(next_group, 'expected_Y', expected_Y)
+
+            # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
+            h5f.close()
+
+            # Saving the last good state. Then the process can continue after this state in...
+            # ...order not to start every Evaluation again.
+            with open(self.state_path + 'last_good_sate.csv', 'a') as f:
+                cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                cwriter.writerow(this_state)
+
+        # Return Results H5 File handler class
+        return self.h5_res
 
     def build_corpusmatrix_on_dlparams(self):
 
@@ -607,8 +923,8 @@ class OpennessParamGridSearchTables(object):
             print 'P Y shape:', res_d['predicted_Y'].shape
             print 'E Y shape:', expected_Y.shape
 
-            'max_sim_scores_per_iter'
-            'predicted_classes_per_iter'
+            # 'max_sim_scores_per_iter'
+            # 'predicted_classes_per_iter'
 
             # Saving results
             for rname, rval in res_d.items():
@@ -618,119 +934,6 @@ class OpennessParamGridSearchTables(object):
             h5f.close()
 
             # Saving the last good state.
-            with open(self.state_path + 'last_good_sate.csv', 'a') as f:
-                cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                cwriter.writerow(this_state)
-
-        # Return Results H5 File handler class
-        return self.h5_res
-
-    def evaluate_on_openness_iset(self):
-
-        print "EVALUATING..."
-
-        # Loading the last good State.
-        if os.path.exists(self.state_path + 'last_good_sate.csv'):
-            with open(self.state_path + 'last_good_sate.csv', 'r') as f:
-                last_goodstate = list(csv.reader(f, delimiter='\n', quotechar='"'))
-
-        ukn_iters = len(self.params_range['uknw_ctgs_num_splt_itrs'])
-
-        # Starting Parameters Grid Search
-        for gci, params in enumerate(ParamGridIter(self.params_range)):
-
-            # Skipping the Evaluation for this Parameters Set.
-            this_state = ['Evaluation for: ' + str(params) + '- Done']
-            if this_state in last_goodstate:
-                print "Skipping Evaluation for: " + str(params)
-                continue
-
-            # Show how many Grid Search Parameter combinations are renaming.
-            print "Param Grid Counts:", gci+1
-            print "Params: ", params
-
-            # # # Creating the group sequence respectively to the models parameters:
-            # Assigning Feature number group to next_group parameter for initializing the loop
-            next_group = self.h5_res.root
-
-            # Start the loop of creating or getting group nodes in respect to model parameters
-            for pname, pvalue in params.items():
-                try:
-                    next_group = self.h5_res.get_node(
-                        next_group, pname+str(pvalue).replace('.', '')
-                    )
-                except Exception as exp_signal:
-                    next_group = self.h5_res.create_group(
-                        next_group, pname+str(pvalue).replace('.', ''), "<Comment>"
-                    )
-            # # # END- Group creation sequence
-
-            # Loading corpus matrix for this Sub-Split.
-            split_suffix = '_S' + str(params['uknw_ctgs_num']) +\
-                '_I' + str(params['uknw_ctgs_num_splt_itrs']) +\
-                '_kF' + str(params['kfolds'])
-
-            corpus_fname = self.state_path + 'Corpus_' +\
-                'VS' + str(params['vocab_size']) + split_suffix + '.h5'
-
-            # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
-            h5f = tb.open_file(corpus_fname, 'r+')
-            corpus_mtrx = h5f.get_node('/',  'corpus_earray')
-
-            # Selecting Cross Validation Set.
-            # Getting the Indeces of samples for each part of the testing sub-split.
-            splt_fname_suffix = '_S' + str(params['uknw_ctgs_num']) + '_I' + str(ukn_iters)
-            train_splts, test_splts, onlyt_splts = LoadSplitSamples(
-                splt_fname_suffix, self.state_path
-            )
-
-            tsp_idxs = test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
-            onlysp_idxs = onlyt_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']]
-
-            # Getting the full testing-samples class tags, including the original class..
-            # ...tags of the only-test classes.
-            expected_Y = self.cls_tgs[tsp_idxs]
-
-            # Preplacing with class tags of the sammples which are are belonging to the...
-            # ...Only-Test with 0, i.e. as expected to be Unknown a.k.a. "Don't Know"...
-            # ...expected predictions.
-            expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
-
-            # Evaluating Semi-Supervised Classification Method.
-            res_d = self.model.eval(
-                train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
-                test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
-                corpus_mtrx,
-                self.cls_tgs,
-                params
-            )
-
-            # predicted_Y, predicted_d_near, predicted_d_far, gnr_cls_idx = self.model.eval(
-            #     train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
-            #     test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
-            #     expected_Y, # <------------------------------
-            #     corpus_mtrx,
-            #     self.cls_tgs,
-            #     params
-            # )
-
-            print 'P Y shape:', res_d['predicted_Y'].shape
-            print 'E Y shape:', expected_Y.shape
-
-            'max_sim_scores_per_iter'
-            'predicted_classes_per_iter'
-
-            # Saving results
-            for rname, rval in res_d.items():
-                self.h5_res.create_array(next_group, rname, rval, "")
-
-            self.h5_res.create_array(next_group, 'expected_Y', expected_Y)
-
-            # ONLY for PyTables Case: Safely closing the corpus matrix hd5 file.
-            h5f.close()
-
-            # Saving the last good state. Then the process can continue after this state in...
-            # ...order not to start every Evaluation again.
             with open(self.state_path + 'last_good_sate.csv', 'a') as f:
                 cwriter = csv.writer(f, delimiter='\n', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 cwriter.writerow(this_state)
