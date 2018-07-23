@@ -779,13 +779,13 @@ class OpennessParamGridSearchTables(object):
             expected_Y[np.in1d(tsp_idxs, onlysp_idxs)] = 0
 
             # NOTE NOTE NOTE
-            self.h5_res.create_array(next_group, 'expected_Y', expected_Y, "")
+            # self.h5_res.create_array(next_group, 'expected_Y', expected_Y, "")
 
             # TIME IT
             # start_tm = tm.time()
 
             # Evaluating Semi-Supervised Classification Method.
-            print "EVALUATING"
+            print "Model Evaluation..."
             res_d = self.model.eval(
                 train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
@@ -910,7 +910,7 @@ class OpennessParamGridSearchTables(object):
             self.h5_res.create_array(next_group, 'expected_Y', expected_Y, "")
 
             # Evaluating Semi-Supervised Classification Method.
-            print "EVALUATING"
+            print "Model Evaluation..."
             res_d = self.model.eval(
                 train_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],
                 test_splts[params['uknw_ctgs_num_splt_itrs']][params['kfolds']],

@@ -26,6 +26,7 @@ class OCSVMEDMPG_Wrapped(object):  # DMPG: Document Model per Genre.
             ]
 
         gnr_classes = dict()
+
         for g, inds in inds_per_gnr.items():
 
             # Create the OC-SVM Model for this genre
@@ -207,6 +208,8 @@ def eval(*args):
     corpus_mtrx = args[2]
     cls_gnr_tgs = args[3]
     params = args[4]
+
+    print "ARG PASSED!"
 
     # Initilising the RFSE model.
     ocsvme = OCSVME(params['nu'])

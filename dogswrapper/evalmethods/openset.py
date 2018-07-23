@@ -262,8 +262,18 @@ class OpenSetParamGridSearchTables(object):
             split_suffix = splt_fname_suffix + '_' + str(params['terms_type']) +\
                 '_kF' + str(params['kfolds'])
 
+            # corpus_fname = self.state_path + 'Corpus_' +\
+            #     'VS' + str(params['vocab_size']) + split_suffix + '.h5'
+
             corpus_fname = self.state_path + 'Corpus_' +\
-                'VS' + str(params['vocab_size']) + split_suffix + '.h5'
+                'GDims' + str(params['dims']) +\
+                'GParams' + str(params['min_trm_fq']) + '_' +\
+                str(params['win_size']) + '_' +\
+                str(params['algo']) + '_' +\
+                str(params['alpha']) + '_' +\
+                str(params['min_alpha']) + '_' +\
+                str(params['epochs']) + '_' +\
+                str(params['decay']) + '.h5'
 
             # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
             h5f = tb.open_file(corpus_fname, 'r+')
@@ -272,7 +282,7 @@ class OpenSetParamGridSearchTables(object):
             # ######################################## #
             #      PATCH ONLY FOR THE OLD FILES        #
             # ######################################## #
-            float64_matrix = np.array(corpus_mtrx.read(), dtype=np.float)
+            float64_matrix = np.array(corpus_mtrx.read(), dtype=np.float32)
             h5f.remove_node('/',  'corpus_earray')
             corpus_mtrx = h5f.create_array('/', 'corpus_earray', float64_matrix, "")
             h5f.flush()

@@ -13,12 +13,12 @@ import html2vec.tables.cngrams as h2v_cng
 # import html2vec.tables.wngrams as h2v_wng
 from dogswrapper.evalmethods.openness import OpennessParamGridSearchTables
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
-from dogswrapper.wrappedmodels.ocsvme import OCSVME_Wrapped, OCSVMEDMPG_Wrapped
+import dogswrapper.wrappedmodels.ocsvme as ocsvme
 
 
 # Santini's 7-genres Corpus
-corpus_filepath = "/media/dimitrios/TurnstoneDisk/KI-04/"
-state_saving_path = "/media/dimitrios/TurnstoneDisk/KI-04/" +\
+corpus_filepath = "/mnt/turnstone/KI-04/"
+state_saving_path = "/mnt/turnstone/KI-04/" +\
     "Openness_C4G_KI04/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
@@ -29,7 +29,7 @@ genres = [
 ]
 
 # Creating or opeding existing file for saving the results.
-method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_Gensim_KI04_2017_11_13_NEXT_PART.h5', 'a')
+method_results = tb.open_file(state_saving_path + 'Openness_OCSVME_C4G_Gensim_KI04_2017_11_13_TTTEST.h5', 'a')
 
 params_range = coll.OrderedDict([
     ('vocab_size', [0]),
@@ -63,7 +63,7 @@ tables_cng = h2v_cng.Html2GsmVec(
     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
 
-openness_model = OCSVME_Wrapped(genres)
+openness_model = ocsvme
 # openness_model = OCSVMEDMPG_Wrapped(genres)
 
 openness_searchgrid = OpennessParamGridSearchTables(
@@ -79,7 +79,7 @@ openness_searchgrid.create_openness_iset()
 # openness_searchgrid.build_corpusmatrix_on_openness_iset()
 # results_h5 = openness_searchgrid.evaluate_on_openness_iset()
 
-openness_searchgrid.build_corpusmatrix_on_dlparams()
+# openness_searchgrid.build_corpusmatrix_on_dlparams()
 results_h5 = openness_searchgrid.evaluate_on_openness_dlparams()
 
 # openness_searchgrid.build_corpusmatrix_on_dlparams_per_gnr()
