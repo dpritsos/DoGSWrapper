@@ -6,11 +6,11 @@ import os
 import sys
 
 # sys.path.append('../../synergeticprocessing/src')
-sys.path.append('../')
+# sys.path.append('../')
 # import html2vec.sparse.cngrams as h2v_cng
 # import html2vec.sparse.wngrams as h2v_wcng
-import html2vec.tables.cngrams as h2v_cng
-# import html2vec.tables.wngrams as h2v_wng
+# import html2vec.tables.cngrams as h2v_cng
+import html2vec.tables.wngrams as h2v_wng
 from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
 import dogswrapper.evalmethods.openness as openness
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
@@ -37,7 +37,7 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17.h5', 'a'
+    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17.h5_DETEST', 'a'
 )
 
 params_range = coll.OrderedDict([
@@ -73,11 +73,14 @@ params_range = coll.OrderedDict([
 word_n_gram_size = 3
 tables_wng = h2v_wng.Html2GsmVec(
 # tables_cng = h2v_cng.Html2GsmVec(
-    word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=Falseopenness_model = nnrd
+    word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
+)
 # openness_model = OCSVMEDMPG_Wrapped(genres)
 
+openness_model = nnrd
+
 openset_unoise_searchgrid = OpenSetParamGridSearchTables(
-    openness_model, tables_cng, params_range, genres, corpus_filepath, method_results,
+    openness_model, tables_wng, params_range, genres, corpus_filepath, method_results,
     state_saving_path, error_handling='replace', encoding='utf-8',
     # norm_func=MaxNormalise,
     norm_func=None,

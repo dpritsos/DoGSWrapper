@@ -1,8 +1,6 @@
 
 import tables
 import numpy as np
-import sys
-sys.path.append('../../Djumble/djumble/')
 # from hmrf_semisup_km import HMRFKmeans
 # from cos_semisup_km import CosineKmeans
 from cos_semisup_km_narray import CosineKmeans

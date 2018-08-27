@@ -2,7 +2,6 @@
 import numpy as np
 import sys
 
-sys.path.append('../../')
 import ECCE as ecce
 
 

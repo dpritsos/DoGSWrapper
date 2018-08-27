@@ -4,8 +4,6 @@ import scipy.spatial.distance as spd
 import subprocess as subp
 import sys
 import shlex
-
-sys.path.append('../../SVMROp')
 import svmrop.svmrop as svmrop
 
 

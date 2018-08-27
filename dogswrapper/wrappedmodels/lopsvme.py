@@ -1,9 +1,6 @@
 
 import numpy as np
 import scipy.spatial.distance as spd
-import sys
-
-sys.path.append('../../SVMROp')
 import svmrop.svmrop as svmrop
 
 
