@@ -5,8 +5,6 @@ import tables as tb
 import os
 import sys
 
-# sys.path.append('../../synergeticprocessing/src')
-# sys.path.append('../')
 # import html2vec.sparse.cngrams as h2v_cng
 # import html2vec.sparse.wngrams as h2v_wcng
 # import html2vec.tables.cngrams as h2v_cng

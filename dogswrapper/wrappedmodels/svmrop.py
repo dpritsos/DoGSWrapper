@@ -1,10 +1,9 @@
 
 import numpy as np
-import scipy.spatial.distance as spd
 import svmrop.svmrop as svmrop
 
 
-class LOPSVM_Wrapped(object):
+class SVMROP_Wrapped(object):
 
     def __init__(self, genres):
         self.genres_lst = genres
@@ -30,7 +29,7 @@ class LOPSVM_Wrapped(object):
             if params['svm_type'] == 'oneclass':
                 self.lopsvm = svmrop.LinearSetSVM(
                     svm_type='oneclass',
-                    l=params['l'],
+                    ll=params['l'],
                     c1_w=params['c1_w'], c2_w=params['c2_w'],
                     mrgn_nw=params['mrgn_nw'], mrgn_fw=params['mrgn_fw'],
                     nu=params['nu']
@@ -38,7 +37,7 @@ class LOPSVM_Wrapped(object):
             else:
                 self.lopsvm = svmrop.LinearSetSVM(
                     svm_type='binary',
-                    l=params['l'],
+                    ll=params['l'],
                     c1_w=params['c1_w'], c2_w=params['c2_w'],
                     mrgn_nw=params['mrgn_nw'], mrgn_fw=params['mrgn_fw'],
                     penalty='l2', multi_class='ovr', dual=True
@@ -93,9 +92,6 @@ class LOPSVM_Wrapped(object):
 
         # Get the part of matrices or arrays required for the model prediction phase
         crossval_X = corpus_mtrx[crv_idxs, 0:params['features_size']]
-        # EXTREMELY IMPORTANT: corpus_mtrx[X] where X=[<idx1>,<idx2>,...,<idxN>] returns ERROR...
-        # ...HDF5 when using pytables Earray. For scipy.sparse there is no such a problem....
-        # Therefore it always should be used this expression corpus_mtrx[X, :]
 
         # Get the part of matrices required for the model prediction phase.
         # ###crossval_Y =  cls_gnr_tgs [crv_idxs, :]
@@ -130,26 +126,27 @@ class LOPSVM_Wrapped(object):
 
         return predicted_Y_per_gnr, predicted_d_near_per_gnr, predicted_d_far_per_gnr, gnr_cls_idx
 
-    def eval(self, *args):
 
-        # Get Input arguments in given sequence
-        trn_idxs = args[0]
-        crv_idxs = args[1]
-        corpus_mtrx = args[2]
-        cls_gnr_tgs = args[3]
-        params = args[4]
+def eval(self, *args):
 
-        # Build Genre Classes given the training vectors
-        gnr_classes = self.contruct_classes(trn_idxs, corpus_mtrx, cls_gnr_tgs, params)
+    # Get Input arguments in given sequence
+    trn_idxs = args[0]
+    crv_idxs = args[1]
+    corpus_mtrx = args[2]
+    cls_gnr_tgs = args[3]
+    params = args[4]
 
-        # Execute predict() with gnr_classes which triggers simple RFSE (non Bagging)
-        results = self.predict(crv_idxs, corpus_mtrx, params, gnr_classes)
+    # Build Genre Classes given the training vectors
+    gnr_classes = self.contruct_classes(trn_idxs, corpus_mtrx, cls_gnr_tgs, params)
 
-        # Expected Results for the ParamGridCrossValBase class in paramgridcrossval module
-        predicted_Y = results[0]
-        predicted_d_near_per_gnr = results[1]
-        predicted_d_far_per_gnr = results[2]
-        gnr_cls_idx = results[3]
+    # Execute predict() with gnr_classes which triggers simple RFSE (non Bagging)
+    results = self.predict(crv_idxs, corpus_mtrx, params, gnr_classes)
 
-        # Return results as expected form ParamGridCrossValBase class
-        return predicted_Y, predicted_d_near_per_gnr, predicted_d_far_per_gnr, gnr_cls_idx
+    # Expected Results for the ParamGridCrossValBase class in paramgridcrossval module
+    predicted_Y = results[0]
+    predicted_d_near_per_gnr = results[1]
+    predicted_d_far_per_gnr = results[2]
+    gnr_cls_idx = results[3]
+
+    # Return results as expected form ParamGridCrossValBase class
+    return predicted_Y, predicted_d_near_per_gnr, predicted_d_far_per_gnr, gnr_cls_idx

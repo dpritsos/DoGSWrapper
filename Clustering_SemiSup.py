@@ -2,25 +2,16 @@
 
 import collections as coll
 import tables as tb
-import sys
 import os
-
-# sys.path.append('../../synergeticprocessing/src')
-sys.path.append('../../')
-sys.path.append('../dogswrapper')
-
-from base.clusteringcrossval import SemiSupervisedParamGridSearchBase
-from base.clusteringcrossval import SemiSupervisedParamGridSearchTables
-
-from wrappedmodels.HMRFKmeans import HMRFKmeans_Wrapped
-# from wrappedmodels.Cosine_Kmeans import CosineKmeans_Wrapped
 
 # import html2vec.sparse.cngrams as h2v_cng
 # import html2vec.sparse.wngrams as h2v_wcng
-# import html2vec.narray.wngrams as h2v_cng
-# import html2vec.narray.wngrams as h2v_wcng
 # import html2vec.tables.cngrams as h2v_cng
 import html2vec.tables.wngrams as h2v_wng
+from base.clusteringcrossval import SemiSupervisedParamGridSearchBase
+from base.clusteringcrossval import SemiSupervisedParamGridSearchTables
+from wrappedmodels.HMRFKmeans import HMRFKmeans_Wrapped
+# from wrappedmodels.Cosine_Kmeans import CosineKmeans_Wrapped
 
 
 # "Santini's 7-genres Corpus"

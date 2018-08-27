@@ -1,6 +1,4 @@
 
-import numpy as np
-import scipy.spatial.distance as spd
 import OpenNNDR.onndr.onndr as onndr
 
 
