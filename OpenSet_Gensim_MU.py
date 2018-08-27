@@ -37,7 +37,7 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17.h5_DETEST', 'a'
+    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17.h5', 'a'
 )
 
 params_range = coll.OrderedDict([
