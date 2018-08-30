@@ -35,11 +35,11 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17_DETST.h5', 'a'
+    state_saving_path + 'OpenSet_MarkedUknown_SVMRO_W3G_Gensim_SANTINIS_2018_08_30.h5', 'a'
 )
 
 params_range = coll.OrderedDict([
-    ('terms_type', ['C4G']),
+    ('terms_type', ['W3G']),
     ('vocab_size', ['NA']),
     ('dims', [50, 100, 250, 500, 1000]),
     ('min_trm_fq', [3, 10]),
