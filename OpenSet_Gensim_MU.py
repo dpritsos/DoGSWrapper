@@ -12,7 +12,7 @@ import html2vec.tables.wngrams as h2v_wng
 from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
 import dogswrapper.evalmethods.openness as openness
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
-from dogswrapper.wrappedmodels import ocsvme, rfse, nnrd
+from dogswrapper.wrappedmodels import ocsvme, rfse, nnrd, svmro
 
 
 # Santini's 7-genres Corpus
@@ -35,7 +35,7 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17.h5', 'a'
+    state_saving_path + 'OpenSet_MarkedUknown_NNRD_W1G_Gensim_SANTINIS_2018_08_17_DETST.h5', 'a'
 )
 
 params_range = coll.OrderedDict([
@@ -60,10 +60,20 @@ params_range = coll.OrderedDict([
     # OCSVME
     # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
     # NNRD
-    ('split_ptg', [0.7, 0.5]),
-    ('ukwn_slt_ptg', [0.3, 0.5]),
-    ('rt_lims_stp', [[0.8, 1.0, 0.2]]),
-    ('lmda', [0.2, 0.5, 0.7]),
+    # ('split_ptg', [0.7, 0.5]),
+    # ('ukwn_slt_ptg', [0.3, 0.5]),
+    # ('rt_lims_stp', [[0.8, 1.0, 0.2]]),
+    # ('lmda', [0.2, 0.5, 0.7]),
+    # SVMRO
+    ('svm_type', ['oneclass']),
+    # ('svm_type', ['binary']),
+    ('ll', [0.3, 0.8]),
+    ('c1_w', [0.3, 0.7]),
+    ('c2_w', [0.3, 0.7]),
+    ('mrgn_nw', [0.3, 0.7]),
+    ('mrgn_fw', [0.3, 0.7]),
+    # SVMRO oneclass
+    ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
     ('marked_uknw_ctg_lst', [12]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
@@ -75,7 +85,7 @@ tables_wng = h2v_wng.Html2GsmVec(
 )
 # openness_model = OCSVMEDMPG_Wrapped(genres)
 
-openness_model = nnrd
+openness_model = svmro
 
 openset_unoise_searchgrid = OpenSetParamGridSearchTables(
     openness_model, tables_wng, params_range, genres, corpus_filepath, method_results,
