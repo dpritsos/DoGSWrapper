@@ -34,7 +34,7 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + "RFSE_C4G_V100000_SANTINIS_2018_02_22_MoreIters.h5", 'a'
+    state_saving_path + "OpenSet_MarkedUknown_SVMRO_W3G_V100000_SANTINIS_2018_02_22.h5", 'a'
 )
 
 params_range = coll.OrderedDict([
@@ -42,20 +42,31 @@ params_range = coll.OrderedDict([
     ('vocab_size', [100000]),  # 1330, 16200  5000, 10000, 50000, 100000
     ('features_size', [1000]),  # , 5000, 10000, 50000, 90000
     # 4, 10, 20, 40, 100, 500, 1000, 5000, 10000, 15000
-    ('sim_func', ['cosine_sim', 'minmax_sim']),
-    ('Sigma', [0.5, 0.7, 0.9]),
-    ('Iterations', [200, 300, 500, 1000]),  # 10, 50, 100, 200, 300, 500
-    # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
-    # ('dims', [50, 100, 250, 500, 1000]),
-    # ('min_trm_fq', [3, 10]),
-    # ('win_size', [3, 8, 20]),
-    # ('algo', ['PV-DBOW']),
-    # ('alpha', [0.025]),
-    # ('min_alpha', [0.025]),
-    # ('epochs', [1, 3, 10]),
-    # ('decay', [0.002, 0.02]),
+    # openness
     # ('uknw_ctgs_num', [1, 2, 3, 4, 5, 6, 7]),
     # ('uknw_ctgs_num_splt_itrs', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+    # RFSE
+    # ('features_size', [25, 50, 100]),
+    # ('sim_func', ['minmax_sim']),
+    # ('Sigma', [0.5, 0.7, 0.9]),
+    # ('Iterations', [10, 50, 100]),
+    # OCSVME
+    # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
+    # NNRD
+    ('split_ptg', [0.7, 0.5]),
+    ('ukwn_slt_ptg', [0.3, 0.5]),
+    ('rt_lims_stp', [[0.8, 1.0, 0.2]]),
+    ('lmda', [0.2, 0.5, 0.7]),
+    # SVMRO
+    # ('svm_type', ['oneclass']),
+    # ('svm_type', ['binary']),
+    # ('ll', [0.3, 0.8]),
+    # ('c1_w', [0.3, 0.7]),
+    # ('c2_w', [0.3, 0.7]),
+    # ('mrgn_nw', [0.3, 0.7]),
+    # ('mrgn_fw', [0.3, 0.7]),
+    # SVMRO oneclass
+    # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
     ('marked_uknw_ctg_lst', [12]),
     ('kfolds', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 ])
