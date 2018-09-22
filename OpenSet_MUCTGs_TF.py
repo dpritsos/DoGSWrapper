@@ -5,20 +5,20 @@ import tables as tb
 import os
 import sys
 
-# sys.path.append('../../synergeticprocessing/src')
-sys.path.append('../')
-import html2vec.tables.cngrams as h2v_cng
-# import html2vec.tables.wngrams as h2v_wng
-# import html2vec.tables.posngrams as h2v_pos
+# import html2vec.sparse.cngrams as h2v_cng
+# import html2vec.sparse.wngrams as h2v_wcng
+# import html2vec.tables.cngrams as h2v_cng
+import html2vec.tables.wngrams as h2v_wng
 from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
+import dogswrapper.evalmethods.openness as openness
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
-from dogswrapper.wrappedmodels import rfse, ocsvme
-# from dogswrapper.wrappedmodels.rfse_py import RFSE_Wrapped, RFSEDMPG_Wrapped, cosine_similarity
+from dogswrapper.wrappedmodels import ocsvme, rfse, nnrd, svmro
 
 
 # Santini's 7-genres Corpus
-corpus_filepath = "/media/dimitrios/TurnstoneDisk/SANTINIS/"
-state_saving_path = "/media/dimitrios/TurnstoneDisk/SANTINIS/" + "C4G_SANTINIS/"
+corpus_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/"
+state_saving_path = "/home/dimitrios/Synergy-Crawler/SANTINIS/" +\
+    "Open_W3G_SANTINIS/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
