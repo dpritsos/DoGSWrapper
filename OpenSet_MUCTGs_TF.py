@@ -37,13 +37,9 @@ method_results = tb.open_file(
     state_saving_path + "RFSE_C4G_V100000_SANTINIS_2018_02_22_MoreIters.h5", 'a'
 )
 
-####################################### TO DO THIS ##############
-    #state_saving_path + 'RFSE_W1G_V100000_SANTINIS_2018_02_27_MoreIters.h5', 'a
-####################################### TO DO THIS ##############
-
 params_range = coll.OrderedDict([
     ('terms_type', ['C4G']),
-    ('vocab_size', [100000]),  # 1330, 16200   10000, 50000, 100000
+    ('vocab_size', [100000]),  # 1330, 16200  5000, 10000, 50000, 100000
     ('features_size', [1000]),  # , 5000, 10000, 50000, 90000
     # 4, 10, 20, 40, 100, 500, 1000, 5000, 10000, 15000
     ('sim_func', ['cosine_sim', 'minmax_sim']),
@@ -82,7 +78,7 @@ tables_cng = h2v_cng.Html2TF(
     char_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
 
-openness_model = rfse
+openness_model = nnrd
 
 openset_unoise_searchgrid = OpenSetParamGridSearchTables(
     openness_model, tables_cng, params_range, genres, corpus_filepath, method_results,

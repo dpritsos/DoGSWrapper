@@ -262,18 +262,20 @@ class OpenSetParamGridSearchTables(object):
             split_suffix = splt_fname_suffix + '_' + str(params['terms_type']) +\
                 '_kF' + str(params['kfolds'])
 
-            # corpus_fname = self.state_path + 'Corpus_' +\
-            #     'VS' + str(params['vocab_size']) + split_suffix + '.h5'
-
+            # FOR TF
             corpus_fname = self.state_path + 'Corpus_' +\
-                'GDims' + str(params['dims']) +\
-                'GParams' + str(params['min_trm_fq']) + '_' +\
-                str(params['win_size']) + '_' +\
-                str(params['algo']) + '_' +\
-                str(params['alpha']) + '_' +\
-                str(params['min_alpha']) + '_' +\
-                str(params['epochs']) + '_' +\
-                str(params['decay']) + '.h5'
+                'VS' + str(params['vocab_size']) + split_suffix + '.h5'
+
+            # FOR GENSIM
+            # corpus_fname = self.state_path + 'Corpus_' +\
+            #     'GDims' + str(params['dims']) +\
+            #     'GParams' + str(params['min_trm_fq']) + '_' +\
+            #     str(params['win_size']) + '_' +\
+            #     str(params['algo']) + '_' +\
+            #     str(params['alpha']) + '_' +\
+            #     str(params['min_alpha']) + '_' +\
+            #     str(params['epochs']) + '_' +\
+            #     str(params['decay']) + '.h5'
 
             # Loading the Corpus Matrix/Array for this Vocabulary and Sub-Split.
             h5f = tb.open_file(corpus_fname, 'r+')
