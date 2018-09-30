@@ -7,8 +7,8 @@ import sys
 
 # import html2vec.sparse.cngrams as h2v_cng
 # import html2vec.sparse.wngrams as h2v_wcng
-# import html2vec.tables.cngrams as h2v_cng
-import html2vec.tables.wngrams as h2v_wng
+import html2vec.tables.cngrams as h2v_cng
+# import html2vec.tables.wngrams as h2v_wng
 from dogswrapper.evalmethods.openset import OpenSetParamGridSearchTables
 import dogswrapper.evalmethods.openness as openness
 from dogswrapper.tools.normalisers import MaxNormalise, SubSamplingNorm
@@ -16,9 +16,9 @@ from dogswrapper.wrappedmodels import ocsvme, rfse, nnrd, svmro
 
 
 # Santini's 7-genres Corpus
-corpus_filepath = "/home/dimitrios/Synergy-Crawler/SANTINIS/"
-state_saving_path = "/home/dimitrios/Synergy-Crawler/SANTINIS/" +\
-    "Open_W3G_SANTINIS/"
+corpus_filepath = "/mnt/turnstone/SANTINIS/"
+state_saving_path = "/mnt/turnstone/SANTINIS/" +\
+    "TF_C4G_SANTINIS/"
 if not os.path.exists(state_saving_path):
     os.mkdir(state_saving_path)
 
@@ -39,8 +39,8 @@ method_results = tb.open_file(
 
 params_range = coll.OrderedDict([
     ('terms_type', ['C4G']),
-    ('vocab_size', [100000]),  # 1330, 16200  5000, 10000, 50000, 100000
-    ('features_size', [1000]),  # , 5000, 10000, 50000, 90000
+    ('vocab_size', [50000, 100000]),  # 1330, 16200  5000, 10000, 50000, 100000
+    # ('features_size', [1000]),  # , 5000, 10000, 50000, 90000
     # 4, 10, 20, 40, 100, 500, 1000, 5000, 10000, 15000
     # openness
     # ('uknw_ctgs_num', [1, 2, 3, 4, 5, 6, 7]),
@@ -53,10 +53,10 @@ params_range = coll.OrderedDict([
     # OCSVME
     # ('nu', [0.05, 0.07, 0.1, 0.15, 0.17, 0.3, 0.5, 0.7, 0.9]),
     # NNRD
-    ('split_ptg', [0.7, 0.5]),
-    ('ukwn_slt_ptg', [0.3, 0.5]),
-    ('rt_lims_stp', [[0.8, 1.0, 0.2]]),
-    ('lmda', [0.2, 0.5, 0.7]),
+    ('split_ptg', [0.5]),
+    ('ukwn_slt_ptg', [0.5]),
+    ('rt_lims_stp', [[0.6, 1.0, 0.2]]),
+    ('lmda', [0.5]),
     # SVMRO
     # ('svm_type', ['oneclass']),
     # ('svm_type', ['binary']),
