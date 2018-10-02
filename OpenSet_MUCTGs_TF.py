@@ -34,12 +34,12 @@ genres = [
 
 # Creating or opeding existing file for saving the results.
 method_results = tb.open_file(
-    state_saving_path + "OpenSet_MarkedUknown_SVMRO_W3G_V100000_SANTINIS_2018_02_22.h5", 'a'
+    state_saving_path + "OpenSet_MarkedUknown_NNDR_W3G_V50k_SANTINIS_2018_10_01.h5", 'a'
 )
 
 params_range = coll.OrderedDict([
     ('terms_type', ['C4G']),
-    ('vocab_size', [50000, 100000]),  # 1330, 16200  5000, 10000, 50000, 100000
+    ('vocab_size', [50000]),  # 1330, 16200  5000, 10000, 50000, 100000
     # ('features_size', [1000]),  # , 5000, 10000, 50000, 90000
     # 4, 10, 20, 40, 100, 500, 1000, 5000, 10000, 15000
     # openness
@@ -55,7 +55,7 @@ params_range = coll.OrderedDict([
     # NNRD
     ('split_ptg', [0.5]),
     ('ukwn_slt_ptg', [0.5]),
-    ('rt_lims_stp', [[0.6, 1.0, 0.2]]),
+    ('rt_lims_stp', [[0.8, 1.0, 0.2]]),
     ('lmda', [0.5]),
     # SVMRO
     # ('svm_type', ['oneclass']),
