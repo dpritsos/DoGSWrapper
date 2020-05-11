@@ -79,7 +79,9 @@ params_range = coll.OrderedDict([
 ])
 
 word_n_gram_size = 3
-tables_wng = h2v_wng.Html2GsmVec(
+tables_wng = h2v_wng.Html2GsmVecBin(
+# tables_cng = h2v_cng.Html2GsmVecBin(
+# tables_wng = h2v_wng.Html2GsmVec(
 # tables_cng = h2v_cng.Html2GsmVec(
     word_n_gram_size, html_attrib=["text"], str_case='lower', valid_html=False
 )
@@ -100,7 +102,7 @@ openset_unoise_searchgrid.create_open_unstrd_noise_iset()
 # openset_unoise_searchgrid.build_corpusmatrix_on_open_unstrd_noise_iset()
 
 # FOR BUILDING THE VOCABS ###############
-"""
+
 openness_searchgrid = openness.OpennessParamGridSearchTables(
     openness_model, tables_wng, params_range, genres, corpus_filepath, method_results,
     state_saving_path, error_handling='replace', encoding='utf-8',
@@ -108,14 +110,17 @@ openness_searchgrid = openness.OpennessParamGridSearchTables(
     norm_func=None,
 )
 openness_searchgrid.build_corpusmatrix_on_dlparams()
-"""
+
+print "Building the Vocabs/CorpusMatricies: " + state_saving_path + " Done!"
+
 # FOR BUILDING THE VOCABS ###############
 
-
+"""
 results_h5 = openset_unoise_searchgrid.evaluate_on_open_unstrd_noise_iset()
 
 print results_h5
 print "Experiments Done!"
+"""
 
 
 method_results.close()
